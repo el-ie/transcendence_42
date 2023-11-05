@@ -1,0 +1,10 @@
+.chanZone Button{
+    height: 30px;
+    margin: 10px;
+    background-color: rgba(86, 24, 128, 0.589);
+    font-weight: 900;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    width: 100px;
+}

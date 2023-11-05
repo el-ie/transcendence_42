@@ -1,0 +1,23 @@
+.form {
+    position: relative;
+    padding: 19px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 70%;
+    align-items: center;
+    border: 2px solid black;
+}
+
+.form .closeButton {
+    position: absolute;
+    margin: 0px;
+    top: 0px;
+    right: 0px;
+    background-color: transparent;
+    color: black;
+    height: auto;
+    width: auto;
+
+
+}

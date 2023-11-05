@@ -1,0 +1,31 @@
+.chatbox {
+    position: relative;
+    height: 400px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+
+}
+
+.chatbox li{
+    /* background-color: rgba(0, 255, 13, 0.377); */
+    margin: 2px;
+    padding: 2px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.myMessage {
+    /* position: absolute; */
+    left: 5px;
+    top:auto;
+    background-color: rgba(0, 255, 13, 0.377);
+    
+    /* color: red; */
+}
+
+.notMyMessage {
+    background-color: rgba(0, 162, 255, 0.377);
+    /* color: blue; */
+}
