@@ -9,6 +9,7 @@ import { MessageModule } from './message/message.module';
 import { SocketModule } from './socket/socket.module';
 import { SocketGateway } from './socket/socket.gateway';
 import { RequestModule } from './request/request.module';
+import { ForTestModule } from './forTest/forTest.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { RequestModule } from './request/request.module';
      }),
      RequestModule,
     //  FriendModule, 
-     ChannelModule, MessageModule, SocketModule
+     ChannelModule, MessageModule, SocketModule, ForTestModule
     ],
   controllers: [],
   providers: [],
