@@ -7,6 +7,7 @@ import Game from './pages/Game';
 import Header from './components/Header';
 import LoginForm from './pages/Login/LoginForm';
 import RouteProtection from './components/RouteProtection';
+import { SocketProvider } from './components/Socket';
 
 
 const root = ReactDOM.createRoot(
@@ -21,19 +22,25 @@ root.render(
         <Route path="/home" element={
           <RouteProtection>
               <Header />
-              <Home />
+              <SocketProvider>
+                <Home />
+              </SocketProvider>
             </RouteProtection>
         } />
         <Route path="/social" element={
             <RouteProtection>
               <Header />
-              <Social />
+              <SocketProvider>
+               <Social />
+              </SocketProvider>
             </RouteProtection>
         } />
         <Route path="/game" element={
             <RouteProtection>
               <Header />
-              <Game />
+              <SocketProvider>
+                <Game />
+              </SocketProvider>
             </RouteProtection>
         } />
       </Routes>

@@ -19,7 +19,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private connectedClients = new Map<string, Socket>();
 
   handleConnection(client: Socket) {
-    console.log('je connecte un client socket');
+    // console.log('socket emise:', client);
     const username = client.handshake.query.username as string;
     this.connectedClients.set(username, client);
   }
