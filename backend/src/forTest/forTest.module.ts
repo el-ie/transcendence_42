@@ -20,6 +20,6 @@ import { TwoFaJwtStrategy } from "src/auth/strategy/2fa.jwt.strategy";
 @Module({
 	imports: [JwtModule.register({}), UserModule, AuthModule],
   controllers: [ForTestController],
-  providers: [ForTestService],
+  providers: [ForTestService, JwtStrategy, FortyTwoStrategy, PrismaService, UserService, TwoFaJwtStrategy],
 })
 export class ForTestModule {}
