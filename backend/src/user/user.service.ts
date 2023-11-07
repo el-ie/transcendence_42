@@ -210,7 +210,7 @@ export class UserService {
         return (blocked)
     }
 
-    async getFriends(login:string) : Promise<string[]>{
+    async getFriends(login:string) : Promise<User[]>{
         const user = await this.prisma.user.findUniqueOrThrow({
             where : {
                 login,
@@ -227,15 +227,15 @@ export class UserService {
             }
         })
         const usersPromises = user.userConnections.map(async (connection) => {
-            const targetId = connection.targetId;
-            return this.getLoginById(targetId);
+            const user = await this.prisma.user.findUniqueOrThrow({where: {id: connection.targetId}});
+            return user;
         });
     
         const users = await Promise.all(usersPromises);
         return (users);
     }
 
-    async getBlocked(login:string) : Promise<string[]>{
+    async getBlocked(login:string) : Promise<number[]>{
         const user = await this.prisma.user.findUniqueOrThrow({
             where : {
                 login,
@@ -251,9 +251,9 @@ export class UserService {
                 }
             }
         })
-        const usersPromises = user.userConnections.map(async (connection) => {
+        const usersPromises = user.userConnections.map((connection) => {
             const targetId = connection.targetId;
-            return this.getLoginById(targetId);
+            return targetId;
         });
     
         const users = await Promise.all(usersPromises);

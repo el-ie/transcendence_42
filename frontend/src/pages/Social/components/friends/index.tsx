@@ -7,8 +7,8 @@ function FriendList({list, handleSelect}) {
         <div>
             <h2>Friends</h2>
             <ul className="FriendList">
-                {list.map((userLogin: string) => (
-                    <li key={userLogin + "a"} onClick={() => handleSelect(userLogin)}>{userLogin}</li>
+                {list.map((user: any) => (
+                    <li key={user.id + "a"} onClick={() => handleSelect(user)}>{user.login}</li>
                 ))}
             </ul>
         </div>
@@ -16,16 +16,16 @@ function FriendList({list, handleSelect}) {
 }
 
 export default function Friends({login, blockeds, handleBlock, handleUnblock}) {
-    const [user, setUser] = useState("");
+    const [user, setUser] = useState(null); //maintenant, user sera l'utilisateur complet
     const [friends, setFriends] = useState([]);
 
 
     useEffect (() => {
-        const url_friends = "http://localhost:3001/users/friends?login=" + login;
+        const url_friends = "http://localhost:3001/users/friends";
         axios.get(url_friends, {withCredentials: true})
         .then((response) => {
             if (response.data.users) {
-                // console.log("friends : ", response.data.users);
+                console.log("friends", response.data.users);
                 setFriends(response.data.users);
             }
             else
@@ -33,22 +33,22 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock}) {
         })
     }, [login])
 
-    function handleAdd(user: string) {
+    function handleAdd(user: any) {
         const temp = [...friends];
         temp.push(user);
         setFriends(temp);
     }
 
-    function handleDel(user: string) {
+    function handleDel(user: any) {
         const temp = [...friends];
-        const temp2 = temp.filter((userLogin) => userLogin !== user);
+        const temp2 = temp.filter((userl) => userl.id !== user.id);
         setFriends(temp2);
     }
 
 
     return (
         <div>
-            <UserProfile userLogin={user} handleDel={handleDel} handleUnblock={handleUnblock} setUser={setUser} handleAdd={handleAdd} handleBlock={handleBlock} login={login} friends={friends} blockeds={blockeds}/>
+            <UserProfile user={user} setUser={setUser} handleDel={handleDel} handleUnblock={handleUnblock}  handleAdd={handleAdd} handleBlock={handleBlock} login={login} friends={friends} blockeds={blockeds}/>
             <FriendList list={friends} handleSelect={setUser} />
         </div>
     )

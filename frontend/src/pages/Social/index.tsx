@@ -3,24 +3,23 @@ import Channels from './components/channel'
 import Chat from './components/chat'
 import Friends from './components/friends'
 import { useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
 import axios from 'axios'
+import { useSocket } from '../../components/Socket'
 
 
 export default function Social() {
     const [currentChan, setCurrentChan] = useState(null);
     const [login, setLogin] = useState('');
-    const [isLogin, setIsLogin] = useState(false);
-    const [socket, setSocket] = useState(null);
     const [blockeds, setBlocked] = useState([]);
 
+    const socket =  useSocket();
+    // console.log(socket);
 
     useEffect(() => {
         const url_get_login = "http://localhost:3001/users/getLogin";
         axios.get(url_get_login, {withCredentials: true})
         .then((response) => {
             if (response.data) {
-                console.log("je recup le login: ", response.data);
                 setLogin(response.data);
             }
         })
@@ -30,9 +29,9 @@ export default function Social() {
         const url_blocked = "http://localhost:3001/users/blocked?";
         axios.get(url_blocked, {withCredentials: true})
         .then((response) => {
-            if (response.data.users) {
-                console.log("blocked : ", response.data.users);
-                setBlocked(response.data.users);
+            if (response.data.usersIds) {
+                setBlocked(response.data.usersIds);
+                //changer dans l'affichage des message pour regarder senderId a la place de senderLogin
             }
             else
                 console.log(response.data.error);
@@ -42,29 +41,18 @@ export default function Social() {
         })
     }, []);
 
-    function handleBlock(user: string) {
+
+
+    function handleBlock(userId: number) {
         const temp = [...blockeds];
-        temp.push(user);
-        console.log("je suis jusque la = je bloque :" , user);
+        temp.push(userId);
         setBlocked(temp);
     }
 
-    function handleUnblock(user: string) {
+    function handleUnblock(userId: number) {
         const temp = [...blockeds];
-        const temp2 = temp.filter((userLogin) => userLogin !== user);
+        const temp2 = temp.filter((userI) => userI !== userId);
         setBlocked(temp2);
-    }
-
-    function handleLogin (){
-        console.log('je crée une co socket !');
-        const newsocket = io('http://localhost:3001', {
-            query: {
-                login
-            }
-        });
-        setSocket(newsocket);
-        setIsLogin(true);
-        // setLogin(input);
     }
 
     function handleLeave() {
@@ -100,8 +88,7 @@ export default function Social() {
     }
     return (
         <div>
-            <button onClick={() => handleLogin()}>login</button>
-            {isLogin && login !== '' && <div className="social">
+            {login !== '' &&  socket !== null && <div className="social">
                 <Channels handleSelect={(channel: any) => selectChan(channel)} login={login} currentChan={currentChan} socket={socket}/>
                 <Chat channel={currentChan} login={login} socket={socket} handleLeave={handleLeave} handleDelete={handleDelete} blockeds={blockeds}/>
                 <Friends login={login} blockeds={blockeds} handleBlock={handleBlock} handleUnblock={handleUnblock}/>

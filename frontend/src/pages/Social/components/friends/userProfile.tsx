@@ -1,18 +1,20 @@
 import axios from "axios";
 import { useState } from "react"
 
-function Profile({userLogin, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends}) {
+function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends}) {
+    const isFriend = friends.some(friend => friend.id === user.id);
+    console.log(isFriend);
 
     function handleClickAdd () {
         const url = "http://localhost:3001/users/addFriend";
         const data = {
             login: login,
-            target: userLogin,
+            target: user.login,
         }
-        axios.post(url, data)
+        axios.post(url, data, {withCredentials: true})
         .then((response) => {
             if (response.data.added)
-                handleAdd(response.data.added.login);
+                handleAdd(response.data.added);
             else
                 console.log(response.data.error);
         })
@@ -25,12 +27,12 @@ function Profile({userLogin, login, handleAdd, handleDel, handleBlock, handleUnb
         const url = "http://localhost:3001/users/DelFriend";
         const data = {
             login: login,
-            target: userLogin,
+            target: user.login,
         }
-        axios.post(url, data)
+        axios.post(url, data, {withCredentials: true})
         .then((response) => {
-            if (response.data.added)
-                handleDel(response.data.added.login);
+            if (response.data.deleted)
+                handleDel(response.data.deleted);
         })
         .catch((error) => {
             console.log(error);
@@ -41,12 +43,12 @@ function Profile({userLogin, login, handleAdd, handleDel, handleBlock, handleUnb
         const url = "http://localhost:3001/users/blockUser";
         const data = {
             login: login,
-            target: userLogin,
+            target: user.login,
         }
-        axios.post(url, data)
+        axios.post(url, data, {withCredentials: true})
         .then((response) => {
             if (response.data.blocked)
-            handleBlock(response.data.blocked.login);
+            handleBlock(response.data.blocked.id);
         })
         .catch((error) => {
             console.log(error);
@@ -57,12 +59,12 @@ function Profile({userLogin, login, handleAdd, handleDel, handleBlock, handleUnb
         const url = "http://localhost:3001/users/unblockUser";
         const data = {
             login: login,
-            target: userLogin,
+            target: user.login,
         }
-        axios.post(url, data)
+        axios.post(url, data, {withCredentials: true})
         .then((response) => {
-            if (response.data.blocked)
-            handleUnblock(response.data.blocked.login);
+            if (response.data.unblocked)
+            handleUnblock(response.data.unblocked.id);
         })
         .catch((error) => {
             console.log(error);
@@ -73,14 +75,14 @@ function Profile({userLogin, login, handleAdd, handleDel, handleBlock, handleUnb
 
     return (
         <div>
-            <h3>{userLogin}</h3>
-            {!friends.includes(userLogin) ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
-            {!blockeds.includes(userLogin) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
+            <h3>{user.login}</h3>
+            {!isFriend ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
+            {!blockeds.includes(user.id) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
         </div>
     )
 }
 
-export default function UserProfile({userLogin, setUser, handleAdd, handleUnblock, handleDel, handleBlock, login, blockeds, friends}) {
+export default function UserProfile({user, setUser, handleAdd, handleUnblock, handleDel, handleBlock, login, blockeds, friends}) {
     const [input, setInput] = useState('');
 
     function handleSearch() {
@@ -93,7 +95,7 @@ export default function UserProfile({userLogin, setUser, handleAdd, handleUnbloc
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.user){
-                setUser(response.data.user.login)
+                setUser(response.data.user)
                 setInput("");
             }
             else
@@ -108,7 +110,7 @@ export default function UserProfile({userLogin, setUser, handleAdd, handleUnbloc
             <h3>Search for a player</h3>
             <input type="text" placeholder="Username" value={input} onChange={(e) => setInput(e.target.value)} />
             <button onClick={() => handleSearch()}>Search</button>
-            {userLogin !== "" && <Profile handleBlock={handleBlock} handleUnblock={handleUnblock} handleDel={handleDel} userLogin={userLogin} login={login} handleAdd={handleAdd} blockeds={blockeds} friends={friends}/>}
+            {user && <Profile handleBlock={handleBlock} handleUnblock={handleUnblock} handleDel={handleDel} user={user} login={login} handleAdd={handleAdd} blockeds={blockeds} friends={friends}/>}
         </div>
     )
 }

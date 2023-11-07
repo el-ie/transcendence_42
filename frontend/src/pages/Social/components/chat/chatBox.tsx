@@ -5,7 +5,7 @@ export default function Chatbox({messages, login, blockeds}) {
         <ul className="chatbox">
             {messages.map((message: any) => {
                 const classname = login === message.senderLogin ? "myMessage": "notMyMessage";
-                if (!blockeds.includes(message.senderLogin))
+                if (!blockeds.includes(message.senderId))
                     return (<li key={message.id} className={classname}>{message.senderLogin}:  {message.content}</li>)
                 else
                     return (null);

@@ -1,11 +1,9 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-// import { jwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
 import { AddFriendDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-// @UseGuards(jwtGuard)
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService){}
@@ -14,7 +12,6 @@ export class UserController {
         return (req.user);
     }
 
-    // @UseGuards(AuthGuard('blabla'))
     @Get('getLogin')
     getLogin (@Req() req) {
         return (req.user.login);
@@ -33,10 +30,10 @@ export class UserController {
     }
 
     @Get('friends')
-    async getFriends(@Query('login') login: string)
+    async getFriends(@Req() req:any)
     {
         try {
-            const users = await this.userService.getFriends(login);
+            const users = await this.userService.getFriends(req.user.login);
             return {users};
         }
         catch {
@@ -48,8 +45,8 @@ export class UserController {
     async getBlocked(@Req() req: any)
     {
         try {
-            const users = await this.userService.getBlocked(req.user.login);
-            return ({users});
+            const usersIds = await this.userService.getBlocked(req.user.login);
+            return ({usersIds});
         }
         catch {
             return {error: "404 User not found"}
@@ -70,8 +67,8 @@ export class UserController {
     @Post('delFriend')
     async delFriend(@Body() dto: AddFriendDto) {
         try {
-          const added = await this.userService.delFriend(dto.login, dto.target);
-          return ({added})
+          const deleted = await this.userService.delFriend(dto.login, dto.target);
+          return ({deleted})
         } 
         catch (error) {
           return { error: `you cant add this user`};
@@ -92,8 +89,8 @@ export class UserController {
     @Post('unblockUser')
     async unblockUser(@Body() dto: AddFriendDto) {
         try {
-         const blocked = await this.userService.unblockUser(dto.login, dto.target);
-         return ({blocked});
+         const unblocked = await this.userService.unblockUser(dto.login, dto.target);
+         return ({unblocked});
         } 
         catch (error) {
           return { error: `you cant block this user`};
