@@ -6,7 +6,7 @@ export default function Profile() {
 
     return (
         <div>
-            userId: {userId};
+            <span>userId: {userId}</span>
         </div>
     )
 }

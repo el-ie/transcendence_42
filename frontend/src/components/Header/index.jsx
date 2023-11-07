@@ -20,7 +20,7 @@ export default function Header() {
             <Link to="/Home">Home</Link>
             <Link to="/Game">Game</Link>
             <Link to="/Social">Social</Link>
-            <Link to={`/Profile/${me.id}`}>Profile</Link>
+            {me && <Link to={`/Profile/${me.id}`}>Profile</Link>}
         </nav>
     )
 }
