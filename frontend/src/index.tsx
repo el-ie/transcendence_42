@@ -8,6 +8,7 @@ import Header from './components/Header';
 import LoginForm from './pages/Login/LoginForm';
 import RouteProtection from './components/RouteProtection';
 import { SocketProvider } from './components/Socket';
+import Profile from './pages/Profile';
 
 
 const root = ReactDOM.createRoot(
@@ -43,7 +44,16 @@ root.render(
               </SocketProvider>
             </RouteProtection>
         } />
+        <Route path="/profile/:userId" element={
+            <RouteProtection>
+              <Header />
+              <SocketProvider>
+                <Profile />
+              </SocketProvider>
+            </RouteProtection>
+        } />
       </Routes>
+      
     </Router>
   </React.StrictMode>,
 );

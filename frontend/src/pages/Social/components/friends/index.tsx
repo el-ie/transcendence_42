@@ -24,7 +24,8 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock}) {
         const url_friends = "http://localhost:3001/users/friends";
         axios.get(url_friends, {withCredentials: true})
         .then((response) => {
-            if (response.data.users) {//changer back pour renvoyer des objets users
+            if (response.data.users) {
+                console.log("friends", response.data.users);
                 setFriends(response.data.users);
             }
             else

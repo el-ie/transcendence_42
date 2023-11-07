@@ -13,7 +13,7 @@ export default function Social() {
     const [blockeds, setBlocked] = useState([]);
 
     const socket =  useSocket();
-    console.log(socket);
+    // console.log(socket);
 
     useEffect(() => {
         const url_get_login = "http://localhost:3001/users/getLogin";
@@ -29,8 +29,8 @@ export default function Social() {
         const url_blocked = "http://localhost:3001/users/blocked?";
         axios.get(url_blocked, {withCredentials: true})
         .then((response) => {
-            if (response.data.userIds) {
-                setBlocked(response.data.userIds);
+            if (response.data.usersIds) {
+                setBlocked(response.data.usersIds);
                 //changer dans l'affichage des message pour regarder senderId a la place de senderLogin
             }
             else

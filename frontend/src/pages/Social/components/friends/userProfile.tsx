@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState } from "react"
 
 function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends}) {
+    const isFriend = friends.some(friend => friend.id === user.id);
+    console.log(isFriend);
 
     function handleClickAdd () {
         const url = "http://localhost:3001/users/addFriend";
@@ -74,7 +76,7 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
     return (
         <div>
             <h3>{user.login}</h3>
-            {!friends.includes(user) ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
+            {!isFriend ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
             {!blockeds.includes(user.id) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
         </div>
     )

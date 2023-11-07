@@ -15,7 +15,6 @@ export function SocketProvider({ children }) {
     // Effectuer la requête pour obtenir l'utilisateur actuellement authentifié
     axios.get("http://localhost:3001/users/me", { withCredentials: true })
       .then((response) => {
-        console.log("Réponse dans socket.tsx : ", response.data);
 
         // Une fois que vous avez les informations de l'utilisateur, configurez la socket WebSocket
         const username = response.data.username;

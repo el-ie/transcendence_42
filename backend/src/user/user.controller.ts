@@ -1,11 +1,9 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-// import { jwtGuard } from 'src/auth/guard';
 import { UserService } from './user.service';
 import { AddFriendDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-// @UseGuards(jwtGuard)
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService){}
@@ -14,7 +12,6 @@ export class UserController {
         return (req.user);
     }
 
-    // @UseGuards(AuthGuard('blabla'))
     @Get('getLogin')
     getLogin (@Req() req) {
         return (req.user.login);
@@ -36,8 +33,8 @@ export class UserController {
     async getFriends(@Req() req:any)
     {
         try {
-            const usersIds = await this.userService.getFriends(req.user.login);
-            return {usersIds};
+            const users = await this.userService.getFriends(req.user.login);
+            return {users};
         }
         catch {
             return {error: "404 User not found"}
