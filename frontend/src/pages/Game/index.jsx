@@ -9,22 +9,36 @@ export default function Game() {
     const socket =  useSocket();
 
 
+	type Game = {
+		player1: { score: number, paddlePosition: number },
+		player2: { score: number, paddlePosition: number },
+		ball: {x: number, y: number}
+	};
+
+	const gameState: Game = useRef();
+
+
 	useEffect( () => {
 
 		//console.log('socket = ', socket);
 
-        const messageHandler = (newmessage: any) => {
-			console.log('MESSAGE RECU');
-			console.log(newmessage);
+        const gameHandler = (gameGivenState: Game) => {
+			console.log('MESSAGE RECU :');
+			console.log(gameGivenState);
+			//gameState = gameGivenState;
+			gameState.current = gameGivenState;
+			console.log('gameState ====');
+			console.log(gameState);
 		};
 
-		console.log('AAA');
+
 
 		if (socket)
 		{
-			console.log('LE SOCKET EST ON');
+			//console.log('LE SOCKET EST ON');
 			socket.emit('find_game', 'lalala');
-			socket.on('game', messageHandler);
+
+			socket.on('game_start', gameHandler);
 		}
 
 		//const gameHandler = (message: any) => {
@@ -40,6 +54,8 @@ export default function Game() {
 
 	}, [socket]);
 
+
+	/////////////////////////////////////////////////////////////////
 
 	const [leftPaddleY, setLeftPaddleY] = useState(300);
 
@@ -73,19 +89,19 @@ export default function Game() {
 
 	//////////////////////////////////////////////
 
-	//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
+		//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
 	////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
 	//
-	////set angle et vitesse de depart
+		////set angle et vitesse de depart
 	//useEffect( () => {
-	//	changeBallAngle(toRadians(70 + 45));
-	//	changeBallSpeed(0.1);
-	//	console.log('ball speed = ', getBallSpeed());
-	//
-	//}, []);
-		/////////////////////////////////////////
+		//	changeBallAngle(toRadians(70 + 45));
+		//	changeBallSpeed(0.1);
+		//	console.log('ball speed = ', getBallSpeed());
+		//
+			//}, []);
+	/////////////////////////////////////////
 
-	const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
+		const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
 	//const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
 
 	//set angle et vitesse de depart
@@ -97,7 +113,7 @@ export default function Game() {
 	}, []);
 	//////////////////////////////////////////////
 
-	const canvasRef = useRef(null);
+		const canvasRef = useRef(null);
 
 	//Fonction qui permet de donner un angle donne a la basse sans changer la vitesse
 	// attention se base sur un debut d'angle a l'est et non au nord !
@@ -135,7 +151,7 @@ export default function Game() {
 		const currentDx = ballRef.current.dx;
 		const currentDy = ballRef.current.dy;
 		let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
-		
+
 		let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
 
 		return speed_finetuned;
@@ -332,23 +348,23 @@ export default function Game() {
 					///////////////////////////////////////////////////////
 
 					let for_test = 0;
-				// ACTUALISATION VALEURS
-			if (ballX > canvas.width - 10 - for_test || ballX <= 10)
-			{
-				//ballRef.current.dx *= -1;
-				ballRef.current.y = hheight / 2;
-				changeBallSpeed(0); //fine tuning
-				if (ballX > canvas.width - 10 - for_test)
-				{
-					ballRef.current.x = wwidth / 2 - 150;
-					changeBallAngle(toRadians(0));
-				}
-				else
-				{
-					ballRef.current.x = wwidth / 2 + 150;
-					changeBallAngle(toRadians(180));
-				}
-			}
+					// ACTUALISATION VALEURS
+					if (ballX > canvas.width - 10 - for_test || ballX <= 10)
+					{
+						//ballRef.current.dx *= -1;
+						ballRef.current.y = hheight / 2;
+						changeBallSpeed(0); //fine tuning
+						if (ballX > canvas.width - 10 - for_test)
+						{
+							ballRef.current.x = wwidth / 2 - 150;
+							changeBallAngle(toRadians(0));
+						}
+						else
+						{
+							ballRef.current.x = wwidth / 2 + 150;
+							changeBallAngle(toRadians(180));
+						}
+					}
 			else
 			{
 				ballRef.current.x += ballRef.current.dx;

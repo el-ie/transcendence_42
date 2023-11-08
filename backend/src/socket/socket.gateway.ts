@@ -111,7 +111,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (player == username)
 				return;
 		}
-
 		//check si l username est deja dans un activeGames 
 		for (const game of this.activeGames) {
 			if (game[0] === username || game[1] === username)
@@ -120,7 +119,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		this.matchmakingQueue.push(username);
 
-		console.log(username, ' added : ', this.matchmakingQueue);
+		//console.log(username, ' added : ', this.matchmakingQueue);
 
 		if (this.matchmakingQueue.length == 2)
 			{
@@ -134,8 +133,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				const gameState = this.initializeGameState(player1, player2);
 				this.activeGames.push([player1, player2, gameState]);
 
-				console.log('actives games :');
-				console.log(this.activeGames);
+				//console.log('actives games :');
+				//console.log(this.activeGames);
 
 				this.manageGame(player1, player2, gameState);
 			}
@@ -145,14 +144,28 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	manageGame(player1: string, player2: string, gameState: Game) {
 
-		//const sPlayer1 = this.connectedClients.get(player1);
-		//const sPlayer2 = this.connectedClients.get(player2);
+		//console.log('----- connectedClients : -------');
+		//console.log(this.connectedClients);
+		const sPlayer1 = this.connectedClients.get(player1);
+		const sPlayer2 = this.connectedClients.get(player2);
+		//this.connectedClients.get(username).emit('game', 'salut  c est moi');
 
-		this.server.to(player1).emit('game_start', { opponent: player2, gameState });
-		this.server.to(player2).emit('game_start', { opponent: player1, gameState });
+		//ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!!
+		if (sPlayer1 === undefined || sPlayer2 === undefined)
+			{
+				console.log('socket manageGame erreur le socket recupere est undefined');
+				return;
+			}
+
+			//sPlayer1.emit('game_start', { gameState ,opponent: player2 });
+			sPlayer1.emit('game_start', gameState);
+			sPlayer2.emit('game_start', gameState);
+
+			//this.server.to(this.connectedClients(player2)).emit('game_start', { opponent: player2, gameState });
+			//this.server.to(player2).emit('game_start', { opponent: player1, gameState });
 
 
-		//this.testPaddleMove();
+			//this.testPaddleMove();
 
 	}
 
