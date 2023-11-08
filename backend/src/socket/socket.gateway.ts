@@ -90,6 +90,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private matchmakingQueue: string[] = [];
 
+  //utile?
+  private activeGames: [string, string][] = [];
+
 
   @SubscribeMessage('find_game')
   async handleLaunchGame(client: Socket, payload: any) {
@@ -100,11 +103,69 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  if (typeof username != 'string')
 		  return; //gerer erreur
 
+	  //check si l username existe dans la database ?
+
+	  //check si l username est deja dans la matchmakingQueue
+	  for (const player of this.matchmakingQueue) {
+		  if (player == username)
+			  return;
+	  }
+
+	  //check si l username est deja dans un activeGames 
+	  for (const game of this.activeGames) {
+		  if (game[0] === username || game[1] === username)
+			  return;
+	  }
+
 	  this.matchmakingQueue.push(username);
+
 	  console.log(username, ' added : ', this.matchmakingQueue);
 
 	  if (this.matchmakingQueue.length == 2)
-		  console.log('GAME IS READY');
+		  {
+			  console.log('GAME IS READY');
+
+			  const player1 = this.matchmakingQueue.shift();
+			  const player2 = this.matchmakingQueue.shift();
+			  // check is player != undefined ?
+
+			  //utile?
+			  this.activeGames.push([player1, player2]);
+
+			  console.log('actives games :');
+			  console.log(this.activeGames);
+
+			  this.manageGame(player1, player2);
+		  }
+
+  }
+
+  initializeGameState(player1: string, player2: string) {
+  // Initialiser l'état de jeu, par exemple avec des positions de départ
+  return ({
+    players: {
+      player1: { score: 0, paddlePosition: 300 },
+      player2: { score: 0, paddlePosition: 300 }
+    },
+    ball: { x: 500, y: 500 },
+    // autres éléments d'état nécessaires
+  });
+}
+
+  manageGame(player1: string, player2: string) {
+		
+	  const sPlayer1 = this.connectedClients.get(player1);
+	  const sPlayer2 = this.connectedClients.get(player2);
+
+	  const gameState = this.initializeGameState(player1, player2);
+	  
+	  
+	  this.testPaddleMove();
+
+  }
+
+  @SubscribeMessage('paddle_move')
+  testPaddleMove() {
   }
 
   @SubscribeMessage('game')
@@ -117,6 +178,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	  if (typeof username != 'string')
 		  return; //gerer erreur
+
 	  this.connectedClients.get(username).emit('game', 'salut  c est moi');
 
 	  //this.connectedClients.forEach((value, key) => {
@@ -126,3 +188,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  //this.connectedClients.get('eamar').emit('game', 'salut les bg');
   }
 }
+
+  //getOpponentUsername(player1: string)
+  //{
+	 // for (const player_iter of this.activeGames) {
+		//  if (player_iter[0] === player1)
+		//	  return player_iter[1];
+	 // }
+	 // return null; // ou autre?
+  //}

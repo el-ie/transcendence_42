@@ -42,6 +42,35 @@ export class ForTestController {
 			//return  (await this.prisma.user.findMany());
 	}
 
+	//pareil que create_fake_user sauf que on donne seulement le parametre name qui sera donne a la fois pour le username et le login ( le meme )
+	@Public()
+	@Get('create')
+	async fake_user2(@Body() body, @Req() req, @Res() response, @Query('name') name: string) {
+
+		let user = await this.prisma.user.findUnique( { where: { username: name } });
+		if (user)
+			response.send('username already taken');
+		user = await this.prisma.user.findUnique( { where: { login: name } });
+		if (user)
+			response.send('login already taken');
+
+		user = await this.prisma.user.create({
+			data: {
+				login: name,
+				username: name,
+				sessionId: "no need",
+			},
+		});
+
+		const token = await this.authService.generateJwt(user, 'basic_auth');
+
+		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
+
+		//return response.send();//options?
+		response.redirect('http://localhost:3000/home');
+			//return  (await this.prisma.user.findMany());
+	}
+
 	@Public()
 	@Get('list_users')
 	async list_users()
