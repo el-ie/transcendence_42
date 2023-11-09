@@ -17,6 +17,9 @@ export default function Game() {
 
 	const gameState: Game = useRef();
 
+	const leftPaddleY = useRef(300);
+
+	//const rightPaddleY = useState(300);
 
 	useEffect( () => {
 
@@ -54,10 +57,36 @@ export default function Game() {
 
 	}, [socket]);
 
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+
+			if (event.keyCode === 87) { // 'W' key
+				if (leftPaddle.y > (paddleHeight / 2)) 
+				{
+					if (socket)
+						socket.emit('paddle_up', 'coucou');
+					else
+						console.log('NO FUCKING SOCKET');
+					console.log('CARMANAA');
+				}
+				//setLeftPaddleY((prevY) => prevY - paddleStep); 
+			}
+
+			//if (event.keyCode === 83) { // 'S' key
+				//	if (leftPaddle.y + leftPaddle.height < hheight - (paddleHeight / 2)) 
+					//		setLeftPaddleY((prevY) => prevY + paddleStep);
+				//}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+		};
+	}, [leftPaddleY.current]);
 
 	/////////////////////////////////////////////////////////////////
 
-	const [leftPaddleY, setLeftPaddleY] = useState(300);
+		//const [leftPaddleY, setLeftPaddleY] = useState(300);
 
 	const [rightPaddleY, setRightPaddleY] = useState(300);
 
@@ -158,7 +187,7 @@ export default function Game() {
 	}
 
 
-	let leftPaddle = { x: 35, y: leftPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
+	let leftPaddle = { x: 35, y: leftPaddleY.current, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 	let rightPaddle = { x: wwidth - 40, y: rightPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
 
@@ -168,25 +197,26 @@ export default function Game() {
 	let border_right = { x: wwidth - 3, y: 0, width: 3, height: hheight};
 
 
-	useEffect(() => {
-		const handleKeyDown = (event) => {
-
-			if (event.keyCode === 87) { // 'W' key
-				if (leftPaddle.y > (paddleHeight / 2)) 
-					setLeftPaddleY((prevY) => prevY - paddleStep); 
-			}
-
-			if (event.keyCode === 83) { // 'S' key
-				if (leftPaddle.y + leftPaddle.height < hheight - (paddleHeight / 2)) 
-					setLeftPaddleY((prevY) => prevY + paddleStep);
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-		};
-	}, [leftPaddleY]);
+	////////////////////// On va tenter de changer ca par un event du back
+	//useEffect(() => {
+		//	const handleKeyDown = (event) => {
+			//
+				//		if (event.keyCode === 87) { // 'W' key
+					//			if (leftPaddle.y > (paddleHeight / 2)) 
+						//				setLeftPaddleY((prevY) => prevY - paddleStep); 
+					//		}
+			//
+				//		if (event.keyCode === 83) { // 'S' key
+					//			if (leftPaddle.y + leftPaddle.height < hheight - (paddleHeight / 2)) 
+						//				setLeftPaddleY((prevY) => prevY + paddleStep);
+					//		}
+			//	};
+		//	window.addEventListener('keydown', handleKeyDown);
+		//
+			//	return () => {
+				//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+				//	};
+		//}, [leftPaddleY]);
 
 	useEffect(() => {
 		const handleKeyDown = (event) => {
@@ -408,7 +438,7 @@ export default function Game() {
 			cancelAnimationFrame(animation_id);
 		}
 
-	}, [leftPaddleY, rightPaddleY]);
+	}, [leftPaddleY.current, rightPaddleY]);
 
 			return (
 				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh'}}>

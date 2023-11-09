@@ -179,8 +179,30 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		});
 	}
 
-	@SubscribeMessage('paddle_move')
-	testPaddleMove() {
+	@SubscribeMessage('paddle_up')
+	async testPaddleMove(client: Socket, payload: any) {
+		console.log('ON EST LAAAAAAAAAAAAAAAAAA');
+		let username = client.handshake.query.username;
+
+		let gameState = null;
+
+		for (const [playerOne, playerTwo, game] of this.activeGames) {
+			console.log(`Player One: ${playerOne}, Player Two: ${playerTwo}, Game: ${game}`);
+			if (username === playerOne || username === playerTwo)
+				gameState = game;
+
+		}
+
+		if (!gameState)
+			{
+				console.log('suscribe paddle_up : player not in an active game');
+				return;
+			}
+
+		console.log('TEST PADDLE MOVE MOTHERFUCKING SUCCES');
+		console.log(gameState);
+
+
 	}
 
 	@SubscribeMessage('game')
