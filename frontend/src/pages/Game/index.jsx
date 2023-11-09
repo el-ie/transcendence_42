@@ -7,17 +7,27 @@ export default function Game() {
 
 
     const socket =  useSocket();
+	if (!socket)
+		throw new Error('React game: socket problem');//check
 
 
 	type Game = {
-		player1: { score: number, paddlePosition: number },
-		player2: { score: number, paddlePosition: number },
+		playerLeft: { name: string, score: number, paddlePosition: number },
+		playerRight: { name: string, score: number, paddlePosition: number },
 		ball: {x: number, y: number}
 	};
 
-	const gameState: Game = useRef();
+	//const gameState: Game = useRef();
 
-	const leftPaddleY = useRef(300);
+	//on devrait plutot attendre que le back envoi le gameState si possible mais pour l isntant on va tester comme ca
+	//const [gameState, setGameState] = useState( {
+	//	playerLeft: { name: null, score: 0, paddlePosition: 300 },
+	//	playerRight: { name: null, score: 0, paddlePosition: 300 },
+	//	ball: {x: 0, y: 0}
+	//});
+
+	const [gameState, setGameState] = useState(null);
+	//const leftPaddleY = useRef(300);
 
 	//const rightPaddleY = useState(300);
 
@@ -26,14 +36,17 @@ export default function Game() {
 		//console.log('socket = ', socket);
 
         const gameHandler = (gameGivenState: Game) => {
-			console.log('MESSAGE RECU :');
+			console.log('game start (gameHandler)');
 			console.log(gameGivenState);
-			//gameState = gameGivenState;
-			gameState.current = gameGivenState;
+			setGameState(gameGivenState);
+		};
+        const gameRefreshHandler = (gameGivenState: Game) => {
+			console.log('game refresh (gameRefreshHandler');
+			console.log(gameGivenState);
+			setGameState(gameGivenState);
 			console.log('gameState ====');
 			console.log(gameState);
 		};
-
 
 
 		if (socket)
@@ -42,6 +55,8 @@ export default function Game() {
 			socket.emit('find_game', 'lalala');
 
 			socket.on('game_start', gameHandler);
+
+			socket.on('game_refresh', gameRefreshHandler);
 		}
 
 		//const gameHandler = (message: any) => {
@@ -57,11 +72,20 @@ export default function Game() {
 
 	}, [socket]);
 
+
+//(paddleHeight / 2)) 
+
 	useEffect(() => {
 		const handleKeyDown = (event) => {
 
+			//socket.on('game_refresh', gameRefreshHandler);
 			if (event.keyCode === 87) { // 'W' key
-				if (leftPaddle.y > (paddleHeight / 2)) 
+				console.log('========EVENTTTTTTT==========');
+
+				console.log(gameState.playerLeft.paddlePosition);
+				console.log(gameState.playerRight.paddlePosition);
+
+				if (gameState.playerLeft.paddlePosition > 100)
 				{
 					if (socket)
 						socket.emit('paddle_up', 'coucou');
@@ -71,18 +95,15 @@ export default function Game() {
 				}
 				//setLeftPaddleY((prevY) => prevY - paddleStep); 
 			}
-
-			//if (event.keyCode === 83) { // 'S' key
-				//	if (leftPaddle.y + leftPaddle.height < hheight - (paddleHeight / 2)) 
-					//		setLeftPaddleY((prevY) => prevY + paddleStep);
-				//}
 		};
+		if (!gameState)
+			return;//security
 		window.addEventListener('keydown', handleKeyDown);
 
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
 		};
-	}, [leftPaddleY.current]);
+	}, []); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
 	/////////////////////////////////////////////////////////////////
 
@@ -187,7 +208,7 @@ export default function Game() {
 	}
 
 
-	let leftPaddle = { x: 35, y: leftPaddleY.current, width: paddleWidth, height: paddleHeight, dy: 0 };
+	let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 	let rightPaddle = { x: wwidth - 40, y: rightPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
 
@@ -197,17 +218,17 @@ export default function Game() {
 	let border_right = { x: wwidth - 3, y: 0, width: 3, height: hheight};
 
 
-	////////////////////// On va tenter de changer ca par un event du back
+	//////////////////// On va tenter de changer ca par un event du back
 	//useEffect(() => {
 		//	const handleKeyDown = (event) => {
 			//
 				//		if (event.keyCode === 87) { // 'W' key
-					//			if (leftPaddle.y > (paddleHeight / 2)) 
+					//			if (gameState.playerLeft.paddlePosition > (paddleHeight / 2)) 
 						//				setLeftPaddleY((prevY) => prevY - paddleStep); 
 					//		}
 			//
 				//		if (event.keyCode === 83) { // 'S' key
-					//			if (leftPaddle.y + leftPaddle.height < hheight - (paddleHeight / 2)) 
+					//			if (gameState.playerLeft.paddlePosition + leftPaddle.height < hheight - (paddleHeight / 2)) 
 						//				setLeftPaddleY((prevY) => prevY + paddleStep);
 					//		}
 			//	};
@@ -217,31 +238,34 @@ export default function Game() {
 				//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
 				//	};
 		//}, [leftPaddleY]);
+	/////////////////////////////////////////////////////////
+
+		useEffect(() => {
+			const handleKeyDown = (event) => {
+
+				if (event.keyCode === 38) { // 'W' key
+					if (rightPaddle.y > (paddleHeight / 2)) 
+						setRightPaddleY((prevY) => prevY - paddleStep); 
+				}
+
+				if (event.keyCode === 40) { // 'S' key
+					if (rightPaddle.y + rightPaddle.height < hheight - (paddleHeight / 2)) 
+						setRightPaddleY((prevY) => prevY + paddleStep);
+				}
+			};
+			window.addEventListener('keydown', handleKeyDown);
+
+			return () => {
+				window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+			};
+		}, [rightPaddleY]);
+
+
 
 	useEffect(() => {
-		const handleKeyDown = (event) => {
 
-			if (event.keyCode === 38) { // 'W' key
-				if (rightPaddle.y > (paddleHeight / 2)) 
-					setRightPaddleY((prevY) => prevY - paddleStep); 
-			}
-
-			if (event.keyCode === 40) { // 'S' key
-				if (rightPaddle.y + rightPaddle.height < hheight - (paddleHeight / 2)) 
-					setRightPaddleY((prevY) => prevY + paddleStep);
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-		};
-	}, [rightPaddleY]);
-
-
-
-	useEffect(() => {
-
+		if (!gameState)
+			return;
 		const canvas = canvasRef.current;
 		if (!canvas)
 			return; //gpt
@@ -257,12 +281,12 @@ export default function Game() {
 
 			//// CONTACT AVEC PADDLES /////////////////////////////
 
-				//if (ballRef.current.y + ballRadius <= leftPaddle.y
+				//if (ballRef.current.y + ballRadius <= gameState.playerLeft.paddlePosition
 
 					// PADDLE GAUCHE //
 					//balle dans la zone du paddle en y :
-					if ( (ballY - ballRadius <= leftPaddle.y + paddleHeight) //balle au dessus de la partie basse du paddle
-						&& (ballY + ballRadius >= leftPaddle.y) ) //balle au dessous de la partie haute du paddle
+					if ( (ballY - ballRadius <= gameState.playerLeft.paddlePosition + paddleHeight) //balle au dessus de la partie basse du paddle
+						&& (ballY + ballRadius >= gameState.playerLeft.paddlePosition) ) //balle au dessous de la partie haute du paddle
 					//balle dans la zone du paddle en x :
 					if (ballX - ballRadius <= leftPaddle.x + leftPaddle.width
 						&& ballX + ballRadius >= leftPaddle.x)
@@ -271,7 +295,7 @@ export default function Game() {
 						//definir le nouvel angle :
 
 						// le centre vertical du paddle
-						let centre_paddle_Y = leftPaddle.y + (leftPaddle.height / 2);
+						let centre_paddle_Y = gameState.playerLeft.paddlePosition + (leftPaddle.height / 2);
 						let distance_ball_paddle_Y;
 						//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
 						let quadrant = 1; //pour au dessus
@@ -410,7 +434,7 @@ export default function Game() {
 			context.fill();
 
 			// Draw Paddles
-			context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+			context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
 
 			context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
 
@@ -424,8 +448,8 @@ export default function Game() {
 
 			//aide a la visualisation
 			//context.fillRect(ballX - 250, ballY, 500, 1);
-			//context.fillRect(leftPaddle.x, leftPaddle.y, 20, 1);
-			//context.fillRect(leftPaddle.x, leftPaddle.y + paddleHeight, 20, 1);
+			//context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, 20, 1);
+			//context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition + paddleHeight, 20, 1);
 
 			// Next frame
 			animation_id = requestAnimationFrame(update);
@@ -438,7 +462,7 @@ export default function Game() {
 			cancelAnimationFrame(animation_id);
 		}
 
-	}, [leftPaddleY.current, rightPaddleY]);
+	}, [rightPaddleY, gameState]);
 
 			return (
 				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh'}}>

@@ -125,29 +125,29 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			{
 				console.log('GAME IS READY');
 
-				const player1 = this.matchmakingQueue.shift();
-				const player2 = this.matchmakingQueue.shift();
+				const playerLeft = this.matchmakingQueue.shift();
+				const playerRight = this.matchmakingQueue.shift();
 				// check is player != undefined ?
 
 				//utile?
-				const gameState = this.initializeGameState(player1, player2);
-				this.activeGames.push([player1, player2, gameState]);
+				const gameState = this.initializeGameState(playerLeft, playerRight);
+				this.activeGames.push([playerLeft, playerRight, gameState]);
 
 				//console.log('actives games :');
 				//console.log(this.activeGames);
 
-				this.manageGame(player1, player2, gameState);
+				this.manageGame(playerLeft, playerRight, gameState);
 			}
 
 	}
 
 
-	manageGame(player1: string, player2: string, gameState: Game) {
+	manageGame(playerLeft: string, playerRight: string, gameState: Game) {
 
 		//console.log('----- connectedClients : -------');
 		//console.log(this.connectedClients);
-		const sPlayer1 = this.connectedClients.get(player1);
-		const sPlayer2 = this.connectedClients.get(player2);
+		const sPlayer1 = this.connectedClients.get(playerLeft);
+		const sPlayer2 = this.connectedClients.get(playerRight);
 		//this.connectedClients.get(username).emit('game', 'salut  c est moi');
 
 		//ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!!
@@ -157,40 +157,46 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				return;
 			}
 
-			//sPlayer1.emit('game_start', { gameState ,opponent: player2 });
+			//sPlayer1.emit('game_start', { gameState ,opponent: playerRight });
 			sPlayer1.emit('game_start', gameState);
 			sPlayer2.emit('game_start', gameState);
 
-			//this.server.to(this.connectedClients(player2)).emit('game_start', { opponent: player2, gameState });
-			//this.server.to(player2).emit('game_start', { opponent: player1, gameState });
+			//this.server.to(this.connectedClients(playerRight)).emit('game_start', { opponent: playerRight, gameState });
+			//this.server.to(playerRight).emit('game_start', { opponent: playerLeft, gameState });
 
 
 			//this.testPaddleMove();
 
 	}
 
-	initializeGameState(player1: string, player2: string) : Game {
-		// Initialiser l'état de jeu, par exemple avec des positions de départ
-		return ({
-			player1: { score: 0, paddlePosition: 300 },
-			player2: { score: 0, paddlePosition: 300 },
-			ball: { x: 500, y: 500 },
-			// autres éléments d'état nécessaires
-		});
-	}
 
 	@SubscribeMessage('paddle_up')
 	async testPaddleMove(client: Socket, payload: any) {
-		console.log('ON EST LAAAAAAAAAAAAAAAAAA');
-		let username = client.handshake.query.username;
 
-		let gameState = null;
+		//console.log('----- LISTEN paddle up ---------');
 
-		for (const [playerOne, playerTwo, game] of this.activeGames) {
-			console.log(`Player One: ${playerOne}, Player Two: ${playerTwo}, Game: ${game}`);
-			if (username === playerOne || username === playerTwo)
-				gameState = game;
+		//securite obligee pour utiliser username comme argument plus tard en temps que String
+		//let username : String;
+		//if (typeof client.handshake.query.username === String)
+		if (Array.isArray(client.handshake.query.username)) {
+			console.log('Erreur paddle up');
+			return;
+		}
+		let username : string = client.handshake.query.username ;
+		//else {
+		//	console.log('Error paddle up username type');
+		//	return;
+		//}
 
+		let gameState : Game = null;
+
+		for (const [playerLeft, playerRight, game] of this.activeGames) {
+			console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
+			if (username === playerLeft || username === playerRight)
+				{
+					gameState = game;
+					break; //check
+				}
 		}
 
 		if (!gameState)
@@ -199,42 +205,69 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				return;
 			}
 
-		console.log('TEST PADDLE MOVE MOTHERFUCKING SUCCES');
-		console.log(gameState);
+			console.log('TEST PADDLE MOVE MOTHERFUCKING SUCCES');
+			console.log(gameState);
 
+			gameState.playerLeft.paddlePosition -= 10;
 
+			this.connectedClients.get(username).emit('game_refresh', gameState);
+			this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
 	}
 
-	@SubscribeMessage('game')
-	async handleGame(client: Socket, payload: any) {
+	getOpponent(player: string) : string
+	{
 
-		//console.log('payload = ', payload);
-
-		console.log('--------game--------');
-		let username = client.handshake.query.username;
-
-		if (typeof username != 'string')
-			return; //gerer erreur
-
-		this.connectedClients.get(username).emit('game', 'salut  c est moi');
-
-		//this.connectedClients.forEach((value, key) => {
-		//	value.emit('game', 'salut les bg');
-		//	//console.log('value = ', value);
-		//});
-		//this.connectedClients.get('eamar').emit('game', 'salut les bg');
+		for (const [playerLeft, playerRight, game] of this.activeGames) {
+			console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
+			if (player === playerLeft)
+				return playerRight;
+			if (player === playerRight)
+				return playerRight;
+		}
+		console.log('Error getOpponent no opponent');
+		return null;
 	}
+
+	initializeGameState(playerL: string, playerR: string) : Game {
+		// Initialiser l'état de jeu, par exemple avec des positions de départ
+		return ({
+			playerLeft: { name: playerL, score: 0, paddlePosition: 300 },
+			playerRight: { name: playerR, score: 0, paddlePosition: 300 },
+			ball: { x: 500, y: 500 },
+			// autres éléments d'état nécessaires
+		});
+	}
+
+	//@SubscribeMessage('game')
+	//async handleGame(client: Socket, payload: any) {
+	//
+	//	//console.log('payload = ', payload);
+	//
+	//	console.log('--------game--------');
+	//	let username = client.handshake.query.username;
+	//
+	//	if (typeof username != 'string')
+	//		return; //gerer erreur
+	//
+	//	this.connectedClients.get(username).emit('game', 'salut  c est moi');
+	//
+	//	//this.connectedClients.forEach((value, key) => {
+	//	//	value.emit('game', 'salut les bg');
+	//	//	//console.log('value = ', value);
+	//	//});
+	//	//this.connectedClients.get('eamar').emit('game', 'salut les bg');
+	//}
 }
 
 type Game = {
-	player1: { score: number, paddlePosition: number },
-	player2: { score: number, paddlePosition: number },
+	playerLeft: { name: string, score: number, paddlePosition: number },
+	playerRight: { name: string, score: number, paddlePosition: number },
 	ball: {x: number, y: number}
 };
-//getOpponentUsername(player1: string)
+//getOpponentUsername(playerLeft: string)
 //{
 // for (const player_iter of this.activeGames) {
-//  if (player_iter[0] === player1)
+//  if (player_iter[0] === playerLeft)
 //	  return player_iter[1];
 // }
 // return null; // ou autre?
