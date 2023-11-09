@@ -17,3 +17,36 @@ nav *{
     text-decoration: none;
 
 }
+.avatar {
+    height: 100px;
+    width: 100px;
+}
+
+.popup {
+    padding: 0px;
+    padding-top: 10px;
+    width: 33%;
+    height: 33%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgb(91, 18, 158);
+    position: fixed;
+    top: 33%;
+    left: 33%;
+}
+
+.popup button{
+    width: fit-content;
+}
+
+.popup .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.popup .row *{
+    margin: 10px;
+}

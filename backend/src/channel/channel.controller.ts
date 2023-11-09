@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { ChannelType } from '@prisma/client';
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { ModuleRef } from '@nestjs/core';
+import { SocketService } from 'src/socket/socket.service';
 // import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Assurez-vous d'importer votre propre JwtAuthGuard
 
 @Controller('channel')
@@ -79,11 +80,12 @@ export class ChannelController {
   async kickUser(@Body() channelLeaveDto: ChannelJoinDto) {
     try {
       const leaverId = await this.userService.getIdByLogin(channelLeaveDto.login);
+      const leaverUsername = await this.userService.getUsernameByLogin(channelLeaveDto.login);
       const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
       await this.channelService.leaveChan(leaverId, channelId, channelLeaveDto.login);
       const username = await this.userService.getUsernameByLogin(channelLeaveDto.login);
-      const socketService = this.socketRef.get(SocketGateway, { strict: false })
-      socketService.sendEvent(channelLeaveDto.login, "kicked", null);
+      const socketService = this.socketRef.get(SocketGateway, { strict: false });
+      socketService.sendEvent(leaverUsername, "kicked", null);
     } catch (error) {
       return { error: `you cant kicked this user`};
     }
@@ -94,10 +96,11 @@ export class ChannelController {
     try {
       const leaverId = await this.userService.getIdByLogin(channelLeaveDto.login);
       const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
+      const leaverUsername = await this.userService.getUsernameByLogin(channelLeaveDto.login);
       await this.channelService.leaveChan(leaverId, channelId, channelLeaveDto.login);
       await this.channelService.banUser(channelId, leaverId)
       const socketService = this.socketRef.get(SocketGateway, { strict: false })
-      socketService.sendEvent(channelLeaveDto.login, "kicked", null);
+      socketService.sendEvent(leaverUsername, "kicked", null);// changer
     } catch (error) {
       return { error: `you cant kicked this user`};
     }

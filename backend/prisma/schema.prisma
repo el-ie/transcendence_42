@@ -34,6 +34,7 @@ model User {
   messages Message[] @relation ("userMessages")
   channelConnections ChannelConnection[] @relation("userConnection")
   userConnections UserConnection[] @relation("userRelation")
+  avatarFileName String @default("default.jpg")
 
   sessionId String
   twoFaEnabled Boolean @default(false)

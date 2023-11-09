@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react"
+import { Link } from "react-router-dom";
 
 function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends}) {
     const isFriend = friends.some(friend => friend.id === user.id);
@@ -70,14 +71,12 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
             console.log(error);
         })
     }
-
-
-
     return (
         <div>
             <h3>{user.login}</h3>
             {!isFriend ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
             {!blockeds.includes(user.id) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
+            <Link to={`/Profile/${user.id}`}>Profile</Link>
         </div>
     )
 }
