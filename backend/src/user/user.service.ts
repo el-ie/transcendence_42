@@ -48,6 +48,15 @@ export class UserService {
         return (user);
     }
 
+    async getUserById(id: number): Promise<User> {
+        const user = await this.prisma.user.findUniqueOrThrow({
+            where: {
+                id,
+            }
+        })
+        return (user);
+    }
+
     async addFriend(login: string, target: string): Promise<User> {
         const senderId = await this.getIdByLogin(login);
         const targetId = await this.getIdByLogin(target);
@@ -77,7 +86,6 @@ export class UserService {
         })
         console.log(userco.count);
         if (!userco.count){
-            console.log("je cree un userco !");
             const newUserCo = await this.prisma.userConnection.create({
                 data: {
                     targetId,
@@ -235,6 +243,41 @@ export class UserService {
         return (users);
     }
 
+    async changeLogin(userId: number, newLogin: string){
+        const user = await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                login: newLogin,
+            }
+        })
+        if (!user)
+            throw new Error("error: user not find or login taken");
+        return (user);
+    }
+
+    async getAvatarPath(userId: number) :Promise<string>{
+
+        const user = await this.prisma.user.findUniqueOrThrow({
+            where : {
+                id: userId
+            }
+        })
+        return (user.avatarFileName)
+    }
+
+    async changeAvatarPath(userId: number, name: string) {
+        const user = await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                avatarFileName: name,
+            }
+        })
+    }
+
     async getBlocked(login:string) : Promise<number[]>{
         const user = await this.prisma.user.findUniqueOrThrow({
             where : {
@@ -259,4 +302,4 @@ export class UserService {
         const users = await Promise.all(usersPromises);
         return (users);
     }
-} 
+}

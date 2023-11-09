@@ -5,7 +5,7 @@ import { SocketGateway } from './socket.gateway';
 export class SocketService {
     constructor(private socketGateway: SocketGateway){}
 
-    sendEvent(login: string, eventName: string, data: any){
-        return (this.socketGateway.sendEvent(login, eventName, data));
+    sendEvent(username: string, eventName: string, data: any){
+        return (this.socketGateway.sendEvent(username, eventName, data));
     }
 }

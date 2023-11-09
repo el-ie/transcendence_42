@@ -5,7 +5,7 @@ import axios from "axios";
 function FriendList({list, handleSelect}) {
     return (
         <div>
-            <h2>Friends</h2>
+            <h2>Friend List</h2>
             <ul className="FriendList">
                 {list.map((user: any) => (
                     <li key={user.id + "a"} onClick={() => handleSelect(user)}>{user.login}</li>

@@ -15,3 +15,9 @@ export class AddFriendDto {
     @IsNotEmpty()
     target: string;
 }
+
+export class ChangeLoginDto {
+    @IsString()
+    @IsNotEmpty()
+    newLogin: string;
+}

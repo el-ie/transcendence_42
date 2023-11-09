@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { UserService } from './user.service';
-import { AddFriendDto } from './dto/user.dto';
+import { AddFriendDto, ChangeLoginDto } from './dto/user.dto';
+import * as path from 'path';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
 
 @Controller('users')
 export class UserController {
@@ -17,6 +20,14 @@ export class UserController {
         return (req.user.login);
     }
 
+    @Get(':id/avatar')
+    async getUserAvatar(@Param('id') userId: string, @Res() res: Response) {
+        const fileName = await this.userService.getAvatarPath(parseInt(userId));
+        console.log("filename: ", fileName);
+        const avatarPath = path.join(__dirname, '..', '..', 'images', fileName);
+        res.sendFile(avatarPath);
+    }
+
     @Get('other')
     async getuser(@Query('login') login: string)
     {
@@ -25,6 +36,19 @@ export class UserController {
             return ({user});
         }
         catch {
+            return {error: "404 User not found"}
+        }
+    }
+
+    @Get('otherById')
+    async getUserById(@Query('id') id: string)
+    {
+        try {
+            const user = await this.userService.getUserById(parseInt(id));
+            return ({user});
+        }
+        catch {
+            console.log("oups");
             return {error: "404 User not found"}
         }
     }
@@ -52,6 +76,23 @@ export class UserController {
             return {error: "404 User not found"}
         }
     }
+
+
+@Post('uploadAvatar')
+@UseInterceptors(FileInterceptor('avatar', {dest: './temp',}))
+async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+    const newFileName = `${req.user.id}_avatar${path.extname(file.originalname)}`;
+
+    const avatarPath = path.join(__dirname, '..', '..', 'images', newFileName);
+    console.log(file);
+    fs.copyFileSync(file.path, avatarPath);
+    fs.unlinkSync(file.path);
+    await this.userService.changeAvatarPath(req.user.id, newFileName);
+
+    console.log(`Fichier copié avec succès : ${newFileName}`);
+    return (true);
+}
+
 
     @Post('addFriend')
     async addFriend(@Body() dto: AddFriendDto) {
@@ -95,6 +136,16 @@ export class UserController {
         catch (error) {
           return { error: `you cant block this user`};
         }
+    }
+    @Post('changeLogin')
+    async changeLogin(@Req() req: any, @Body() dto: ChangeLoginDto ){
+        try {
+            const user = await this.userService.changeLogin(req.user.id, dto.newLogin);
+            return ({user});
+           } 
+           catch (error) {
+             return { error: `you cant change login`};
+           }
     }
 
 }
