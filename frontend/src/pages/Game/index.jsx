@@ -77,16 +77,27 @@ export default function Game() {
 
 				const handleKeyDown = (event) => {
 
+					let blindSpotSizeRatio = 19; //determine la taille du petit coin inateignable par le paddle
+
 					if ((event.keyCode === 87 || event.keyCode === 38)) { // 'W' key
-						//if (gameState.playerLeft.paddlePosition > 100)
-							//if (playerSide === 'player_left')
-								socket.emit('paddle_move', 'UP');
+
+						if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition < (hheight / blindSpotSizeRatio))
+							return;
+						if (playerSide === 'player_right' && gameState.playerRight.paddlePosition < (hheight / blindSpotSizeRatio))
+							return;
+						//if (playerSide === 'player_left')
+							socket.emit('paddle_move', 'UP');
 					}
 
 					if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
 						//if (gameState.playerLeft.paddlePosition > 100)
 							//if (playerSide === 'player_left')
-								socket.emit('paddle_move', 'DOWN');
+						if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+							return;
+						if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+							return;
+
+							socket.emit('paddle_move', 'DOWN');
 					}
 
 				};
@@ -156,7 +167,7 @@ export default function Game() {
 
 		let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 	//plus de y !!
-	let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
+		let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 	let border_top = { x: 0, y: 0, width: wwidth, height: 3};
 	let border_bot = { x: 0, y: hheight - 3, width: wwidth, height: 3};
@@ -187,24 +198,24 @@ export default function Game() {
 
 		// local paddle move fonctionnel:
 
-		//useEffect(() => {
+	//useEffect(() => {
 		//	const handleKeyDown = (event) => {
-		//
-		//		if (event.keyCode === 38) { // 'W' key
-		//			if (gameState.playerRight.paddlePosition > (paddleHeight / 2)) 
-		//				setRightPaddleY((prevY) => prevY - paddleStep); 
-		//		}
-		//
-		//		if (event.keyCode === 40) { // 'S' key
-		//			if (gameState.playerRight.paddlePosition + rightPaddle.height < hheight - (paddleHeight / 2)) 
-		//				setRightPaddleY((prevY) => prevY + paddleStep);
-		//		}
-		//	};
+			//
+				//		if (event.keyCode === 38) { // 'W' key
+					//			if (gameState.playerRight.paddlePosition > (paddleHeight / 2)) 
+						//				setRightPaddleY((prevY) => prevY - paddleStep); 
+					//		}
+			//
+				//		if (event.keyCode === 40) { // 'S' key
+					//			if (gameState.playerRight.paddlePosition + rightPaddle.height < hheight - (paddleHeight / 2)) 
+						//				setRightPaddleY((prevY) => prevY + paddleStep);
+					//		}
+			//	};
 		//	window.addEventListener('keydown', handleKeyDown);
 		//
-		//	return () => {
-		//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-		//	};
+			//	return () => {
+				//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+				//	};
 		//}, [rightPaddleY]);
 
 
