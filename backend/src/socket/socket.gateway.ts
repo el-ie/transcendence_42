@@ -174,7 +174,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 
-	@SubscribeMessage('paddle_up')
+	@SubscribeMessage('paddle_move')
 	async testPaddleMove(client: Socket, payload: any) {
 
 		console.log('----- LISTEN paddle up ---------');
@@ -205,14 +205,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		if (!gameState)
 			{
-				console.log('suscribe paddle_up : player not in an active game');
+				console.log('suscribe paddle_move : player not in an active game');
 				return;
 			}
 
 			console.log('TEST PADDLE MOVE MOTHERFUCKING SUCCES');
 			console.log(gameState);
 
-			gameState.playerLeft.paddlePosition -= 10;
+			if (payload === 'UP')
+				gameState.playerLeft.paddlePosition -= 15;
+			if (payload === 'DOWN')
+				gameState.playerLeft.paddlePosition += 15;
 
 			this.connectedClients.get(username).emit('game_refresh', gameState);
 			this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);

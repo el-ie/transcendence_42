@@ -80,7 +80,13 @@ export default function Game() {
 					if ((event.keyCode === 87 || event.keyCode === 38)) { // 'W' key
 						//if (gameState.playerLeft.paddlePosition > 100)
 							if (playerSide === 'player_left')
-								socket.emit('paddle_up', 'coucou');
+								socket.emit('paddle_move', 'UP');
+					}
+
+					if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
+						//if (gameState.playerLeft.paddlePosition > 100)
+							if (playerSide === 'player_left')
+								socket.emit('paddle_move', 'DOWN');
 					}
 
 				};
