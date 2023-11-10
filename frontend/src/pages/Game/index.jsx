@@ -34,7 +34,7 @@ export default function Game() {
 
 	const [rightPaddleY, setRightPaddleY] = useState(300);
 
-	const [playerSide, setPlayerSide] = useState(null);
+	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
 
 	//const leftPaddleY = useRef(300);
 	//const rightPaddleY = useState(300);
@@ -77,10 +77,10 @@ export default function Game() {
 
 				const handleKeyDown = (event) => {
 
-					if (event.keyCode === 87) { // 'W' key
-						if (gameState.playerLeft.paddlePosition > 100)
-
-							socket.emit('paddle_up', 'coucou');
+					if ((event.keyCode === 87 || event.keyCode === 38)) { // 'W' key
+						//if (gameState.playerLeft.paddlePosition > 100)
+							if (playerSide === 'player_left')
+								socket.emit('paddle_up', 'coucou');
 					}
 
 				};
@@ -97,42 +97,42 @@ export default function Game() {
 				};
 			}, [gameState]); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
-			/////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////
 
-				//const [leftPaddleY, setLeftPaddleY] = useState(300);
+		//const [leftPaddleY, setLeftPaddleY] = useState(300);
 
 
-			//const [ball, setBall] = useState({ x: 320, y: 240, radius: 10, dx: 1, dy: 0 });
+	//const [ball, setBall] = useState({ x: 320, y: 240, radius: 10, dx: 1, dy: 0 });
 
-			//let ball = { x: 320, y: 240, radius: 10, dx: -3, dy: 0 };
+	//let ball = { x: 320, y: 240, radius: 10, dx: -3, dy: 0 };
 
-			let wwidth = 800;
-			let hheight = 600;
-			let paddleHeight = 80;
-			let paddleWidth = 10;
-			let ballRadius = 10;
-			//pas mouvement paddle
-			let paddleStep = 25;
-			// vitesse vertivale de la balle
-			let ballDx = 3;
-			//vitesse horizontale
-			let ballDy = 0;
-			//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
-			let minSpeedBall = 6;
-			let maxSpeedBall = 13;
+	let wwidth = 800;
+	let hheight = 600;
+	let paddleHeight = 80;
+	let paddleWidth = 10;
+	let ballRadius = 10;
+	//pas mouvement paddle
+	let paddleStep = 25;
+	// vitesse vertivale de la balle
+	let ballDx = 3;
+	//vitesse horizontale
+	let ballDy = 0;
+	//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
+	let minSpeedBall = 6;
+	let maxSpeedBall = 13;
 
-			//////////////////////////////////////////////
+	//////////////////////////////////////////////
 
-				//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
-			////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
-			//
-				////set angle et vitesse de depart
-			//useEffect( () => {
-				//	changeBallAngle(toRadians(70 + 45));
-				//	changeBallSpeed(0.1);
-				//	console.log('ball speed = ', getBallSpeed());
-				//
-					//}, []);
+		//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
+	////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
+	//
+		////set angle et vitesse de depart
+	//useEffect( () => {
+		//	changeBallAngle(toRadians(70 + 45));
+		//	changeBallSpeed(0.1);
+		//	console.log('ball speed = ', getBallSpeed());
+		//
+			//}, []);
 	/////////////////////////////////////////
 
 		const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
@@ -148,7 +148,7 @@ export default function Game() {
 		const canvasRef = useRef(null);///////////////////////////////////////
 
 
-	let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
+		let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 	let rightPaddle = { x: wwidth - 40, y: rightPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
 	let border_top = { x: 0, y: 0, width: wwidth, height: 3};
 	let border_bot = { x: 0, y: hheight - 3, width: wwidth, height: 3};
@@ -177,25 +177,27 @@ export default function Game() {
 		//}, [leftPaddleY]);
 	/////////////////////////////////////////////////////////
 
-		useEffect(() => {
-			const handleKeyDown = (event) => {
+		// local paddle move fonctionnel:
 
-				if (event.keyCode === 38) { // 'W' key
-					if (rightPaddle.y > (paddleHeight / 2)) 
-						setRightPaddleY((prevY) => prevY - paddleStep); 
-				}
-
-				if (event.keyCode === 40) { // 'S' key
-					if (rightPaddle.y + rightPaddle.height < hheight - (paddleHeight / 2)) 
-						setRightPaddleY((prevY) => prevY + paddleStep);
-				}
-			};
-			window.addEventListener('keydown', handleKeyDown);
-
-			return () => {
-				window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-			};
-		}, [rightPaddleY]);
+		//useEffect(() => {
+		//	const handleKeyDown = (event) => {
+		//
+		//		if (event.keyCode === 38) { // 'W' key
+		//			if (rightPaddle.y > (paddleHeight / 2)) 
+		//				setRightPaddleY((prevY) => prevY - paddleStep); 
+		//		}
+		//
+		//		if (event.keyCode === 40) { // 'S' key
+		//			if (rightPaddle.y + rightPaddle.height < hheight - (paddleHeight / 2)) 
+		//				setRightPaddleY((prevY) => prevY + paddleStep);
+		//		}
+		//	};
+		//	window.addEventListener('keydown', handleKeyDown);
+		//
+		//	return () => {
+		//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+		//	};
+		//}, [rightPaddleY]);
 
 
 
@@ -373,7 +375,7 @@ export default function Game() {
 			context.fill();
 
 			// Draw Paddles
-			context.fillStyle = 'red';
+			context.fillStyle = 'blue';
 
 			if (playerSide === 'player_left')
 			{
