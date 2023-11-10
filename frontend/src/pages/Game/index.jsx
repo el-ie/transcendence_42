@@ -11,7 +11,7 @@ export default function Game() {
 	{
 		throw new Error('React game: socket problem');//check
 	} else {
-		console.log(' $$$$$$4GOODSOCKET$$$$$$$$');
+		console.log(' $$$$$$GOODSOCKET$$$$$$$$');
 	}
 
 	type Game = {
@@ -32,7 +32,7 @@ export default function Game() {
 
 	const [gameState, setGameState] = useState(null);
 
-	const [rightPaddleY, setRightPaddleY] = useState(300);
+	//const [rightPaddleY, setRightPaddleY] = useState(300);
 
 	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
 
@@ -79,13 +79,13 @@ export default function Game() {
 
 					if ((event.keyCode === 87 || event.keyCode === 38)) { // 'W' key
 						//if (gameState.playerLeft.paddlePosition > 100)
-							if (playerSide === 'player_left')
+							//if (playerSide === 'player_left')
 								socket.emit('paddle_move', 'UP');
 					}
 
 					if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
 						//if (gameState.playerLeft.paddlePosition > 100)
-							if (playerSide === 'player_left')
+							//if (playerSide === 'player_left')
 								socket.emit('paddle_move', 'DOWN');
 					}
 
@@ -155,7 +155,9 @@ export default function Game() {
 
 
 		let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
-	let rightPaddle = { x: wwidth - 40, y: rightPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
+	//plus de y !!
+	let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
+
 	let border_top = { x: 0, y: 0, width: wwidth, height: 3};
 	let border_bot = { x: 0, y: hheight - 3, width: wwidth, height: 3};
 	let border_left = { x: 0, y: 0, width: 3, height: hheight};
@@ -189,12 +191,12 @@ export default function Game() {
 		//	const handleKeyDown = (event) => {
 		//
 		//		if (event.keyCode === 38) { // 'W' key
-		//			if (rightPaddle.y > (paddleHeight / 2)) 
+		//			if (gameState.playerRight.paddlePosition > (paddleHeight / 2)) 
 		//				setRightPaddleY((prevY) => prevY - paddleStep); 
 		//		}
 		//
 		//		if (event.keyCode === 40) { // 'S' key
-		//			if (rightPaddle.y + rightPaddle.height < hheight - (paddleHeight / 2)) 
+		//			if (gameState.playerRight.paddlePosition + rightPaddle.height < hheight - (paddleHeight / 2)) 
 		//				setRightPaddleY((prevY) => prevY + paddleStep);
 		//		}
 		//	};
@@ -286,8 +288,8 @@ export default function Game() {
 					}
 
 					// PADDLE DROIT //
-					if ( (ballY - ballRadius <= rightPaddle.y + paddleHeight)
-						&& (ballY + ballRadius >= rightPaddle.y))
+					if ( (ballY - ballRadius <= gameState.playerRight.paddlePosition + paddleHeight)
+						&& (ballY + ballRadius >= gameState.playerRight.paddlePosition))
 					if ( (ballX + ballRadius >= rightPaddle.x)
 						&& (ballX - ballRadius <= rightPaddle.x + rightPaddle.width) )
 					{
@@ -295,7 +297,7 @@ export default function Game() {
 						//definir le nouvel angle :
 
 						// le centre vertical du paddle
-						let centre_paddle_Y = rightPaddle.y + (rightPaddle.height / 2);
+						let centre_paddle_Y = gameState.playerRight.paddlePosition + (rightPaddle.height / 2);
 						let distance_ball_paddle_Y;
 						//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
 						let quadrant = 1; //pour au dessus
@@ -387,18 +389,18 @@ export default function Game() {
 			{
 				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
 				context.fillStyle = 'black';
-				context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+				context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, rightPaddle.width, rightPaddle.height);
 			}
 			else
 			{
-				context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+				context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, rightPaddle.width, rightPaddle.height);
 				context.fillStyle = 'black';
 				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
 			}
 
 
-			//context.fillRect(rightPaddle.x, rightPaddle.y, 1, 100);
-			//context.fillRect(rightPaddle.x, rightPaddle.y, 100, 1);
+			//context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, 1, 100);
+			//context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, 100, 1);
 
 			context.fillRect(border_top.x, border_top.y, border_top.width, border_top.height);
 			context.fillRect(border_bot.x, border_bot.y, border_bot.width, border_bot.height);
@@ -420,7 +422,7 @@ export default function Game() {
 			cancelAnimationFrame(animation_id);
 		}
 
-	}, [rightPaddleY, gameState]);
+	}, [gameState]);
 
 			const changeBallSpeed = (newSpeed) => {
 

@@ -194,44 +194,83 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		let gameState : Game = null;
 
+		let playerSide : string = this.getPlayerSide(username);
+
+
 		for (const [playerLeft, playerRight, game] of this.activeGames) {
-			console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
-			if (username === playerLeft || username === playerRight)
-				{
-					gameState = game;
-					break; //check
-				}
+			{
+				console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
+				if (username === playerLeft || username === playerRight)
+					{
+						//if (username === playerLeft)
+						//	playerSide = 'LEFT';
+						//if (username === playerRight)
+						//	playerSide = 'RIGHT';
+						gameState = game;
+						break; //check
+					}
+			}
 		}
 
-		if (!gameState)
-			{
-				console.log('suscribe paddle_move : player not in an active game');
-				return;
-			}
+		if (!gameState) {
+			console.log('suscribe paddle_move : player not in an active game');
+			return;
+		}
 
-			console.log('TEST PADDLE MOVE MOTHERFUCKING SUCCES');
-			console.log(gameState);
+		if (payload === 'UP') {
+			if (playerSide === 'LEFT')
+				{
+					gameState.playerLeft.paddlePosition -= 15;
+					console.log('LEFT');
+				}
+				else if (playerSide === 'RIGHT')
+					{
+						gameState.playerRight.paddlePosition -= 15;
+						console.log('RIGHTTTTTTTTTTT');
+					}
+					else
+						throw new Error('paddle_mode');
+		}
 
-			if (payload === 'UP')
-				gameState.playerLeft.paddlePosition -= 15;
-			if (payload === 'DOWN')
+		if (payload === 'DOWN') {
+			if (playerSide === 'LEFT')
 				gameState.playerLeft.paddlePosition += 15;
+			else if (playerSide === 'RIGHT')
+				gameState.playerRight.paddlePosition += 15;
+			else
+				throw new Error('paddle_mode');
+		}
 
-			this.connectedClients.get(username).emit('game_refresh', gameState);
-			this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
+		console.log(username, ' === ', this.getOpponent(username));
+		//console.log(this.connectedClients.get(this.getOpponent(username)));
+
+		this.connectedClients.get(username).emit('game_refresh', gameState);
+		this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
 	}
 
 	getOpponent(player: string) : string
 	{
 
 		for (const [playerLeft, playerRight, game] of this.activeGames) {
-			console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
 			if (player === playerLeft)
 				return playerRight;
 			if (player === playerRight)
-				return playerRight;
+				return playerLeft;
 		}
 		console.log('Error getOpponent no opponent');
+		return null;
+	}
+
+	getPlayerSide(player: string) : string
+	{
+
+		for (const [playerLeft, playerRight, game] of this.activeGames) {
+			if (player === playerLeft)
+				return 'LEFT';
+			if (player === playerRight)
+				return 'RIGHT';
+		}
+		console.log('Error getPlayerSide');
 		return null;
 	}
 
