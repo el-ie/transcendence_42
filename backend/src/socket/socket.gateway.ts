@@ -217,15 +217,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 
+		let paddleStep = 20;
+
 		if (payload === 'UP') {
 			if (playerSide === 'LEFT')
 				{
-					gameState.playerLeft.paddlePosition -= 15;
-					console.log('LEFT');
+					gameState.playerLeft.paddlePosition -= 20; console.log('LEFT');
 				}
 				else if (playerSide === 'RIGHT')
 					{
-						gameState.playerRight.paddlePosition -= 15;
+						gameState.playerRight.paddlePosition -= 20;
 						console.log('RIGHTTTTTTTTTTT');
 					}
 					else
@@ -234,9 +235,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		if (payload === 'DOWN') {
 			if (playerSide === 'LEFT')
-				gameState.playerLeft.paddlePosition += 15;
+				gameState.playerLeft.paddlePosition += 20;
 			else if (playerSide === 'RIGHT')
-				gameState.playerRight.paddlePosition += 15;
+				gameState.playerRight.paddlePosition += 20;
 			else
 				throw new Error('paddle_mode');
 		}

@@ -7,12 +7,9 @@ export default function Game() {
 
 
 	const socket =  useSocket();
+
 	if (!socket)
-	{
 		throw new Error('React game: socket problem');//check
-	} else {
-		console.log(' $$$$$$GOODSOCKET$$$$$$$$');
-	}
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
@@ -20,108 +17,76 @@ export default function Game() {
 		ball: {x: number, y: number}
 	};
 
-
-	//const gameState: Game = useRef();
-
-	//on devrait plutot attendre que le back envoi le gameState si possible mais pour l isntant on va tester comme ca
-	//const [gameState, setGameState] = useState( {
-		//	playerLeft: { name: null, score: 0, paddlePosition: 300 },
-		//	playerRight: { name: null, score: 0, paddlePosition: 300 },
-		//	ball: {x: 0, y: 0}
-		//});
-
 	const [gameState, setGameState] = useState(null);
-
-	//const [rightPaddleY, setRightPaddleY] = useState(300);
 
 	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
 
-	//const leftPaddleY = useRef(300);
-	//const rightPaddleY = useState(300);
-
 	useEffect( () => {
 
-		//console.log('socket = ', socket);
 		if (!socket)
 			return;
 
 		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
-
 			setGameState(gameGivenState);
 			setPlayerSide(playerGivenSide);
 		};
 
 		const gameRefreshHandler = (gameGivenState: Game) => {
+			setGameState(gameGivenState);
+		};
 
-				setGameState(gameGivenState);
-			};
-
-		//console.log('LE SOCKET EST ON');
 		socket.emit('find_game', 'lalala');
 		socket.on('game_start', gameStartHandler);
 		socket.on('game_refresh', gameRefreshHandler);
-		//const gameHandler = (message: any) => {
-			//	console.log('gameHandler: ', message);
-			//};
-		//
-			//socket.on('message', gameHandler);
-		////
-			//return () => {
-				//	if (socket)
-					//		socket.off('game', messageHandler);
-				//	};
+
+		// FAUT IL IMPLEMENTER SOCKER OFF ?
+		//return () => {
+		//		socket.off('game', messageHandler);
+		//};
+
 	}, [socket]);
 
 
-			useEffect(() => {
+	///////////// CAPTURE KEYBOARD /////////////
+		useEffect(() => {
 
-				const handleKeyDown = (event) => {
+			const handleKeyDown = (event) => {
 
-					let blindSpotSizeRatio = 19; //determine la taille du petit coin inateignable par le paddle
+				let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
 
-					if ((event.keyCode === 87 || event.keyCode === 38)) { // 'W' key
+				if ((event.keyCode === 87 || event.keyCode === 38)) {
 
-						if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition < (hheight / blindSpotSizeRatio))
-							return;
-						if (playerSide === 'player_right' && gameState.playerRight.paddlePosition < (hheight / blindSpotSizeRatio))
-							return;
-						//if (playerSide === 'player_left')
-							socket.emit('paddle_move', 'UP');
-					}
+					if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition < (hheight / blindSpotSizeRatio))
+						return;
+					if (playerSide === 'player_right' && gameState.playerRight.paddlePosition < (hheight / blindSpotSizeRatio))
+						return;
 
-					if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
-						//if (gameState.playerLeft.paddlePosition > 100)
-							//if (playerSide === 'player_left')
-						if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
-							return;
-						if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
-							return;
-
-							socket.emit('paddle_move', 'DOWN');
-					}
-
-				};
-
-				if (!gameState || !socket)
-				{
-					console.log('deplacement du paddle impossible, gameState = null ou !socket');
-					return;//security
+					socket.emit('paddle_move', 'UP');
 				}
-				window.addEventListener('keydown', handleKeyDown);
 
-				return () => {
-					window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-				};
-			}, [gameState]); //est ce qu on peut vraiment ne rien mettre dans le tableau
+				if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
+					if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+						return;
+					if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+						return;
+
+					socket.emit('paddle_move', 'DOWN');
+				}
+			};
+
+			if (!gameState || !socket)
+			{
+				console.log('deplacement du paddle impossible, gameState = null ou !socket');
+				return;//security
+			}
+			window.addEventListener('keydown', handleKeyDown);
+
+			return () => {
+				window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+			};
+		}, [gameState]); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
 	/////////////////////////////////////////////////////////////////
-
-		//const [leftPaddleY, setLeftPaddleY] = useState(300);
-
-
-	//const [ball, setBall] = useState({ x: 320, y: 240, radius: 10, dx: 1, dy: 0 });
-
-	//let ball = { x: 320, y: 240, radius: 10, dx: -3, dy: 0 };
 
 	let wwidth = 800;
 	let hheight = 600;
@@ -129,32 +94,17 @@ export default function Game() {
 	let paddleWidth = 10;
 	let ballRadius = 10;
 	//pas mouvement paddle
-	let paddleStep = 25;
+	//let paddleStep = 30;
 	// vitesse vertivale de la balle
 	let ballDx = 3;
 	//vitesse horizontale
 	let ballDy = 0;
 	//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
 	let minSpeedBall = 6;
-	let maxSpeedBall = 13;
+	let maxSpeedBall = 11;
 
-	//////////////////////////////////////////////
+	const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
 
-		//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
-	////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
-	//
-		////set angle et vitesse de depart
-	//useEffect( () => {
-		//	changeBallAngle(toRadians(70 + 45));
-		//	changeBallSpeed(0.1);
-		//	console.log('ball speed = ', getBallSpeed());
-		//
-			//}, []);
-	/////////////////////////////////////////
-
-		const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
-
-	//const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
 	useEffect( () => {
 		//set angle et vitesse de depart
 		changeBallAngle(toRadians(0));
@@ -162,63 +112,16 @@ export default function Game() {
 	}, []);
 	//////////////////////////////////////////////
 
-		const canvasRef = useRef(null);///////////////////////////////////////
+		const canvasRef = useRef(null);
 
 
-		let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
-	//plus de y !!
-		let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
+	let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
+	let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 	let border_top = { x: 0, y: 0, width: wwidth, height: 3};
 	let border_bot = { x: 0, y: hheight - 3, width: wwidth, height: 3};
 	let border_left = { x: 0, y: 0, width: 3, height: hheight};
 	let border_right = { x: wwidth - 3, y: 0, width: 3, height: hheight};
-
-	//////////////////// On va tenter de changer ca par un event du back
-	//useEffect(() => {
-		//	const handleKeyDown = (event) => {
-			//
-				//		if (event.keyCode === 87) { // 'W' key
-					//			if (gameState.playerLeft.paddlePosition > (paddleHeight / 2)) 
-						//				setLeftPaddleY((prevY) => prevY - paddleStep); 
-					//		}
-			//
-				//		if (event.keyCode === 83) { // 'S' key
-					//			if (gameState.playerLeft.paddlePosition + leftPaddle.height < hheight - (paddleHeight / 2)) 
-						//				setLeftPaddleY((prevY) => prevY + paddleStep);
-					//		}
-			//	};
-		//	window.addEventListener('keydown', handleKeyDown);
-		//
-			//	return () => {
-				//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-				//	};
-		//}, [leftPaddleY]);
-	/////////////////////////////////////////////////////////
-
-		// local paddle move fonctionnel:
-
-	//useEffect(() => {
-		//	const handleKeyDown = (event) => {
-			//
-				//		if (event.keyCode === 38) { // 'W' key
-					//			if (gameState.playerRight.paddlePosition > (paddleHeight / 2)) 
-						//				setRightPaddleY((prevY) => prevY - paddleStep); 
-					//		}
-			//
-				//		if (event.keyCode === 40) { // 'S' key
-					//			if (gameState.playerRight.paddlePosition + rightPaddle.height < hheight - (paddleHeight / 2)) 
-						//				setRightPaddleY((prevY) => prevY + paddleStep);
-					//		}
-			//	};
-		//	window.addEventListener('keydown', handleKeyDown);
-		//
-			//	return () => {
-				//		window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-				//	};
-		//}, [rightPaddleY]);
-
-
 
 	useEffect(() => {
 
@@ -228,8 +131,6 @@ export default function Game() {
 			return;
 		}
 		//const canvas = canvasRef.current;
-		//if (!canvas)
-			//	return; //gpt
 		const context = canvasRef.current.getContext('2d');
 
 		let animation_id;
