@@ -34,6 +34,8 @@ export default function Game() {
 
 	const [rightPaddleY, setRightPaddleY] = useState(300);
 
+	const [playerSide, setPlayerSide] = useState(null);
+
 	//const leftPaddleY = useRef(300);
 	//const rightPaddleY = useState(300);
 
@@ -43,22 +45,20 @@ export default function Game() {
 		if (!socket)
 			return;
 
-		const gameHandler = (gameGivenState: Game) => {
-			console.log('game start (gameHandler)');
-			console.log(gameGivenState);
+		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
+
 			setGameState(gameGivenState);
+			setPlayerSide(playerGivenSide);
 		};
+
 		const gameRefreshHandler = (gameGivenState: Game) => {
-			console.log('game refresh (gameRefreshHandler');
-				console.log(gameGivenState);
+
 				setGameState(gameGivenState);
-				console.log('gameState ====');
-				console.log(gameState);
 			};
 
 		//console.log('LE SOCKET EST ON');
 		socket.emit('find_game', 'lalala');
-		socket.on('game_start', gameHandler);
+		socket.on('game_start', gameStartHandler);
 		socket.on('game_refresh', gameRefreshHandler);
 		//const gameHandler = (message: any) => {
 			//	console.log('gameHandler: ', message);
@@ -373,9 +373,21 @@ export default function Game() {
 			context.fill();
 
 			// Draw Paddles
-			context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
+			context.fillStyle = 'red';
 
-			context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+			if (playerSide === 'player_left')
+			{
+				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
+				context.fillStyle = 'black';
+				context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+			}
+			else
+			{
+				context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+				context.fillStyle = 'black';
+				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
+			}
+
 
 			//context.fillRect(rightPaddle.x, rightPaddle.y, 1, 100);
 			//context.fillRect(rightPaddle.x, rightPaddle.y, 100, 1);
@@ -441,8 +453,10 @@ export default function Game() {
 			}
 
 			return (
+
 				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh'}}>
 				<canvas ref={canvasRef} width={wwidth} height={hheight} />
+				{playerSide && <p>X</p>}
 				</div>
 			);
 }

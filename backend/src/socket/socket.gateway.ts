@@ -162,8 +162,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 
 			//sPlayer1.emit('game_start', { gameState ,opponent: playerRight });
-			sPlayer1.emit('game_start', gameState);
-			sPlayer2.emit('game_start', gameState);
+			sPlayer1.emit('game_start', gameState, 'player_left');
+			sPlayer2.emit('game_start', gameState, 'player_right');
 
 			//this.server.to(this.connectedClients(playerRight)).emit('game_start', { opponent: playerRight, gameState });
 			//this.server.to(playerRight).emit('game_start', { opponent: playerLeft, gameState });
@@ -214,8 +214,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 			gameState.playerLeft.paddlePosition -= 10;
 
-			this.connectedClients.get(username).emit('game_start', gameState);
-			this.connectedClients.get(this.getOpponent(username)).emit('game_start', gameState);
+			this.connectedClients.get(username).emit('game_refresh', gameState);
+			this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
 	}
 
 	getOpponent(player: string) : string
