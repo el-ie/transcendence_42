@@ -6,10 +6,13 @@ import React, { useRef, useEffect, useState } from 'react';
 export default function Game() {
 
 
-    const socket =  useSocket();
+	const socket =  useSocket();
 	if (!socket)
+	{
 		throw new Error('React game: socket problem');//check
-
+	} else {
+		console.log(' $$$$$$4GOODSOCKET$$$$$$$$');
+	}
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
@@ -17,48 +20,46 @@ export default function Game() {
 		ball: {x: number, y: number}
 	};
 
+
 	//const gameState: Game = useRef();
 
 	//on devrait plutot attendre que le back envoi le gameState si possible mais pour l isntant on va tester comme ca
 	//const [gameState, setGameState] = useState( {
-	//	playerLeft: { name: null, score: 0, paddlePosition: 300 },
-	//	playerRight: { name: null, score: 0, paddlePosition: 300 },
-	//	ball: {x: 0, y: 0}
-	//});
+		//	playerLeft: { name: null, score: 0, paddlePosition: 300 },
+		//	playerRight: { name: null, score: 0, paddlePosition: 300 },
+		//	ball: {x: 0, y: 0}
+		//});
 
 	const [gameState, setGameState] = useState(null);
-	//const leftPaddleY = useRef(300);
 
+	const [rightPaddleY, setRightPaddleY] = useState(300);
+
+	//const leftPaddleY = useRef(300);
 	//const rightPaddleY = useState(300);
 
 	useEffect( () => {
 
 		//console.log('socket = ', socket);
+		if (!socket)
+			return;
 
-        const gameHandler = (gameGivenState: Game) => {
+		const gameHandler = (gameGivenState: Game) => {
 			console.log('game start (gameHandler)');
 			console.log(gameGivenState);
 			setGameState(gameGivenState);
 		};
-        const gameRefreshHandler = (gameGivenState: Game) => {
+		const gameRefreshHandler = (gameGivenState: Game) => {
 			console.log('game refresh (gameRefreshHandler');
-			console.log(gameGivenState);
-			setGameState(gameGivenState);
-			console.log('gameState ====');
-			console.log(gameState);
-		};
+				console.log(gameGivenState);
+				setGameState(gameGivenState);
+				console.log('gameState ====');
+				console.log(gameState);
+			};
 
-
-		if (socket)
-		{
-			//console.log('LE SOCKET EST ON');
-			socket.emit('find_game', 'lalala');
-
-			socket.on('game_start', gameHandler);
-
-			socket.on('game_refresh', gameRefreshHandler);
-		}
-
+		//console.log('LE SOCKET EST ON');
+		socket.emit('find_game', 'lalala');
+		socket.on('game_start', gameHandler);
+		socket.on('game_refresh', gameRefreshHandler);
 		//const gameHandler = (message: any) => {
 			//	console.log('gameHandler: ', message);
 			//};
@@ -66,157 +67,93 @@ export default function Game() {
 			//socket.on('message', gameHandler);
 		////
 			//return () => {
-			//	if (socket)
-			//		socket.off('game', messageHandler);
-			//	};
-
+				//	if (socket)
+					//		socket.off('game', messageHandler);
+				//	};
 	}, [socket]);
 
 
-//(paddleHeight / 2)) 
+			useEffect(() => {
 
-	useEffect(() => {
-		const handleKeyDown = (event) => {
+				const handleKeyDown = (event) => {
 
-			//socket.on('game_refresh', gameRefreshHandler);
-			if (event.keyCode === 87) { // 'W' key
-				console.log('========EVENTTTTTTT==========');
+					if (event.keyCode === 87) { // 'W' key
+						if (gameState.playerLeft.paddlePosition > 100)
 
-				console.log(gameState.playerLeft.paddlePosition);
-				console.log(gameState.playerRight.paddlePosition);
+							socket.emit('paddle_up', 'coucou');
+					}
 
-				if (gameState.playerLeft.paddlePosition > 100)
+				};
+
+				if (!gameState || !socket)
 				{
-					if (socket)
-						socket.emit('paddle_up', 'coucou');
-					else
-						console.log('NO FUCKING SOCKET');
-					console.log('CARMANAA');
+					console.log('deplacement du paddle impossible, gameState = null ou !socket');
+					return;//security
 				}
-				//setLeftPaddleY((prevY) => prevY - paddleStep); 
-			}
-		};
-		if (!gameState)
-			return;//security
-		window.addEventListener('keydown', handleKeyDown);
+				window.addEventListener('keydown', handleKeyDown);
 
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-		};
-	}, []); //est ce qu on peut vraiment ne rien mettre dans le tableau
+				return () => {
+					window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+				};
+			}, [gameState]); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
-	/////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////
 
-		//const [leftPaddleY, setLeftPaddleY] = useState(300);
+				//const [leftPaddleY, setLeftPaddleY] = useState(300);
 
-	const [rightPaddleY, setRightPaddleY] = useState(300);
 
-	//const [ball, setBall] = useState({ x: 320, y: 240, radius: 10, dx: 1, dy: 0 });
+			//const [ball, setBall] = useState({ x: 320, y: 240, radius: 10, dx: 1, dy: 0 });
 
-	//let ball = { x: 320, y: 240, radius: 10, dx: -3, dy: 0 };
+			//let ball = { x: 320, y: 240, radius: 10, dx: -3, dy: 0 };
 
-	//epaisseur totale du canva
-	let wwidth = 800;
-	//hauteur totale du canva
-	let hheight = 600;
-	//hauteur paddle
-	let paddleHeight = 80;
-	//epaisseur paddle
-	let paddleWidth = 10;
-	//radius de la balle
-	let ballRadius = 10;
-	//pas mouvement paddle
-	let paddleStep = 25;
+			let wwidth = 800;
+			let hheight = 600;
+			let paddleHeight = 80;
+			let paddleWidth = 10;
+			let ballRadius = 10;
+			//pas mouvement paddle
+			let paddleStep = 25;
+			// vitesse vertivale de la balle
+			let ballDx = 3;
+			//vitesse horizontale
+			let ballDy = 0;
+			//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
+			let minSpeedBall = 6;
+			let maxSpeedBall = 13;
 
-	// vitesse vertivale de la balle
-	let ballDx = 3;
-	//vitesse horizontale
-	let ballDy = 0;
+			//////////////////////////////////////////////
 
-	//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
-	let minSpeedBall = 6;
-	let maxSpeedBall = 13;
-
-	//////////////////////////////////////////////
-
-		//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
-	////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
-	//
-		////set angle et vitesse de depart
-	//useEffect( () => {
-		//	changeBallAngle(toRadians(70 + 45));
-		//	changeBallSpeed(0.1);
-		//	console.log('ball speed = ', getBallSpeed());
-		//
-			//}, []);
+				//const ballRef = useRef({ x: wwidth / 2 - 100, y: 30 , radius: 10, dx: ballDx, dy: ballDy });
+			////const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
+			//
+				////set angle et vitesse de depart
+			//useEffect( () => {
+				//	changeBallAngle(toRadians(70 + 45));
+				//	changeBallSpeed(0.1);
+				//	console.log('ball speed = ', getBallSpeed());
+				//
+					//}, []);
 	/////////////////////////////////////////
 
 		const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
-	//const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
 
-	//set angle et vitesse de depart
+	//const ballRef = useRef({ x: wwidth / 2, y: hheight / 2, radius: 10, dx: ballDx, dy: ballDy });
 	useEffect( () => {
+		//set angle et vitesse de depart
 		changeBallAngle(toRadians(0));
 		changeBallSpeed(0);
-		//console.log('ball speed = ', getBallSpeed());
-
 	}, []);
 	//////////////////////////////////////////////
 
-		const canvasRef = useRef(null);
-
-	//Fonction qui permet de donner un angle donne a la basse sans changer la vitesse
-	// attention se base sur un debut d'angle a l'est et non au nord !
-		const changeBallAngle = (theta) => {
-			const currentDx = ballRef.current.dx;
-			const currentDy = ballRef.current.dy;
-			const currentSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
-
-			ballRef.current.dx = currentSpeed * Math.cos(theta);
-			ballRef.current.dy = currentSpeed * Math.sin(theta);
-		}
-
-	function toRadians(degrees) {
-		return degrees * (Math.PI / 180);
-	}
-
-	//newSpeed doit etre entre 0 pour la vitesse la plus basse et 1 pour la plus haute
-	const changeBallSpeed = (newSpeed) => {
-
-		// fine tuning
-		newSpeed = (newSpeed * (maxSpeedBall - minSpeedBall)) + minSpeedBall;
-		if (newSpeed > maxSpeedBall)
-			newSpeed = maxSpeedBall;
-
-		const currentDx = ballRef.current.dx;
-		const currentDy = ballRef.current.dy;
-
-		const currentAngle = Math.atan2(currentDy, currentDx);
-
-		ballRef.current.dx = newSpeed * Math.cos(currentAngle);
-		ballRef.current.dy = newSpeed * Math.sin(currentAngle);
-	}
-
-	const getBallSpeed = () => {
-		const currentDx = ballRef.current.dx;
-		const currentDy = ballRef.current.dy;
-		let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
-
-		let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
-
-		return speed_finetuned;
-	}
+		const canvasRef = useRef(null);///////////////////////////////////////
 
 
 	let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
-
 	let rightPaddle = { x: wwidth - 40, y: rightPaddleY, width: paddleWidth, height: paddleHeight, dy: 0 };
-
 	let border_top = { x: 0, y: 0, width: wwidth, height: 3};
 	let border_bot = { x: 0, y: hheight - 3, width: wwidth, height: 3};
 	let border_left = { x: 0, y: 0, width: 3, height: hheight};
 	let border_right = { x: wwidth - 3, y: 0, width: 3, height: hheight};
-
 
 	//////////////////// On va tenter de changer ca par un event du back
 	//useEffect(() => {
@@ -265,14 +202,16 @@ export default function Game() {
 	useEffect(() => {
 
 		if (!gameState)
+		{
+			console.log('UPDATE: NO GAME STATE');
 			return;
-		const canvas = canvasRef.current;
-		if (!canvas)
-			return; //gpt
-		const context = canvas.getContext('2d');
+		}
+		//const canvas = canvasRef.current;
+		//if (!canvas)
+			//	return; //gpt
+		const context = canvasRef.current.getContext('2d');
 
 		let animation_id;
-
 
 		const update = () => {
 
@@ -396,19 +335,19 @@ export default function Game() {
 
 					//newDx = -newDx;
 
-					if (ballY > canvas.height - 10 || ballY <= 10)
+					if (ballY > canvasRef.current.height - 10 || ballY <= 10)
 					ballRef.current.dy *= -1;
 					//newDy = -newDy;
 					///////////////////////////////////////////////////////
 
 					let for_test = 0;
 					// ACTUALISATION VALEURS
-					if (ballX > canvas.width - 10 - for_test || ballX <= 10)
+					if (ballX > canvasRef.current.width - 10 - for_test || ballX <= 10)
 					{
 						//ballRef.current.dx *= -1;
 						ballRef.current.y = hheight / 2;
 						changeBallSpeed(0); //fine tuning
-						if (ballX > canvas.width - 10 - for_test)
+						if (ballX > canvasRef.current.width - 10 - for_test)
 						{
 							ballRef.current.x = wwidth / 2 - 150;
 							changeBallAngle(toRadians(0));
@@ -425,8 +364,8 @@ export default function Game() {
 				ballRef.current.y += ballRef.current.dy;
 			}
 
-			// Clear canvas
-			context.clearRect(0, 0, canvas.width, canvas.height);
+			// Clear canvasRef.current
+			context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
 			// Draw Ball
 			context.beginPath();
@@ -457,12 +396,49 @@ export default function Game() {
 
 		animation_id = requestAnimationFrame(update);
 
-
 		return () => {
 			cancelAnimationFrame(animation_id);
 		}
 
 	}, [rightPaddleY, gameState]);
+
+			const changeBallSpeed = (newSpeed) => {
+
+				// fine tuning
+				newSpeed = (newSpeed * (maxSpeedBall - minSpeedBall)) + minSpeedBall;
+				if (newSpeed > maxSpeedBall)
+					newSpeed = maxSpeedBall;
+
+				const currentDx = ballRef.current.dx;
+				const currentDy = ballRef.current.dy;
+
+				const currentAngle = Math.atan2(currentDy, currentDx);
+
+				ballRef.current.dx = newSpeed * Math.cos(currentAngle);
+				ballRef.current.dy = newSpeed * Math.sin(currentAngle);
+			}
+
+			const getBallSpeed = () => {
+				const currentDx = ballRef.current.dx;
+				const currentDy = ballRef.current.dy;
+				let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+
+				let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
+
+				return speed_finetuned;
+			}
+			const changeBallAngle = (theta) => {
+				const currentDx = ballRef.current.dx;
+				const currentDy = ballRef.current.dy;
+				const currentSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+
+				ballRef.current.dx = currentSpeed * Math.cos(theta);
+				ballRef.current.dy = currentSpeed * Math.sin(theta);
+			}
+
+			function toRadians(degrees) {
+				return degrees * (Math.PI / 180);
+			}
 
 			return (
 				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh'}}>

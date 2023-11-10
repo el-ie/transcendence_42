@@ -153,7 +153,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		//ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!!
 		if (sPlayer1 === undefined || sPlayer2 === undefined)
 			{
-				console.log('socket manageGame erreur le socket recupere est undefined');
+				console.log('socket manageGame erreur le socket recupere est undefined for :');
+				if (sPlayer1 === undefined)
+					console.log('PLAYER1');
+				if (sPlayer2 === undefined)
+					console.log('PLAYER2');
 				return;
 			}
 
@@ -173,7 +177,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('paddle_up')
 	async testPaddleMove(client: Socket, payload: any) {
 
-		//console.log('----- LISTEN paddle up ---------');
+		console.log('----- LISTEN paddle up ---------');
 
 		//securite obligee pour utiliser username comme argument plus tard en temps que String
 		//let username : String;
@@ -210,8 +214,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 			gameState.playerLeft.paddlePosition -= 10;
 
-			this.connectedClients.get(username).emit('game_refresh', gameState);
-			this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
+			this.connectedClients.get(username).emit('game_start', gameState);
+			this.connectedClients.get(this.getOpponent(username)).emit('game_start', gameState);
 	}
 
 	getOpponent(player: string) : string
