@@ -47,10 +47,18 @@ export default function Game() {
 	}, [socket]);
 
 
+	const [lastMoveTime, setLastMoveTime] = useState(0);
+	const moveDelay = 30; // délai en millisecondes
+
 	///////////// CAPTURE KEYBOARD /////////////
 		useEffect(() => {
 
+
 			const handleKeyDown = (event) => {
+
+				let currentTime = Date.now();
+				if (currentTime != 0 && currentTime - lastMoveTime < moveDelay)
+					return;
 
 				let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
 
@@ -61,6 +69,7 @@ export default function Game() {
 					if (playerSide === 'player_right' && gameState.playerRight.paddlePosition < (hheight / blindSpotSizeRatio))
 						return;
 
+					setLastMoveTime(currentTime);
 					socket.emit('paddle_move', 'UP');
 				}
 
@@ -70,6 +79,7 @@ export default function Game() {
 					if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
 						return;
 
+					setLastMoveTime(currentTime);
 					socket.emit('paddle_move', 'DOWN');
 				}
 			};
@@ -84,11 +94,11 @@ export default function Game() {
 			return () => {
 				window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
 			};
-		}, [gameState]); //est ce qu on peut vraiment ne rien mettre dans le tableau
+		}, [gameState, lastMoveTime]); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
 	/////////////////////////////////////////////////////////////////
 
-	let wwidth = 800;
+		let wwidth = 800;
 	let hheight = 600;
 	let paddleHeight = 80;
 	let paddleWidth = 10;

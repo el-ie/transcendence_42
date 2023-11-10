@@ -221,16 +221,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		if (payload === 'UP') {
 			if (playerSide === 'LEFT')
-				{
-					gameState.playerLeft.paddlePosition -= 20; console.log('LEFT');
-				}
-				else if (playerSide === 'RIGHT')
-					{
-						gameState.playerRight.paddlePosition -= 20;
-						console.log('RIGHTTTTTTTTTTT');
-					}
-					else
-						throw new Error('paddle_mode');
+				gameState.playerLeft.paddlePosition -= 20;
+			else if (playerSide === 'RIGHT')
+				gameState.playerRight.paddlePosition -= 20;
+			else
+				throw new Error('paddle_mode');
 		}
 
 		if (payload === 'DOWN') {
