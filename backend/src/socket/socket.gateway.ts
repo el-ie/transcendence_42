@@ -411,7 +411,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 
-		let paddleStep = 5;
+		let paddleStep = 8 + getBallSpeed(gameState) * 7;
 
 		if (payload === 'UP') {
 			if (playerSide === 'LEFT')
@@ -485,7 +485,7 @@ type Game = {
 //let minSpeedBall = 4;
 //let maxSpeedBall = 11;
 let minSpeedBall = 4;
-let maxSpeedBall = 7;
+let maxSpeedBall = 9;
 
 function changeBallSpeed(gameState: Game, newSpeed: number) {
 

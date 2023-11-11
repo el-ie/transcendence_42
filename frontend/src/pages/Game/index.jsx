@@ -21,14 +21,11 @@ export default function Game() {
 
 	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
 
-	const [isKeyPressed, setIsKeyPressed] = useState(false); // TESTTTTTTTTTTTTTTTTTTTTt
-
 	const [isKeyUpPressed, setIsKeyUpPressed] = useState(false);
 	const [isKeyDownPressed, setIsKeyDownPressed] = useState(false);
 
 	//const ballRef = useRef({});
 	const ballRef = useRef({ x: 400 , y: 100 , dx: 0, dy: 0 });
-
 
 	function actualizeBallPos(gameState: Game) {
 		ballRef.current.x = gameState.ball.x;
@@ -77,64 +74,45 @@ export default function Game() {
 
 	///////////// CAPTURE KEYBOARD /////////////
 
-		
+	function validPaddleMove(direction: string) : boolean {
+
+		let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
+
+		let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
+
+		if (direction === 'direction_up') {
+
+			if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
+				return false;
+			if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
+				return false;
+			return true;
+		}
+
+		if (direction === 'direction_down') {
+			if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+				return false;
+			if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+				return false;
+			return true;
+		}
+	}
 
 		const handleKeyDown = (event) => {
 
 			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
-
 			let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
 
 			if ((event.keyCode === 87 || event.keyCode === 38)) {
-
-				if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-					return;
-				if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-					return;
-
-				console.log('KEY DOWN SUCCESSSSS');
-
-				//setLastMoveTime(currentTime);
-				//socket.emit('paddle_move', 'UP');
-				setIsKeyUpPressed(true);
+				if (validPaddleMove('direction_up'))
+					setIsKeyUpPressed(true);
 			}
-
 			if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
-				if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-					return;
-				if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-					return;
-
-				console.log('KEY DOWN SUCCESSSSS');
-				//setLastMoveTime(currentTime);
-				//socket.emit('paddle_move', 'DOWN');
-				setIsKeyDownPressed(true);
+				if (validPaddleMove('direction_down'))
+					setIsKeyDownPressed(true);
 			}
 		};
 
-	function validPaddleMove(direction: string) : boolean {
-
-			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
-
-			let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
-
-			if (direction === 'direction_up') {
-
-				if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-					return false;
-				if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-					return false;
-				return true;
-			}
-
-			if (direction === 'direction_down') {
-				if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-					return false;
-				if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-					return false;
-				return true;
-			}
-	}
 
 	const handleKeyUp = (event) => {
 
@@ -155,9 +133,9 @@ export default function Game() {
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('keyup', handleKeyUp);
 
-			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
+		let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
 
-			let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
+		let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
 
 		const interval = setInterval(() => {
 			if (isKeyUpPressed && validPaddleMove('direction_up')) {
@@ -175,53 +153,6 @@ export default function Game() {
 		};
 
 	}, [gameState, isKeyUpPressed, isKeyDownPressed]); //est ce qu on peut vraiment ne rien mettre dans le tableau
-	//retrait de lastMoveTime PENSER A LE SUPPRIMER
-
-
-
-	///////////////////////// test ///////////////////
-
-		const testHandleKeyDown = (event) => {
-			if (event.keyCode === 96) { // W ou flèche haut
-				setIsKeyPressed(true);
-			}
-		};
-
-	const testHandleKeyUp = (event) => {
-		if (event.keyCode === 96) { // W ou flèche haut
-			setIsKeyPressed(false);
-		}
-	};
-
-	useEffect(() => {
-
-		if (!gameState || !socket)
-		{
-			console.log('deplacement du paddle impossible, gameState = null ou !socket');
-			return;//security
-		}
-
-		window.addEventListener('keydown', testHandleKeyDown);
-		window.addEventListener('keyup', testHandleKeyUp);
-
-		const interval = setInterval(() => {
-			if (isKeyPressed) {
-				socket.emit('paddle_move', 'DOWN');
-			}
-			if (isKeyPressed) {
-				socket.emit('paddle_move', 'DOWN');
-			}
-		}, 15); // Mise à jour toutes les 100 ms
-
-		return () => {
-			window.removeEventListener('keydown', testHandleKeyDown);
-			window.removeEventListener('keyup', testHandleKeyUp);
-			clearInterval(interval);
-		};
-	}, [gameState, isKeyPressed]);
-
-
-
 
 	/////////////////////////////////////////////////////////////////
 
