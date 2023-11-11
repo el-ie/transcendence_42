@@ -23,6 +23,9 @@ export default function Game() {
 
 	const [isKeyPressed, setIsKeyPressed] = useState(false); // TESTTTTTTTTTTTTTTTTTTTTt
 
+	const [isKeyUpPressed, setIsKeyUpPressed] = useState(false); // TESTTTTTTTTTTTTTTTTTTTTt
+	const [isKeyDownPressed, setIsKeyDownPressed] = useState(false); // TESTTTTTTTTTTTTTTTTTTTTt
+
 	//const ballRef = useRef({});
 	const ballRef = useRef({ x: 400 , y: 100 , dx: 0, dy: 0 });
 
@@ -77,9 +80,9 @@ export default function Game() {
 
 		const handleKeyDown = (event) => {
 
-			let currentTime = Date.now();
-			if (currentTime != 0 && currentTime - lastMoveTime < moveDelay)
-				return;
+			//let currentTime = Date.now();
+			//if (currentTime != 0 && currentTime - lastMoveTime < moveDelay)
+			//	return;
 
 			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
 
@@ -92,8 +95,9 @@ export default function Game() {
 				if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
 					return;
 
-				setLastMoveTime(currentTime);
-				socket.emit('paddle_move', 'UP');
+				//setLastMoveTime(currentTime);
+				//socket.emit('paddle_move', 'UP');
+				setIsKeyUpPressed(true);
 			}
 
 			if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
@@ -102,8 +106,34 @@ export default function Game() {
 				if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
 					return;
 
-				setLastMoveTime(currentTime);
-				socket.emit('paddle_move', 'DOWN');
+				//setLastMoveTime(currentTime);
+				//socket.emit('paddle_move', 'DOWN');
+				setIsKeyDownPressed(true);
+			}
+		};
+
+		const handleKeyUp = (event) => {
+
+			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
+
+			let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
+
+			if ((event.keyCode === 87 || event.keyCode === 38)) {
+
+				if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
+					return;
+				if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
+					return;
+
+				setIsKeyUpPressed(false);
+			}
+
+			if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
+				if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+					return;
+				if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+					return;
+				setIsKeyDownPressed(false);
 			}
 		};
 
@@ -115,11 +145,25 @@ export default function Game() {
 			return;//security
 		}
 		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
+
+		const interval = setInterval(() => {
+			if (isKeyUpPressed) {
+				socket.emit('paddle_move', 'UP');
+			}
+			if (isKeyDownPressed) {
+				socket.emit('paddle_move', 'DOWN');
+			}
+		}, 20); // Mise à jour toutes les 100 ms
 
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+			window.removeEventListener('keyup', handleKeyUp);
+			clearInterval(interval);
 		};
-	}, [gameState, lastMoveTime]); //est ce qu on peut vraiment ne rien mettre dans le tableau
+
+	}, [gameState, isKeyUpPressed, isKeyDownPressed]); //est ce qu on peut vraiment ne rien mettre dans le tableau
+	//retrait de lastMoveTime PENSER A LE SUPPRIMER
 
 
 
