@@ -95,7 +95,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	private activeGames: [string, string, Game][] = [];
 
-	@SubscribeMessage('find_game')
+	@SubscribeMessage('FIND_GAME')
 	async handleLaunchGame(client: Socket, payload: any) {
 
 		console.log('--------find game--------');
@@ -165,12 +165,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				return;
 			}
 
-			//sPlayer1.emit('game_start', { gameState ,opponent: playerRight });
-			sPlayer1.emit('game_start', gameState, 'player_left');
-			sPlayer2.emit('game_start', gameState, 'player_right');
+			//sPlayer1.emit('GAME_START', { gameState ,opponent: playerRight });
+			sPlayer1.emit('GAME_START', gameState, 'player_left');
+			sPlayer2.emit('GAME_START', gameState, 'player_right');
 
-			//this.server.to(this.connectedClients(playerRight)).emit('game_start', { opponent: playerRight, gameState });
-			//this.server.to(playerRight).emit('game_start', { opponent: playerLeft, gameState });
+			//this.server.to(this.connectedClients(playerRight)).emit('GAME_START', { opponent: playerRight, gameState });
+			//this.server.to(playerRight).emit('GAME_START', { opponent: playerLeft, gameState });
 
 
 			//this.testPaddleMove();
@@ -244,8 +244,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(username, ' === ', this.getOpponent(username));
 		//console.log(this.connectedClients.get(this.getOpponent(username)));
 
-		this.connectedClients.get(username).emit('game_refresh', gameState);
-		this.connectedClients.get(this.getOpponent(username)).emit('game_refresh', gameState);
+		this.connectedClients.get(username).emit('GAME_REFRESH', gameState);
+		this.connectedClients.get(this.getOpponent(username)).emit('GAME_REFRESH', gameState);
 	}
 
 	getOpponent(player: string) : string

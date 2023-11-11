@@ -24,30 +24,34 @@ export default function Game() {
 	//const ballRef = useRef({});
 	const ballRef = useRef({ x: 400 , y: 100 , dx: 0, dy: 0 });
 
+
+	function actualizeBallPos(gameState: Game) {
+			ballRef.current.x = gameState.ball.x;
+			ballRef.current.y = gameState.ball.y;
+			ballRef.current.dx = gameState.ball.dx;
+			ballRef.current.dy = gameState.ball.dy;
+	}
+
 	useEffect( () => {
 
 		if (!socket)
 			return;
 
 		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
-			setGameState(gameGivenState);
 			setPlayerSide(playerGivenSide);
-			console.log('-------GAMESTATETETETEE----------');
+			setGameState(gameGivenState);
 			console.log(gameState);
-
-			ballRef.current.x = gameGivenState.ball.x;
-			ballRef.current.y = gameGivenState.ball.y;
-			ballRef.current.dx = gameGivenState.ball.dx;
-			ballRef.current.dy = gameGivenState.ball.dy;
+			actualizeBallPos(gameGivenState);
 		};
 
 		const gameRefreshHandler = (gameGivenState: Game) => {
 			setGameState(gameGivenState);
+			//actualizeBallPos(gameGivenState);
 		};
 
-		socket.emit('find_game', 'lalala');
-		socket.on('game_start', gameStartHandler);
-		socket.on('game_refresh', gameRefreshHandler);
+		socket.emit('FIND_GAME', 'lalala');
+		socket.on('GAME_START', gameStartHandler);
+		socket.on('GAME_REFRESH', gameRefreshHandler);
 
 		// FAUT IL IMPLEMENTER SOCKER OFF ?
 		//return () => {
