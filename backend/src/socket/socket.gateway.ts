@@ -411,7 +411,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return;
 		}
 
-		let paddleStep = 30;
+		let paddleStep = 5;
 
 		if (payload === 'UP') {
 			if (playerSide === 'LEFT')

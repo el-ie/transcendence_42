@@ -82,11 +82,13 @@ export default function Game() {
 
 				let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
 
+				let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
+
 				if ((event.keyCode === 87 || event.keyCode === 38)) {
 
-					if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition < (hheight / blindSpotSizeRatio))
+					if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
 						return;
-					if (playerSide === 'player_right' && gameState.playerRight.paddlePosition < (hheight / blindSpotSizeRatio))
+					if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
 						return;
 
 					setLastMoveTime(currentTime);
@@ -94,9 +96,9 @@ export default function Game() {
 				}
 
 				if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
-					if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+					if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
 						return;
-					if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) > hheight - (hheight / blindSpotSizeRatio))
+					if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
 						return;
 
 					setLastMoveTime(currentTime);
