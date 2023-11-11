@@ -28,10 +28,10 @@ export default function Game() {
 
 
 	function actualizeBallPos(gameState: Game) {
-			ballRef.current.x = gameState.ball.x;
-			ballRef.current.y = gameState.ball.y;
-			ballRef.current.dx = gameState.ball.dx;
-			ballRef.current.dy = gameState.ball.dy;
+		ballRef.current.x = gameState.ball.x;
+		ballRef.current.y = gameState.ball.y;
+		ballRef.current.dx = gameState.ball.dx;
+		ballRef.current.dy = gameState.ball.dy;
 	}
 
 	useEffect( () => {
@@ -62,9 +62,9 @@ export default function Game() {
 		socket.on('GAME_REFRESH_BALL', gameRefreshBallHandler);
 
 		// FAUT IL IMPLEMENTER SOCKER OFF ?
-		//return () => {
-		//		socket.off('game', messageHandler);
-		//};
+			//return () => {
+				//		socket.off('game', messageHandler);
+				//};
 
 	}, [socket]);
 
@@ -75,61 +75,61 @@ export default function Game() {
 	///////////// CAPTURE KEYBOARD /////////////
 
 
-			const handleKeyDown = (event) => {
+		const handleKeyDown = (event) => {
 
-				let currentTime = Date.now();
-				if (currentTime != 0 && currentTime - lastMoveTime < moveDelay)
+			let currentTime = Date.now();
+			if (currentTime != 0 && currentTime - lastMoveTime < moveDelay)
+				return;
+
+			let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
+
+			let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
+
+			if ((event.keyCode === 87 || event.keyCode === 38)) {
+
+				if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
+					return;
+				if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
 					return;
 
-				let blindSpotSizeRatio = 19; //ratio sur la taille du petit coin inateignable par le paddle
-
-				let paddleStep = 5; // UTILISER LA VALEUR DU BACKEND
-
-				if ((event.keyCode === 87 || event.keyCode === 38)) {
-
-					if (playerSide === 'player_left' && gameState.playerLeft.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-						return;
-					if (playerSide === 'player_right' && gameState.playerRight.paddlePosition + paddleStep < (hheight / blindSpotSizeRatio))
-						return;
-
-					setLastMoveTime(currentTime);
-					socket.emit('paddle_move', 'UP');
-				}
-
-				if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
-					if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-						return;
-					if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
-						return;
-
-					setLastMoveTime(currentTime);
-					socket.emit('paddle_move', 'DOWN');
-				}
-			};
-
-		useEffect(() => {
-
-			if (!gameState || !socket)
-			{
-				console.log('deplacement du paddle impossible, gameState = null ou !socket');
-				return;//security
+				setLastMoveTime(currentTime);
+				socket.emit('paddle_move', 'UP');
 			}
-			window.addEventListener('keydown', handleKeyDown);
 
-			return () => {
-				window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
-			};
-		}, [gameState, lastMoveTime]); //est ce qu on peut vraiment ne rien mettre dans le tableau
+			if ((event.keyCode === 83 || event.keyCode === 40)) { // 'W' key
+				if (playerSide === 'player_left' && (gameState.playerLeft.paddlePosition  + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+					return;
+				if (playerSide === 'player_right' && (gameState.playerRight.paddlePosition + paddleHeight) - (paddleStep) > hheight - (hheight / blindSpotSizeRatio) )
+					return;
+
+				setLastMoveTime(currentTime);
+				socket.emit('paddle_move', 'DOWN');
+			}
+		};
+
+	useEffect(() => {
+
+		if (!gameState || !socket)
+		{
+			console.log('deplacement du paddle impossible, gameState = null ou !socket');
+			return;//security
+		}
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown); // Cleanup on unmount
+		};
+	}, [gameState, lastMoveTime]); //est ce qu on peut vraiment ne rien mettre dans le tableau
 
 
 
 	///////////////////////// test ///////////////////
 
-	const testHandleKeyDown = (event) => {
-		if (event.keyCode === 96) { // W ou flèche haut
-			setIsKeyPressed(true);
-		}
-	};
+		const testHandleKeyDown = (event) => {
+			if (event.keyCode === 96) { // W ou flèche haut
+				setIsKeyPressed(true);
+			}
+		};
 
 	const testHandleKeyUp = (event) => {
 		if (event.keyCode === 96) { // W ou flèche haut
@@ -139,21 +139,21 @@ export default function Game() {
 
 	useEffect(() => {
 
-			if (!gameState || !socket)
-			{
-				console.log('deplacement du paddle impossible, gameState = null ou !socket');
-				return;//security
-			}
+		if (!gameState || !socket)
+		{
+			console.log('deplacement du paddle impossible, gameState = null ou !socket');
+			return;//security
+		}
 
 		window.addEventListener('keydown', testHandleKeyDown);
 		window.addEventListener('keyup', testHandleKeyUp);
 
 		const interval = setInterval(() => {
 			if (isKeyPressed) {
-					socket.emit('paddle_move', 'DOWN');
+				socket.emit('paddle_move', 'DOWN');
 			}
 			if (isKeyPressed) {
-					socket.emit('paddle_move', 'DOWN');
+				socket.emit('paddle_move', 'DOWN');
 			}
 		}, 15); // Mise à jour toutes les 100 ms
 
