@@ -132,7 +132,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				//utile?
 				const gameState = this.initializeGameState(playerLeft, playerRight);
 
-				changeBallspeed(gameState, 0.1);
+				changeBallspeed(gameState, 0);
 				changeBallAngle(gameState, toRadians(45));
 
 				this.activeGames.push([playerLeft, playerRight, gameState]);
@@ -169,11 +169,27 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sPlayer1.emit('GAME_START', gameState, 'player_left');
 			sPlayer2.emit('GAME_START', gameState, 'player_right');
 
+
+			this.gameLoop(gameState, sPlayer1, sPlayer2);
+
 			//this.server.to(this.connectedClients(playerRight)).emit('GAME_START', { opponent: playerRight, gameState });
 			//this.server.to(playerRight).emit('GAME_START', { opponent: playerLeft, gameState });
 
 
 			//this.testPaddleMove();
+
+	}
+
+	gameLoop(gameState: Game, player1Socket, player2Socket) {
+
+		let idontknow = setInterval(() => {
+			gameState.ball.x += gameState.ball.dx;
+			gameState.ball.y += gameState.ball.dy;
+
+		player1Socket.emit('GAME_REFRESH_BALL', gameState);
+		player2Socket.emit('GAME_REFRESH_BALL', gameState);
+
+		}, 10); // Met à jour toutes les 16 ms
 
 	}
 
@@ -244,8 +260,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(username, ' === ', this.getOpponent(username));
 		//console.log(this.connectedClients.get(this.getOpponent(username)));
 
-		this.connectedClients.get(username).emit('GAME_REFRESH', gameState);
-		this.connectedClients.get(this.getOpponent(username)).emit('GAME_REFRESH', gameState);
+		this.connectedClients.get(username).emit('GAME_REFRESH_PADDLE', gameState);
+		this.connectedClients.get(this.getOpponent(username)).emit('GAME_REFRESH_PADDLE', gameState);
 	}
 
 	getOpponent(player: string) : string
@@ -292,8 +308,10 @@ type Game = {
 	ball: {x: number, y: number, dx: number, dy: number}
 };
 
-let minSpeedBall = 4;
-let maxSpeedBall = 11;
+//let minSpeedBall = 4;
+//let maxSpeedBall = 11;
+let minSpeedBall = 2;
+let maxSpeedBall = 8;
 
 function changeBallspeed(gameState: Game, newSpeed: number) {
 
