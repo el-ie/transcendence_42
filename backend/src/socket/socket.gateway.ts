@@ -131,6 +131,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 				//utile?
 				const gameState = this.initializeGameState(playerLeft, playerRight);
+
+				changeBallspeed(gameState, 0.1);
+				changeBallAngle(gameState, toRadians(45));
+
 				this.activeGames.push([playerLeft, playerRight, gameState]);
 
 				//console.log('actives games :');
@@ -275,42 +279,59 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return ({
 			playerLeft: { name: playerL, score: 0, paddlePosition: 300 },
 			playerRight: { name: playerR, score: 0, paddlePosition: 300 },
-			ball: { x: 500, y: 500 },
+			ball: { x: 400, y: 300 , dx: 1, dy: 0}, //tuner
 			// autres éléments d'état nécessaires
 		});
 	}
 
-	//@SubscribeMessage('game')
-	//async handleGame(client: Socket, payload: any) {
-	//
-	//	//console.log('payload = ', payload);
-	//
-	//	console.log('--------game--------');
-	//	let username = client.handshake.query.username;
-	//
-	//	if (typeof username != 'string')
-	//		return; //gerer erreur
-	//
-	//	this.connectedClients.get(username).emit('game', 'salut  c est moi');
-	//
-	//	//this.connectedClients.forEach((value, key) => {
-	//	//	value.emit('game', 'salut les bg');
-	//	//	//console.log('value = ', value);
-	//	//});
-	//	//this.connectedClients.get('eamar').emit('game', 'salut les bg');
-	//}
 }
 
 type Game = {
 	playerLeft: { name: string, score: number, paddlePosition: number },
 	playerRight: { name: string, score: number, paddlePosition: number },
-	ball: {x: number, y: number}
+	ball: {x: number, y: number, dx: number, dy: number}
 };
-//getOpponentUsername(playerLeft: string)
-//{
-// for (const player_iter of this.activeGames) {
-//  if (player_iter[0] === playerLeft)
-//	  return player_iter[1];
-// }
-// return null; // ou autre?
-//}
+
+let minSpeedBall = 4;
+let maxSpeedBall = 11;
+
+function changeBallspeed(gameState: Game, newSpeed: number) {
+
+	// fine tuning
+	newSpeed = (newSpeed * (maxSpeedBall - minSpeedBall)) + minSpeedBall;
+	if (newSpeed > maxSpeedBall)
+		newSpeed = maxSpeedBall;
+
+	const currentDx = gameState.ball.dx;
+	const currentDy = gameState.ball.dy;
+
+	const currentAngle = Math.atan2(currentDy, currentDx);
+
+	gameState.ball.dx = newSpeed * Math.cos(currentAngle);
+	gameState.ball.dy = newSpeed * Math.sin(currentAngle);
+}
+
+function getBallSpeed (gameState: Game) {
+	const currentDx = gameState.ball.dx;
+	const currentDy = gameState.ball.dy;
+	let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+
+	let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
+
+	return speed_finetuned;
+}
+
+function changeBallAngle (gameState: Game, theta: number) {
+	const currentDx = gameState.ball.dx;
+	const currentDy = gameState.ball.dy;
+	const currentSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+
+	gameState.ball.dx = currentSpeed * Math.cos(theta);
+	gameState.ball.dy = currentSpeed * Math.sin(theta);
+}
+
+function toRadians(degrees: number) {
+	return degrees * (Math.PI / 180);
+}
+
+

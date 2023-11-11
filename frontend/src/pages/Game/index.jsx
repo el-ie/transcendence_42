@@ -14,12 +14,15 @@ export default function Game() {
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
 		playerRight: { name: string, score: number, paddlePosition: number },
-		ball: {x: number, y: number}
+		ball: {x: number, y: number, dx: number, dy: number}
 	};
 
 	const [gameState, setGameState] = useState(null);
 
 	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
+
+	//const ballRef = useRef({});
+	const ballRef = useRef({ x: 400 , y: 100 , dx: 0, dy: 0 });
 
 	useEffect( () => {
 
@@ -29,6 +32,13 @@ export default function Game() {
 		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
 			setGameState(gameGivenState);
 			setPlayerSide(playerGivenSide);
+			console.log('-------GAMESTATETETETEE----------');
+			console.log(gameState);
+
+			ballRef.current.x = gameGivenState.ball.x;
+			ballRef.current.y = gameGivenState.ball.y;
+			ballRef.current.dx = gameGivenState.ball.dx;
+			ballRef.current.dy = gameGivenState.ball.dy;
 		};
 
 		const gameRefreshHandler = (gameGivenState: Game) => {
@@ -98,28 +108,34 @@ export default function Game() {
 
 	/////////////////////////////////////////////////////////////////
 
-		let wwidth = 800;
+		// FIXEX VALUES :
+	let wwidth = 800;
 	let hheight = 600;
 	let paddleHeight = 80;
 	let paddleWidth = 10;
 	let ballRadius = 10;
-	//pas mouvement paddle
-	//let paddleStep = 30;
-	// vitesse vertivale de la balle
-	let ballDx = 3;
-	//vitesse horizontale
+	/////////////////////////
+
+
+		// DYNAMIC VALUES :
+	let ballDx = 0;
 	let ballDy = 0;
-	//ratio de vitesse de la balle, 3 = lent, 7 = plutot rapide
+
 	let minSpeedBall = 6;
 	let maxSpeedBall = 11;
 
-	const ballRef = useRef({ x: wwidth / 2, y: hheight / 2 , radius: 10, dx: ballDx, dy: ballDy });
+	//const ballRef = useRef(null);
+	//const ballRef = useRef({ x: gameState.ball.x , y: gameState.ball.y , dx: ballDx, dy: ballDy });
 
-	useEffect( () => {
-		//set angle et vitesse de depart
-		changeBallAngle(toRadians(0));
-		changeBallSpeed(0);
-	}, []);
+	//const ballRef = useRef(null);
+
+	// INITIALIZE BALL TRAJECTOIRE
+
+	//useEffect( () => {
+		//	//set angle et vitesse de depart
+		//	changeBallAngle(toRadians(0));
+		//	changeBallSpeed(0);
+		//}, []);
 	//////////////////////////////////////////////
 
 		const canvasRef = useRef(null);
@@ -267,13 +283,14 @@ export default function Game() {
 
 					//newDx = -newDx;
 
+					// COLLISION BORDS HAUT / BAS
 					if (ballY > canvasRef.current.height - 10 || ballY <= 10)
 					ballRef.current.dy *= -1;
 					//newDy = -newDy;
 					///////////////////////////////////////////////////////
 
 					let for_test = 0;
-					// ACTUALISATION VALEURS
+					//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
 					if (ballX > canvasRef.current.width - 10 - for_test || ballX <= 10)
 					{
 						//ballRef.current.dx *= -1;
@@ -301,7 +318,7 @@ export default function Game() {
 
 			// Draw Ball
 			context.beginPath();
-			context.arc(ballRef.current.x, ballRef.current.y, ballRef.current.radius, 0, Math.PI * 2);
+			context.arc(ballRef.current.x, ballRef.current.y, ballRadius, 0, Math.PI * 2);
 			context.fill();
 
 			// Draw Paddles
