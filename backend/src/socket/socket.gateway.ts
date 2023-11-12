@@ -194,6 +194,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			let paddleWidth = 10;
 			let ballRadius = 10;
 
+			let ballAccelerationStack = 0.2;
 
 			let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 			let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
@@ -223,41 +224,38 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
 				let quadrant = 1; //pour au dessus
 
-				if (ballY > centre_paddle_Y)
-					{
-						distance_ball_paddle_Y = ballY - centre_paddle_Y;
-						quadrant = 0; // la balle tape au dessous du centre
-					}
+				if (ballY > centre_paddle_Y) {
+					distance_ball_paddle_Y = ballY - centre_paddle_Y;
+					quadrant = 0; // la balle tape au dessous du centre
+				}
+				else
+					distance_ball_paddle_Y = centre_paddle_Y - ballY;
+
+				// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+
+				let angle_impact = distance_ball_paddle_Y / (leftPaddle.height / 2);
+				angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+
+				//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
+				if (angle_impact > 0.3) {
+					if (quadrant === 0)
+						changeBallAngle(gameState, toRadians(angle_impact * 70));
 					else
-						distance_ball_paddle_Y = centre_paddle_Y - ballY;
+						changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
+				}
 
-					// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+				//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
 
-					let angle_impact = distance_ball_paddle_Y / (leftPaddle.height / 2);
-					angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+				if (angle_impact > 0.5) {
+					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
+					//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
+					//console.log('ratio[', ratioAcceleration, ']');
+					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
+					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
+				}
+				//changeBallAngle(toRadians(80));
 
-					//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
-					if (angle_impact > 0.3)
-						{
-							if (quadrant === 0)
-								changeBallAngle(gameState, toRadians(angle_impact * 70));
-							else
-								changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
-						}
-
-						//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
-
-						if (angle_impact > 0.5)
-							{
-								let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
-								//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
-								//console.log('ratio[', ratioAcceleration, ']');
-								changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * 0.3) ); //fine tuning
-								//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
-							}
-							//changeBallAngle(toRadians(80));
-
-							//console.log('New speed : ', getBallSpeed());
+				//console.log('New speed : ', getBallSpeed());
 
 			}
 
@@ -276,42 +274,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
 				let quadrant = 1; //pour au dessus
 
-				if (ballY > centre_paddle_Y)
-					{
-						distance_ball_paddle_Y = ballY - centre_paddle_Y;
-						quadrant = 0; // la balle tape au dessous du centre
-					}
+				if (ballY > centre_paddle_Y) {
+					distance_ball_paddle_Y = ballY - centre_paddle_Y;
+					quadrant = 0; // la balle tape au dessous du centre
+				}
+				else
+					distance_ball_paddle_Y = centre_paddle_Y - ballY;
+
+				// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+
+				let angle_impact = distance_ball_paddle_Y / (rightPaddle.height / 2);
+				angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+
+				let inversion = 180;
+				//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
+				if (angle_impact > 0.3) {
+					if (quadrant === 0)
+						changeBallAngle(gameState, toRadians(90 + angle_impact * 70));
 					else
-						distance_ball_paddle_Y = centre_paddle_Y - ballY;
+						changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
+				}
 
-					// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+				//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
 
-					let angle_impact = distance_ball_paddle_Y / (rightPaddle.height / 2);
-					angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+				if (angle_impact > 0.5) {
+					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
+					//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
+					//console.log('ratio[', ratioAcceleration, ']');
+					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
+					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
+				}
+				//changeBallAngle(toRadians(80));
 
-					let inversion = 180;
-					//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
-					if (angle_impact > 0.3)
-						{
-							if (quadrant === 0)
-								changeBallAngle(gameState, toRadians(90 + angle_impact * 70));
-							else
-								changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
-						}
-
-						//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
-
-						if (angle_impact > 0.5)
-							{
-								let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
-								//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
-								//console.log('ratio[', ratioAcceleration, ']');
-								changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * 0.3) ); //fine tuning
-								//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
-							}
-							//changeBallAngle(toRadians(80));
-
-							//console.log('New speed : ', getBallSpeed());
+				//console.log('New speed : ', getBallSpeed());
 			}
 
 			//// CONTACT AVEC BORDS //////////////////////////////
@@ -331,37 +326,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
 		//CHANGE
 		//if (ballX > canvasRef.current.width - 10 - for_test || ballX <= 10)
-		if (ballX > wwidth - 10 - for_test || ballX <= 10)
-			{
-				//gameState.ball.dx *= -1;
-				gameState.ball.y = hheight / 2;
-				changeBallSpeed(gameState, 0); //fine tuning
-				//CHANGE
-				//if (ballX > canvasRef.current.width - 10 - for_test)
-				if (ballX > wwidth - 10 - for_test)
-					{
-						gameState.ball.x = wwidth / 2 - 150;
-						changeBallAngle(gameState, toRadians(0));
-					}
-					else
-						{
-							gameState.ball.x = wwidth / 2 + 150;
-							changeBallAngle(gameState, toRadians(180));
-						}
+		if (ballX > wwidth - 10 - for_test || ballX <= 10) {
+			//gameState.ball.dx *= -1;
+			gameState.ball.y = hheight / 2;
+			changeBallSpeed(gameState, 0); //fine tuning
+			//CHANGE
+			//if (ballX > canvasRef.current.width - 10 - for_test)
+			if (ballX > wwidth - 10 - for_test) {
+				gameState.ball.x = wwidth / 2 - 150;
+				changeBallAngle(gameState, toRadians(0));
+				gameState.playerLeft.score += 1;
 			}
-			else
-				{
-					gameState.ball.x += gameState.ball.dx;
-					gameState.ball.y += gameState.ball.dy;
-				}
+			else {
+				gameState.ball.x = wwidth / 2 + 150;
+				changeBallAngle(gameState, toRadians(180));
+				gameState.playerRight.score += 1;
+			}
+
+			player1Socket.emit('GAME_REFRESH_SCORE', gameState);
+			player2Socket.emit('GAME_REFRESH_SCORE', gameState);
+
+		}
+		else {
+			gameState.ball.x += gameState.ball.dx;
+			gameState.ball.y += gameState.ball.dy;
+		}
 
 
 
-				//gameState.ball.x += gameState.ball.dx;
-				//gameState.ball.y += gameState.ball.dy;
+		//gameState.ball.x += gameState.ball.dx;
+		//gameState.ball.y += gameState.ball.dy;
 
-				player1Socket.emit('GAME_REFRESH_BALL', gameState);
-				player2Socket.emit('GAME_REFRESH_BALL', gameState);
+		player1Socket.emit('GAME_REFRESH_BALL', gameState);
+		player2Socket.emit('GAME_REFRESH_BALL', gameState);
 
 		}, 10); // Met à jour toutes les 16 ms
 
