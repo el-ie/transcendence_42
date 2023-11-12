@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Query, Req } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { ChangePasswordDto, ChannelCreaDto, ChannelJoinDto, DirectCreaDto, NameDto, SetAdminDto, UserloginDto, idDto } from './dto/channel.dto';
 import { UserService } from 'src/user/user.service';
@@ -29,14 +29,13 @@ export class ChannelController {
   @Post('createDirect')
   async createDirect(@Body() directcreaDto: DirectCreaDto) {
     try {
-      
-      const channelName = (directcreaDto.starterLogin > directcreaDto.targetLogin)? (directcreaDto.starterLogin + "-" + directcreaDto.targetLogin) : (directcreaDto.targetLogin + "-" + directcreaDto.starterLogin)
-      const starterId = await this.userService.getIdByLogin(directcreaDto.starterLogin);
-      const targetId = await this.userService.getIdByLogin(directcreaDto.targetLogin);
-      if (starterId === targetId)
+      const starter = await this.userService.getUser(directcreaDto.starterLogin);
+      const target = await this.userService.getUser(directcreaDto.targetLogin);
+      const channelName = (starter.username > target.username)? (starter.username + "-" + target.username) : (target.username + "-" + starter.username)
+      if (starter.id === target.id)
         throw new Error;
-      const channel = await this.channelService.createChannel(channelName, "", directcreaDto.type, starterId);
-      await this.channelService.joinChannel(channelName, targetId, "");
+      const channel = await this.channelService.createChannel(channelName, "", directcreaDto.type, starter.id);
+      await this.channelService.joinChannel(channelName, target.id, "");
       return { channel };
     } catch (error) {
       return { error: "server cant create direct chat"};
@@ -164,6 +163,25 @@ export class ChannelController {
     }
   }
 
+  @Get('directChatPrintableName')
+  async  getDirectChatPrintableName(@Query('name') name: string, @Req() req: any) {
+    try {
+      const channelId = await this.channelService.getIdByName(name);
+      const chanUsers = await this.channelService.getChannelUsers(channelId);
+      const chanLogins = chanUsers.map((user) => {
+        if (user.id != req.user.id)
+          return (user.login);
+        else
+          return (null);
+      })
+      const otherLogin = chanLogins[0] ? chanLogins[0] : chanLogins[1];
+      return ({otherLogin})
+    }
+    catch{
+      return {error: "erreur lors de la recup du name"};
+    }
+  }
+
   @Get('mine')
   async getUserChannels (@Query('login') userlogin: string) {
     try {
@@ -219,10 +237,9 @@ export class ChannelController {
 
 
   @Get('direct')
-  async getUserDirect (@Query('login') userlogin: string) {
+  async getUserDirect (@Req() req: any) {
     try {
-      const userId = await this.userService.getIdByLogin(userlogin);
-      const channels = await this.channelService.getUserDirect(userId);
+      const channels = await this.channelService.getUserDirect(req.user.id);
       return {channels} ;
 
     }

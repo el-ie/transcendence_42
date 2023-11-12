@@ -5,6 +5,7 @@ import { AddFriendDto, ChangeLoginDto } from './dto/user.dto';
 import * as path from 'path';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as imageSize from 'image-size';
 import * as fs from 'fs';
 
 @Controller('users')
@@ -78,20 +79,25 @@ export class UserController {
     }
 
 
-@Post('uploadAvatar')
-@UseInterceptors(FileInterceptor('avatar', {dest: './temp',}))
-async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
-    const newFileName = `${req.user.id}_avatar${path.extname(file.originalname)}`;
-
-    const avatarPath = path.join(__dirname, '..', '..', 'images', newFileName);
-    console.log(file);
-    fs.copyFileSync(file.path, avatarPath);
-    fs.unlinkSync(file.path);
-    await this.userService.changeAvatarPath(req.user.id, newFileName);
-
-    console.log(`Fichier copié avec succès : ${newFileName}`);
-    return (true);
-}
+    @Post('uploadAvatar')
+    @UseInterceptors(FileInterceptor('avatar', {dest: './temp',}))
+    async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+        try {
+            const allowedTypes = ["image/jpeg", "image/gif", "image/png"];
+            if (!allowedTypes.includes(file.mimetype)) {
+                throw new Error('Le fichier n\'est pas une image valide.');
+            }
+            const newFileName = `${req.user.id}_avatar${path.extname(file.originalname)}`;
+            const avatarPath = path.join(__dirname, '..', '..', 'images', newFileName);
+            fs.copyFileSync(file.path, avatarPath);
+            fs.unlinkSync(file.path);
+            await this.userService.changeAvatarPath(req.user.id, newFileName);
+            return (true);
+        }
+        catch {
+            return ({error: "erreur durant l'upload"});
+        }
+    }
 
 
     @Post('addFriend')

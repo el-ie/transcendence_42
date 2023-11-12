@@ -254,6 +254,14 @@ export class UserService {
         })
         if (!user)
             throw new Error("error: user not find or login taken");
+        await this.prisma.message.updateMany({
+            where: {
+                senderId: userId,
+            },
+            data: {
+                senderLogin: newLogin,
+            }
+        })
         return (user);
     }
 

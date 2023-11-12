@@ -1,19 +1,51 @@
+import axios from "axios";
 import "./chanList.css"
+import { useEffect, useState } from "react";
 
-function getName(name:string, login:string) {
+async function getName(name:string) {
     if (!name.includes("-"))
         return (name)
-    const logins = name.split("-")
-    if (logins[0] === login)
-        return (logins[1])
-    return (logins[0]);
+    const url = "http://localhost:3001/channel/directChatPrintableName?name=" + name;
+    const trueName = await axios.get(url, {withCredentials: true})
+    .then((response) => {
+        if (response.data.otherLogin)
+        {
+            console.log("je return" ,response.data.otherLogin);
+            return (response.data.otherLogin);
+        }
+        else
+        {
+            console.log('erreur dans getblala');
+        }
+    })
+    .catch(() => {
+        console.log("erour");
+    })
+    return (trueName);
 }
-export default function ChanList({list, handleSelect, login}) {
-        return (
-            <ul className="chanList">
-                {list.map((channel: any) => (
-                    <li key={channel.id + "a"} onClick={() => handleSelect(channel)}>{getName(channel.name, login)}</li>
-                ))}
-            </ul>
-        )
-}
+export default function ChanList({ list, handleSelect, login }) {
+    const [resolvedNames, setResolvedNames] = useState([]);
+  
+    useEffect(() => {
+      const promises = list.map((channel) => getName(channel.name));
+  
+      Promise.all(promises)
+        .then((resolved) => {
+          setResolvedNames(resolved);
+        })
+        .catch((error) => {
+          console.error("Error resolving names: ", error);
+        });
+    }, [list, login]);
+  
+    return (
+      <ul className="chanList">
+        {resolvedNames.length !== 0 && resolvedNames.map((name, index) => (
+          <li key={index} onClick={() => handleSelect(list[index])}>
+            {name}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  

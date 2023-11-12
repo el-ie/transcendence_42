@@ -5,19 +5,11 @@ import ChatInput from "./chatInput";
 import SettingForm from "./settingForm";
 
 
-function getName(name:string, login:string) {
-    if (!name.includes("-"))
-        return (name)
-    const logins = name.split("-")
-    if (logins[0] === login)
-        return (logins[1])
-    return (logins[0]);
-}
-
 export default function Chat({channel, login, socket, handleLeave, handleDelete, blockeds}) {
     const [messages, setMessages] = useState([]);
     const [role, setRole] = useState('');
     const [setting, setSetting] = useState(false);
+    const [name, setName] = useState("");
 
     useEffect(() => {
         if (channel) {
@@ -40,6 +32,28 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
             .catch(() => {
                 console.error("error de recup du role");
             })
+            if (channel.name.includes("-"))
+            {
+                const url = "http://localhost:3001/channel/directChatPrintableName?name=" + channel.name;
+                axios.get(url, {withCredentials: true})
+                .then((response) => {
+                    if (response.data.otherLogin)
+                    {
+                        setName(response.data.otherLogin);
+                    }
+                    else
+                    {
+                        console.log('erreur dans getblala');
+                    }
+                })
+                .catch(() => {
+                    console.log("erour");
+                })
+            }
+            else
+            {
+                setName(channel.name);
+            }
         }
     }, [channel, login])
 
@@ -71,7 +85,7 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
     {
         return (
             <div>
-                <h2>{getName(channel.name, login)}</h2>
+                {name !== "" && <h2>{name}</h2>}
                 {channel.type !== 'DIRECT' && 
                 <div className="settingsdiv">
                     <span>{role}</span>

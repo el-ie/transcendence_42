@@ -23,6 +23,8 @@ nav *{
 }
 
 .popup {
+    z-index: 999;
+    position: relative;
     padding: 0px;
     padding-top: 10px;
     width: 33%;
@@ -49,4 +51,18 @@ nav *{
 
 .popup .row *{
     margin: 10px;
+}
+
+.popup .closeButton {
+    position: absolute;
+    margin: 0px;
+    top: 0px;
+    right: 0px;
+    border: none;
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    height: auto;
+    width: auto;
+
+
 }

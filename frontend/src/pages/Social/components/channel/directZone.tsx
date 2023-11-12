@@ -8,7 +8,7 @@ export default function DirectZone({handleSelect, login}) {
     const [chanList, setChanList] = useState([])
 
     useEffect(() => {
-        const url = "http://localhost:3001/channel/direct?login=" + login;
+        const url = "http://localhost:3001/channel/direct";
         axios.get(url, {withCredentials: true})
         .then((response) => {
             setChanList(response.data.channels);

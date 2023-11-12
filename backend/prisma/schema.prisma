@@ -68,6 +68,7 @@ model ChannelConnection {
 
 model Message {
   id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
   author User @relation("userMessages", fields: [senderId], references: [id], onDelete: Cascade)
   senderId Int
   senderLogin String

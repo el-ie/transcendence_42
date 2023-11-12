@@ -130,7 +130,11 @@ export class ChannelService {
                     id: channelId,
                 },
                 include: {
-                    messages: {}
+                    messages: {
+                        orderBy: {
+                            createdAt: 'asc',
+                        }
+                    }
                 },
             });
             return (
