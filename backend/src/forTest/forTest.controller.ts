@@ -67,7 +67,7 @@ export class ForTestController {
 		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
 
 		//return response.send();//options?
-		response.redirect('http://localhost:3000/home');
+		response.redirect('http://localhost:3000/game');
 			//return  (await this.prisma.user.findMany());
 	}
 
