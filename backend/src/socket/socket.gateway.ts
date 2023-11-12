@@ -20,18 +20,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	handleConnection(client: Socket) {
 
-		//elie shit to delete
-		//console.log('socket emise:', client.handshake.query.username);
-		//console.log('map =', this.connectedClients);
-		//for (let clientId of this.connectedClients.keys()) {
-		//   console.log('----', clientId);
-		//}
-
-		//this.connectedClients.forEach((value, key) => {
-		//	console.log('value = ', value);
-		//});
-
-
 		const username = client.handshake.query.username as string;
 		this.connectedClients.set(username, client);
 	}
@@ -96,14 +84,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private activeGames: [string, string, Game][] = [];
 
 	@SubscribeMessage('FIND_GAME')
-	async handleLaunchGame(client: Socket, payload: any) {
+	async handleLaunchGame(client: Socket) {
 
-		console.log('--------find game--------');
 		let username = client.handshake.query.username;
 
 		if (typeof username != 'string')
 			return; //gerer erreur
-
 		//check si l username existe dans la database ?
 
 		//check si l username est deja dans la matchmakingQueue
@@ -118,71 +104,45 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 
 		this.matchmakingQueue.push(username);
-
 		//console.log(username, ' added : ', this.matchmakingQueue);
 
-		if (this.matchmakingQueue.length == 2)
-			{
-				console.log('GAME IS READY');
+		if (this.matchmakingQueue.length >= 2) {
+			const playerLeft = this.matchmakingQueue.shift();
+			const playerRight = this.matchmakingQueue.shift();
 
-				const playerLeft = this.matchmakingQueue.shift();
-				const playerRight = this.matchmakingQueue.shift();
-				// check is player != undefined ?
-
-				//utile?
-				const gameState = this.initializeGameState(playerLeft, playerRight);
-
-				changeBallSpeed(gameState, 0);
-				changeBallAngle(gameState, toRadians(45));
-
-				this.activeGames.push([playerLeft, playerRight, gameState]);
-
-				//console.log('actives games :');
-				//console.log(this.activeGames);
-
-				this.manageGame(playerLeft, playerRight, gameState);
-			}
+			this.launchGame(playerLeft, playerRight);
+		}
 
 	}
 
 
-	manageGame(playerLeft: string, playerRight: string, gameState: Game) {
+	launchGame(playerLeft: string, playerRight: string) {
 
-		//console.log('----- connectedClients : -------');
-		//console.log(this.connectedClients);
 		const sPlayer1 = this.connectedClients.get(playerLeft);
 		const sPlayer2 = this.connectedClients.get(playerRight);
-		//this.connectedClients.get(username).emit('game', 'salut  c est moi');
 
-		//ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!!
-		if (sPlayer1 === undefined || sPlayer2 === undefined)
-			{
-				console.log('socket manageGame erreur le socket recupere est undefined for :');
-				if (sPlayer1 === undefined)
-					console.log('PLAYER1');
-				if (sPlayer2 === undefined)
-					console.log('PLAYER2');
-				return;
-			}
+		//ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!! surtout quand la database etait full (200 users)
+		if (sPlayer1 === undefined || sPlayer2 === undefined) {
+			console.log('socket manageGame erreur le socket recupere est undefined for :');
+			if (sPlayer1 === undefined)
+				console.log('PLAYER1');
+			if (sPlayer2 === undefined)
+				console.log('PLAYER2');
+			return;
+		}
 
-			//sPlayer1.emit('GAME_START', { gameState ,opponent: playerRight });
-			sPlayer1.emit('GAME_START', gameState, 'player_left');
-			sPlayer2.emit('GAME_START', gameState, 'player_right');
+		const gameState : Game = this.initializeGameState(playerLeft, playerRight);
 
+		changeBallSpeed(gameState, 0);
+		changeBallAngle(gameState, toRadians(45));
 
-			this.gameLoop(gameState, sPlayer1, sPlayer2);
+		this.activeGames.push([playerLeft, playerRight, gameState]);
 
-			//this.server.to(this.connectedClients(playerRight)).emit('GAME_START', { opponent: playerRight, gameState });
-			//this.server.to(playerRight).emit('GAME_START', { opponent: playerLeft, gameState });
+		sPlayer1.emit('GAME_START', gameState, 'player_left');
+		sPlayer2.emit('GAME_START', gameState, 'player_right');
 
-
-			//this.testPaddleMove();
-
+		this.gameLoop(gameState, sPlayer1, sPlayer2);
 	}
-
-
-
-
 
 	gameLoop(gameState: Game, player1Socket, player2Socket) {
 
@@ -199,15 +159,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 			let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
 
-
 			const ballX = gameState.ball.x;
 			const ballY = gameState.ball.y;
 
 			let scoreToWin = 5;
 
 			//// CONTACT AVEC PADDLES /////////////////////////////
-
-			//if (gameState.ball.y + ballRadius <= gameState.playerLeft.paddlePosition
 
 			// PADDLE GAUCHE //
 			//balle dans la zone du paddle en y :
@@ -222,7 +179,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 				// le centre vertical du paddle
 				let centre_paddle_Y = gameState.playerLeft.paddlePosition + (leftPaddle.height / 2);
-				let distance_ball_paddle_Y;
+				let distance_ball_paddle_Y: number;
 				//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
 				let quadrant = 1; //pour au dessus
 
@@ -234,7 +191,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					distance_ball_paddle_Y = centre_paddle_Y - ballY;
 
 				// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
-
 				let angle_impact = distance_ball_paddle_Y / (leftPaddle.height / 2);
 				angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
 
@@ -245,20 +201,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					else
 						changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
 				}
-
-				//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
-
 				if (angle_impact > 0.5) {
 					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
 					//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
-					//console.log('ratio[', ratioAcceleration, ']');
 					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
 					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
 				}
-				//changeBallAngle(toRadians(80));
-
-				//console.log('New speed : ', getBallSpeed());
-
 			}
 
 			// PADDLE DROIT //
@@ -297,84 +245,65 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 						changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
 				}
 
-				//console.log('angle{', angle_impact, '}'); //enfait angle_impact va jusqu a 1.2
-
 				if (angle_impact > 0.5) {
 					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
-					//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
-					//console.log('ratio[', ratioAcceleration, ']');
 					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
 					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
 				}
-				//changeBallAngle(toRadians(80));
-
-				//console.log('New speed : ', getBallSpeed());
 			}
 
 			//// CONTACT AVEC BORDS //////////////////////////////
-			//let for_test = wwidth / 2 + 160;
 
-			//newDx = -newDx;
-
-			// COLLISION BORDS HAUT / BAS
-			//CHANGE
-			//if (ballY > canvasRef.current.height - 10 || ballY <= 10)
 			if (ballY > hheight - 10 || ballY <= 10)
 				gameState.ball.dy *= -1;
-		//newDy = -newDy;
-		///////////////////////////////////////////////////////
 
-		let for_test = 0;
-		//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
-		//CHANGE
-		//if (ballX > canvasRef.current.width - 10 - for_test || ballX <= 10)
-		if (ballX > wwidth - 10 - for_test || ballX <= 10) {
-			//gameState.ball.dx *= -1;
-			gameState.ball.y = hheight / 2;
-			changeBallSpeed(gameState, 0); //fine tuning
-			//CHANGE
-			//if (ballX > canvasRef.current.width - 10 - for_test)
-			if (ballX > wwidth - 10 - for_test) {
-				gameState.ball.x = wwidth / 2 - 150;
-				changeBallAngle(gameState, toRadians(0));
-				gameState.playerLeft.score += 1;
+			//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
+			if (ballX > wwidth - 10 || ballX <= 10) {
+				//gameState.ball.dx *= -1;
+				gameState.ball.y = hheight / 2;
+				changeBallSpeed(gameState, 0); //fine tuning
+
+				if (ballX > wwidth - 10 ) {
+					gameState.ball.x = wwidth / 2 - 150;
+					changeBallAngle(gameState, toRadians(0));
+					gameState.playerLeft.score += 1;
+				}
+				else {
+					gameState.ball.x = wwidth / 2 + 150;
+					changeBallAngle(gameState, toRadians(180));
+					gameState.playerRight.score += 1;
+				}
+
+				player1Socket.emit('GAME_REFRESH_SCORE', gameState);
+				player2Socket.emit('GAME_REFRESH_SCORE', gameState);
+
+				if (gameState.playerLeft.score >= scoreToWin) {
+					player1Socket.emit('GAME_END', gameState.playerLeft.name);
+					player2Socket.emit('GAME_END', gameState.playerLeft.name);
+				}
+
+				if (gameState.playerRight.score >= scoreToWin) {
+					player1Socket.emit('GAME_END', gameState.playerRight.name);
+					player2Socket.emit('GAME_END', gameState.playerRight.name);
+				}
+
+				//////////////// GAME END ////////////////////
+
+				if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
+					clearInterval(intervalId);
+					console.log('---------- GAME END --------');
+					this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
+					return;
+				}
+
 			}
 			else {
-				gameState.ball.x = wwidth / 2 + 150;
-				changeBallAngle(gameState, toRadians(180));
-				gameState.playerRight.score += 1;
+				gameState.ball.x += gameState.ball.dx;
+				gameState.ball.y += gameState.ball.dy;
 			}
 
-			player1Socket.emit('GAME_REFRESH_SCORE', gameState);
-			player2Socket.emit('GAME_REFRESH_SCORE', gameState);
-
-			if (gameState.playerLeft.score >= scoreToWin) {
-				player1Socket.emit('GAME_END', gameState.playerLeft.name);
-				player2Socket.emit('GAME_END', gameState.playerLeft.name);
-			}
-
-			if (gameState.playerRight.score >= scoreToWin) {
-				player1Socket.emit('GAME_END', gameState.playerRight.name);
-				player2Socket.emit('GAME_END', gameState.playerRight.name);
-			}
-
-			//////////////// GAME END ////////////////////
-
-			if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
-				clearInterval(intervalId);
-				console.log('---------- GAME END --------');
-				this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
-				return;
-			}
-
-		}
-		else {
-			gameState.ball.x += gameState.ball.dx;
-			gameState.ball.y += gameState.ball.dy;
-		}
-
-		player1Socket.emit('GAME_REFRESH_BALL', gameState);
-		player2Socket.emit('GAME_REFRESH_BALL', gameState);
+			player1Socket.emit('GAME_REFRESH_BALL', gameState);
+			player2Socket.emit('GAME_REFRESH_BALL', gameState);
 
 		}, 10); // Met à jour toutes les 16 ms
 

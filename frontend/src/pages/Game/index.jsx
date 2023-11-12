@@ -70,7 +70,7 @@ export default function Game() {
 			setWinner(winner);
 		};
 
-		socket.emit('FIND_GAME', 'lalala');
+		socket.emit('FIND_GAME');
 		socket.on('GAME_START', gameStartHandler);
 		socket.on('GAME_REFRESH_PADDLE', gameRefreshPaddleHandler);
 		socket.on('GAME_REFRESH_BALL', gameRefreshBallHandler);
