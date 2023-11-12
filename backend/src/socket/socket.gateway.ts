@@ -134,7 +134,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const gameState : Game = this.initializeGameState(playerLeft, playerRight);
 
 		changeBallSpeed(gameState, 0);
-		changeBallAngle(gameState, toRadians(45));
+
+		if (Math.random() < 0.5)
+			changeBallAngle(gameState, toRadians(0));
+		else
+			changeBallAngle(gameState, toRadians(180));
 
 		this.activeGames.push([playerLeft, playerRight, gameState]);
 
@@ -146,166 +150,169 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	gameLoop(gameState: Game, player1Socket, player2Socket) {
 
-		let intervalId = setInterval(() => {
-
 			let wwidth = 800;
 			let hheight = 600;
 			let paddleHeight = 80;
 			let paddleWidth = 10;
 			let ballRadius = 10;
-
 			let ballAccelerationStack = 0.2;
-
-			let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
-			let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
-
-			const ballX = gameState.ball.x;
-			const ballY = gameState.ball.y;
-
 			let scoreToWin = 5;
+			let ballX: number;
+			let ballY: number;
 
-			//// CONTACT AVEC PADDLES /////////////////////////////
+			let leftPaddle = {};
+			let rightPaddle = {};
 
-			// PADDLE GAUCHE //
-			//balle dans la zone du paddle en y :
-			if ( (ballY - ballRadius <= gameState.playerLeft.paddlePosition + paddleHeight) //balle au dessus de la partie basse du paddle
-				&& (ballY + ballRadius >= gameState.playerLeft.paddlePosition) ) //balle au dessous de la partie haute du paddle
-			//balle dans la zone du paddle en x :
-			if (ballX - ballRadius <= leftPaddle.x + leftPaddle.width
-				&& ballX + ballRadius >= leftPaddle.x)
-			{
-				gameState.ball.dx *= -1;
-				//definir le nouvel angle :
+			let intervalId = setInterval(() => {
 
-				// le centre vertical du paddle
-				let centre_paddle_Y = gameState.playerLeft.paddlePosition + (leftPaddle.height / 2);
-				let distance_ball_paddle_Y: number;
-				//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
-				let quadrant = 1; //pour au dessus
+				leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
+				rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
 
-				if (ballY > centre_paddle_Y) {
-					distance_ball_paddle_Y = ballY - centre_paddle_Y;
-					quadrant = 0; // la balle tape au dessous du centre
-				}
-				else
-					distance_ball_paddle_Y = centre_paddle_Y - ballY;
+				ballX = gameState.ball.x;
+				ballY = gameState.ball.y;
 
-				// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
-				let angle_impact = distance_ball_paddle_Y / (leftPaddle.height / 2);
-				angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
 
-				//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
-				if (angle_impact > 0.3) {
-					if (quadrant === 0)
-						changeBallAngle(gameState, toRadians(angle_impact * 70));
+				//// CONTACT AVEC PADDLES /////////////////////////////
+
+				// PADDLE GAUCHE //
+				//balle dans la zone du paddle en y :
+				if ( (ballY - ballRadius <= gameState.playerLeft.paddlePosition + paddleHeight) //balle au dessus de la partie basse du paddle
+					&& (ballY + ballRadius >= gameState.playerLeft.paddlePosition) ) //balle au dessous de la partie haute du paddle
+				//balle dans la zone du paddle en x :
+				if (ballX - ballRadius <= leftPaddle.x + leftPaddle.width
+					&& ballX + ballRadius >= leftPaddle.x)
+				{
+					gameState.ball.dx *= -1;
+					//definir le nouvel angle :
+
+					// le centre vertical du paddle
+					let centre_paddle_Y = gameState.playerLeft.paddlePosition + (leftPaddle.height / 2);
+					let distance_ball_paddle_Y: number;
+					//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
+					let quadrant = 1; //pour au dessus
+
+					if (ballY > centre_paddle_Y) {
+						distance_ball_paddle_Y = ballY - centre_paddle_Y;
+						quadrant = 0; // la balle tape au dessous du centre
+					}
 					else
-						changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
+						distance_ball_paddle_Y = centre_paddle_Y - ballY;
+
+					// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+					let angle_impact = distance_ball_paddle_Y / (leftPaddle.height / 2);
+					angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+
+					//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
+					if (angle_impact > 0.3) {
+						if (quadrant === 0)
+							changeBallAngle(gameState, toRadians(angle_impact * 70));
+						else
+							changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
+					}
+					if (angle_impact > 0.5) {
+						let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
+						//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
+						changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
+						//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
+					}
 				}
-				if (angle_impact > 0.5) {
-					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
-					//ratioAcceleration = (ratioAcceleration - 0.5) * 2; //on passe ratioAcceleration entre 0 et 1;
-					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
-					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
-				}
-			}
 
-			// PADDLE DROIT //
-			if ( (ballY - ballRadius <= gameState.playerRight.paddlePosition + paddleHeight)
-				&& (ballY + ballRadius >= gameState.playerRight.paddlePosition))
-			if ( (ballX + ballRadius >= rightPaddle.x)
-				&& (ballX - ballRadius <= rightPaddle.x + rightPaddle.width) )
-			{
-				gameState.ball.dx *= -1;
-				//definir le nouvel angle :
+				// PADDLE DROIT //
+				if ( (ballY - ballRadius <= gameState.playerRight.paddlePosition + paddleHeight)
+					&& (ballY + ballRadius >= gameState.playerRight.paddlePosition))
+				if ( (ballX + ballRadius >= rightPaddle.x)
+					&& (ballX - ballRadius <= rightPaddle.x + rightPaddle.width) )
+				{
+					gameState.ball.dx *= -1;
+					//definir le nouvel angle :
 
-				// le centre vertical du paddle
-				let centre_paddle_Y = gameState.playerRight.paddlePosition + (rightPaddle.height / 2);
-				let distance_ball_paddle_Y;
-				//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
-				let quadrant = 1; //pour au dessus
+					// le centre vertical du paddle
+					let centre_paddle_Y = gameState.playerRight.paddlePosition + (rightPaddle.height / 2);
+					let distance_ball_paddle_Y;
+					//variable  pour savoir si la balle tape au dessus ou dessous du centre du paddle :
+					let quadrant = 1; //pour au dessus
 
-				if (ballY > centre_paddle_Y) {
-					distance_ball_paddle_Y = ballY - centre_paddle_Y;
-					quadrant = 0; // la balle tape au dessous du centre
-				}
-				else
-					distance_ball_paddle_Y = centre_paddle_Y - ballY;
-
-				// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
-
-				let angle_impact = distance_ball_paddle_Y / (rightPaddle.height / 2);
-				angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
-
-				let inversion = 180;
-				//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
-				if (angle_impact > 0.3) {
-					if (quadrant === 0)
-						changeBallAngle(gameState, toRadians(90 + angle_impact * 70));
+					if (ballY > centre_paddle_Y) {
+						distance_ball_paddle_Y = ballY - centre_paddle_Y;
+						quadrant = 0; // la balle tape au dessous du centre
+					}
 					else
-						changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
+						distance_ball_paddle_Y = centre_paddle_Y - ballY;
+
+					// L'angle_impact prendra une valeur de 0 si la balle tape au centre du paddle, jusqu a 1 si la balle tape totalement dans un coin, a partir de cela on va a la fois pouvoir determiner l' angle dans lequel la balle repartira mais aussi son acceleration
+
+					let angle_impact = distance_ball_paddle_Y / (rightPaddle.height / 2);
+					angle_impact *= 0.80; //pour ramener le maximum a 1 a la place de 1.2, plus simple 
+
+					let inversion = 180;
+					//on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
+					if (angle_impact > 0.3) {
+						if (quadrant === 0)
+							changeBallAngle(gameState, toRadians(90 + angle_impact * 70));
+						else
+							changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
+					}
+
+					if (angle_impact > 0.5) {
+						let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
+						changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
+						//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
+					}
 				}
 
-				if (angle_impact > 0.5) {
-					let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
-					changeBallSpeed(gameState, getBallSpeed(gameState) + 0.1 + (ratioAcceleration * ballAccelerationStack) ); //fine tuning
-					//on augmente systematiquement de 0.1 si l impact est > 0.5, et on augmente encore de 0 a 0.2 en plus en fonction de l angle
-				}
-			}
+				//// CONTACT AVEC BORDS //////////////////////////////
 
-			//// CONTACT AVEC BORDS //////////////////////////////
+				if (ballY > hheight - 10 || ballY <= 10)
+					gameState.ball.dy *= -1;
 
-			if (ballY > hheight - 10 || ballY <= 10)
-				gameState.ball.dy *= -1;
+				//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
+				if (ballX > wwidth - 10 || ballX <= 10) {
+					//gameState.ball.dx *= -1;
+					gameState.ball.y = hheight / 2;
+					changeBallSpeed(gameState, 0); //fine tuning
 
-			//// COLLISIONS BORDS DROITE / GAUCHE et reset position balle
-			if (ballX > wwidth - 10 || ballX <= 10) {
-				//gameState.ball.dx *= -1;
-				gameState.ball.y = hheight / 2;
-				changeBallSpeed(gameState, 0); //fine tuning
+					if (ballX > wwidth - 10 ) {
+						gameState.ball.x = wwidth / 2 - 150;
+						changeBallAngle(gameState, toRadians(0));
+						gameState.playerLeft.score += 1;
+					}
+					else {
+						gameState.ball.x = wwidth / 2 + 150;
+						changeBallAngle(gameState, toRadians(180));
+						gameState.playerRight.score += 1;
+					}
 
-				if (ballX > wwidth - 10 ) {
-					gameState.ball.x = wwidth / 2 - 150;
-					changeBallAngle(gameState, toRadians(0));
-					gameState.playerLeft.score += 1;
+					player1Socket.emit('GAME_REFRESH_SCORE', gameState);
+					player2Socket.emit('GAME_REFRESH_SCORE', gameState);
+
+					if (gameState.playerLeft.score >= scoreToWin) {
+						player1Socket.emit('GAME_END', gameState.playerLeft.name);
+						player2Socket.emit('GAME_END', gameState.playerLeft.name);
+					}
+
+					if (gameState.playerRight.score >= scoreToWin) {
+						player1Socket.emit('GAME_END', gameState.playerRight.name);
+						player2Socket.emit('GAME_END', gameState.playerRight.name);
+					}
+
+					//////////////// GAME END ////////////////////
+
+					if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
+						clearInterval(intervalId);
+						this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
+						return;
+					}
+
 				}
 				else {
-					gameState.ball.x = wwidth / 2 + 150;
-					changeBallAngle(gameState, toRadians(180));
-					gameState.playerRight.score += 1;
+					gameState.ball.x += gameState.ball.dx;
+					gameState.ball.y += gameState.ball.dy;
 				}
 
-				player1Socket.emit('GAME_REFRESH_SCORE', gameState);
-				player2Socket.emit('GAME_REFRESH_SCORE', gameState);
+				player1Socket.emit('GAME_REFRESH_BALL', gameState);
+				player2Socket.emit('GAME_REFRESH_BALL', gameState);
 
-				if (gameState.playerLeft.score >= scoreToWin) {
-					player1Socket.emit('GAME_END', gameState.playerLeft.name);
-					player2Socket.emit('GAME_END', gameState.playerLeft.name);
-				}
-
-				if (gameState.playerRight.score >= scoreToWin) {
-					player1Socket.emit('GAME_END', gameState.playerRight.name);
-					player2Socket.emit('GAME_END', gameState.playerRight.name);
-				}
-
-				//////////////// GAME END ////////////////////
-
-				if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
-					clearInterval(intervalId);
-					console.log('---------- GAME END --------');
-					this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
-					return;
-				}
-
-			}
-			else {
-				gameState.ball.x += gameState.ball.dx;
-				gameState.ball.y += gameState.ball.dy;
-			}
-
-			player1Socket.emit('GAME_REFRESH_BALL', gameState);
-			player2Socket.emit('GAME_REFRESH_BALL', gameState);
-
-		}, 10); // Met à jour toutes les 16 ms
+			}, 10); // Met à jour toutes les 16 ms
 
 	}
 
@@ -313,46 +320,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('paddle_move')
 	async testPaddleMove(client: Socket, payload: any) {
 
-		console.log('----- LISTEN paddle up ---------');
-
 		//securite obligee pour utiliser username comme argument plus tard en temps que String
-		//let username : String;
-		//if (typeof client.handshake.query.username === String)
 		if (Array.isArray(client.handshake.query.username)) {
 			console.log('Erreur paddle up');
 			return;
 		}
 		let username : string = client.handshake.query.username ;
-		//else {
-		//	console.log('Error paddle up username type');
-		//	return;
-		//}
 
 		let gameState : Game = null;
 
 		let playerSide : string = this.getPlayerSide(username);
 
-
-		for (const [playerLeft, playerRight, game] of this.activeGames) {
-			{
-				console.log(`Player Left: ${playerLeft}, Player Right: ${playerRight}, Game: ${game}`);
-				if (username === playerLeft || username === playerRight)
-					{
-						//if (username === playerLeft)
-						//	playerSide = 'LEFT';
-						//if (username === playerRight)
-						//	playerSide = 'RIGHT';
-						gameState = game;
-						break; //check
-					}
-			}
-		}
+		gameState = this.getPlayerCurrentGame(username);
 
 		if (!gameState) {
-			console.log('suscribe paddle_move : player not in an active game');
+			console.log('Error: player has no current game');
 			return;
 		}
 
+		//La vitesse de deplacement du paddle augmente avec l augmentation de la vitesse de la balle
 		let paddleStep = 8 + getBallSpeed(gameState) * 7;
 
 		if (payload === 'UP') {
@@ -360,8 +346,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				gameState.playerLeft.paddlePosition -= paddleStep;
 			else if (playerSide === 'RIGHT')
 				gameState.playerRight.paddlePosition -= paddleStep;
-			else
-				throw new Error('paddle_mode');
+			else {
+				console.log('Error: paddle_move');
+				return;
+			}
 		}
 
 		if (payload === 'DOWN') {
@@ -369,20 +357,28 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				gameState.playerLeft.paddlePosition += paddleStep;
 			else if (playerSide === 'RIGHT')
 				gameState.playerRight.paddlePosition += paddleStep;
-			else
-				throw new Error('paddle_mode');
+			else {
+				console.log('Error: paddle_move');
+				return;
+			}
 		}
 
-		console.log(username, ' === ', this.getOpponent(username));
-		//console.log(this.connectedClients.get(this.getOpponent(username)));
-
+		//ajouter gestion erreur si on ne peut pas get que renvoi connectedClients (ne devrait pas se produire mais au cas ou)
 		this.connectedClients.get(username).emit('GAME_REFRESH_PADDLE', gameState);
 		this.connectedClients.get(this.getOpponent(username)).emit('GAME_REFRESH_PADDLE', gameState);
 	}
 
+	getPlayerCurrentGame(player: string) : Game {
+		for (const [playerLeft, playerRight, game] of this.activeGames) {
+			if (player === playerLeft || player === playerRight) {
+				return game;
+			}
+		}
+		return null;
+	}
+
 	getOpponent(player: string) : string
 	{
-
 		for (const [playerLeft, playerRight, game] of this.activeGames) {
 			if (player === playerLeft)
 				return playerRight;
@@ -424,8 +420,6 @@ type Game = {
 	ball: {x: number, y: number, dx: number, dy: number}
 };
 
-//let minSpeedBall = 4;
-//let maxSpeedBall = 11;
 let minSpeedBall = 4;
 let maxSpeedBall = 9;
 
@@ -467,5 +461,4 @@ function changeBallAngle (gameState: Game, theta: number) {
 function toRadians(degrees: number) {
 	return degrees * (Math.PI / 180);
 }
-
 
