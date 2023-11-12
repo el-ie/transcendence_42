@@ -7,16 +7,16 @@ import React, { useRef, useEffect, useState } from 'react';
 
 export default function Game() {
 
-	//const [reloadPage, setReloadPage] = useState(false);
 
 	const socket =  useSocket();
-
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
 		playerRight: { name: string, score: number, paddlePosition: number },
 		ball: {x: number, y: number, dx: number, dy: number}
 	};
+
+	const [readyToPlay, setReadyToPlay] = useState(false);
 
 	const [gameState, setGameState] = useState(null);
 
@@ -38,9 +38,10 @@ export default function Game() {
 		ballRef.current.dy = gameState.ball.dy;
 	}
 
+
 	useEffect( () => {
 
-		if (!socket || gameEnd)
+		if (!readyToPlay || !socket || gameEnd)
 			return;
 
 		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
@@ -84,7 +85,7 @@ export default function Game() {
 				socket.off('GAME_REFRESH_SCORE', gameRefreshScoreHandler);
 			};
 
-	}, [socket]);
+	}, [socket, readyToPlay]);
 
 
 	//const [lastMoveTime, setLastMoveTime] = useState(0);
@@ -519,10 +520,22 @@ export default function Game() {
 				//setReloadPage(true);
 			};
 
-			//if (!reloadPage) {
+			const handleReadyToPlay = () => {
+				setReadyToPlay(true);
+			}
+
+			if (!readyToPlay) {
+				return (
+					<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
+					<button onClick={handleReadyToPlay} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent </button>
+					</div>
+				);
+			}
+
 			return (
 
 				<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
+
 
 				{!gameState && !gameEnd && <h2> Waiting for opponent ... </h2>}
 
@@ -532,7 +545,7 @@ export default function Game() {
 
 				{gameState && <h1 style={{fontSize: '100px'}}>{gameState.playerLeft.score}      -      {gameState.playerRight.score}</h1>}
 
-				{gameEnd && <button onClick={handleReload} style={{ padding: '15px 25px', borderRadius: '4px'}} > Play again </button>}
+				{gameEnd && <button onClick={handleReload} style={{ padding: '15px 25px', borderRadius: '4px'}} > Back to game menu </button>}
 
 				</div>
 			);
