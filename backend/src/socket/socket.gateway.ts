@@ -203,7 +203,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const ballX = gameState.ball.x;
 			const ballY = gameState.ball.y;
 
-			let scoreToWin = 2;
+			let scoreToWin = 5;
 
 			//// CONTACT AVEC PADDLES /////////////////////////////
 
