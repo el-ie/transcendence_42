@@ -3,13 +3,14 @@ import { useSocket } from '../../components/Socket';
 //import { useEffect, useState } from "react"
 import React, { useRef, useEffect, useState } from 'react';
 
+//import { Navigate } from 'react-router-dom'
+
 export default function Game() {
 
+	//const [reloadPage, setReloadPage] = useState(false);
 
 	const socket =  useSocket();
 
-	if (!socket)
-		throw new Error('React game: socket problem');//check
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
@@ -18,6 +19,9 @@ export default function Game() {
 	};
 
 	const [gameState, setGameState] = useState(null);
+
+	const [gameEnd, setGameEnd] = useState(false);
+	const [winner, setWinner] = useState(null);
 
 	const [playerSide, setPlayerSide] = useState(null); //cote du joueur
 
@@ -36,7 +40,7 @@ export default function Game() {
 
 	useEffect( () => {
 
-		if (!socket)
+		if (!socket || gameEnd)
 			return;
 
 		const gameStartHandler = (gameGivenState: Game, playerGivenSide: string) => {
@@ -60,11 +64,17 @@ export default function Game() {
 			actualizeBallPos(gameGivenState);
 		};
 
+		const gameEndHandler = (winner: string) => {
+			setGameEnd(true);
+			setWinner(winner);
+		};
+
 		socket.emit('FIND_GAME', 'lalala');
 		socket.on('GAME_START', gameStartHandler);
 		socket.on('GAME_REFRESH_PADDLE', gameRefreshPaddleHandler);
 		socket.on('GAME_REFRESH_BALL', gameRefreshBallHandler);
 		socket.on('GAME_REFRESH_SCORE', gameRefreshScoreHandler);
+		socket.on('GAME_END', gameEndHandler);
 
 		// FAUT IL IMPLEMENTER SOCKET OFF ?
 			return () => {
@@ -207,9 +217,12 @@ export default function Game() {
 
 	useEffect(() => {
 
-		if (!gameState)
-		{
+		if (!gameState) {
 			console.log('UPDATE: NO GAME STATE');
+			return;
+		}
+		if (gameEnd) {
+			console.log('Game ended')
 			return;
 		}
 		//const canvas = canvasRef.current;
@@ -461,7 +474,7 @@ export default function Game() {
 			cancelAnimationFrame(animation_id);
 		}
 
-	}, [gameState, ballRef]); //AJOUT DE BALLREF ////////////////////////////////////////////////
+	}, [gameState, ballRef, gameEnd]); //AJOUT DE BALLREF ////////////////////////////////////////////////
 
 				const changeBallSpeed = (newSpeed) => {
 
@@ -501,20 +514,47 @@ export default function Game() {
 				return degrees * (Math.PI / 180);
 			}
 
+			const handleReload = () => {
+				window.location.reload();
+				//setReloadPage(true);
+			};
+
+			//if (!reloadPage) {
 			return (
 
-				<>
-				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
-				<canvas ref={canvasRef} width={wwidth} height={hheight} />
-				{playerSide && <p>X</p>}
-				</div>
-				<div>
-				{gameState && <h1 style={{position: 'relative', textAlign: 'center', fontSize: '100px', marginTop: '-100px', paddingTop: '-100px', whiteSpace: 'pre'}}>{gameState.playerLeft.score}      -      {gameState.playerRight.score}</h1>}
-				</div>
-				</>
-			);
-}
+				<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
 
-//export default Pong;
+				{!gameState && !gameEnd && <h2> Waiting for opponent ... </h2>}
+
+				{gameEnd && winner && <h1 style={{fontSize: '50px'}}>GAME WINNED BY {winner} </h1>}
+
+				{!gameEnd && <canvas ref={canvasRef} width={wwidth} height={hheight} />}
+
+				{gameState && <h1 style={{fontSize: '100px'}}>{gameState.playerLeft.score}      -      {gameState.playerRight.score}</h1>}
+
+				{gameEnd && <button onClick={handleReload} style={{ padding: '15px 25px', borderRadius: '4px'}} > Play again </button>}
+
+				</div>
+			);
+			//}
+			//else  {
+			//	return (
+			//		<Navigate to="/game" replace /> 
+			//	);
+			//}
+}
+//<>
+	//{!gameEnd && <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
+		//<canvas ref={canvasRef} width={wwidth} height={hheight} />
+		//</div>}
+//<div style={{position: 'relative', textAlign: 'center', marginTop: '-200px', paddingTop: '-200px', whiteSpace: 'pre'}}>
+	//
+	//{gameEnd && winner && <h1 style={{position: 'relative', fontSize: '50px'}}>GAME WINNED BY {winner} </h1>}
+//{gameState && <h1 style={{position: 'relative', fontSize: '100px'}}>{gameState.playerLeft.score}      -      {gameState.playerRight.score}</h1>}
+//
+	//</div>
+	//</>
+
+	//export default Pong;
 
 

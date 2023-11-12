@@ -186,7 +186,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	gameLoop(gameState: Game, player1Socket, player2Socket) {
 
-		let idontknow = setInterval(() => {
+		let intervalId = setInterval(() => {
 
 			let wwidth = 800;
 			let hheight = 600;
@@ -202,6 +202,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 			const ballX = gameState.ball.x;
 			const ballY = gameState.ball.y;
+
+			let scoreToWin = 2;
 
 			//// CONTACT AVEC PADDLES /////////////////////////////
 
@@ -346,16 +348,30 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			player1Socket.emit('GAME_REFRESH_SCORE', gameState);
 			player2Socket.emit('GAME_REFRESH_SCORE', gameState);
 
+			if (gameState.playerLeft.score >= scoreToWin) {
+				player1Socket.emit('GAME_END', gameState.playerLeft.name);
+				player2Socket.emit('GAME_END', gameState.playerLeft.name);
+			}
+
+			if (gameState.playerRight.score >= scoreToWin) {
+				player1Socket.emit('GAME_END', gameState.playerRight.name);
+				player2Socket.emit('GAME_END', gameState.playerRight.name);
+			}
+
+			//////////////// GAME END ////////////////////
+
+			if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
+				clearInterval(intervalId);
+				console.log('---------- GAME END --------');
+				this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
+				return;
+			}
+
 		}
 		else {
 			gameState.ball.x += gameState.ball.dx;
 			gameState.ball.y += gameState.ball.dy;
 		}
-
-
-
-		//gameState.ball.x += gameState.ball.dx;
-		//gameState.ball.y += gameState.ball.dy;
 
 		player1Socket.emit('GAME_REFRESH_BALL', gameState);
 		player2Socket.emit('GAME_REFRESH_BALL', gameState);
