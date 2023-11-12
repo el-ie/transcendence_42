@@ -150,27 +150,25 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	gameLoop(gameState: Game, player1Socket, player2Socket) {
 
+			let scoreToWin = 5;
+
 			let wwidth = 800;
 			let hheight = 600;
 			let paddleHeight = 80;
 			let paddleWidth = 10;
 			let ballRadius = 10;
 			let ballAccelerationStack = 0.2;
-			let scoreToWin = 5;
+
+			let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight};
+			let	rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight };
+
 			let ballX: number;
 			let ballY: number;
 
-			let leftPaddle = {};
-			let rightPaddle = {};
-
 			let intervalId = setInterval(() => {
-
-				leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
-				rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
 
 				ballX = gameState.ball.x;
 				ballY = gameState.ball.y;
-
 
 				//// CONTACT AVEC PADDLES /////////////////////////////
 
