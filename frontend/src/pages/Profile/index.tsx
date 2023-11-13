@@ -1,11 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "./profile.css"
 
 export default function Profile() {
 
     const {userId} = useParams();
     const [user, setUser] = useState(null);
+    const [timestamp, setTimestamp] = useState(Date.now());
+    const urlAvatar = user ? `http://localhost:3001/users/${user.id}/avatar?timestamp=${timestamp}` : "";
 
     useEffect(() => {
         const url = "http://localhost:3001/users/otherById?id=" + userId;
@@ -21,10 +24,13 @@ export default function Profile() {
     }, [userId])
 
     return (
-        <div>
-            <span>userId: {userId}</span>
-            {user && <div>
-            </div>}
-        </div>
+        (user && <div className="profile">
+            <div className="infos">
+                <img className="avatar" src={urlAvatar} alt="avatar" />
+                <span>{user.login}</span>
+            </div>
+        </div> )
     )
 }
+
+// const urlAvatar = `http://localhost:3001/users/${me.id}/avatar?timestamp=${timestamp}`;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import UserProfile from "./userProfile";
+import "./style.css"
 import axios from "axios";
 
 function FriendList({list, handleSelect}) {
@@ -8,16 +9,20 @@ function FriendList({list, handleSelect}) {
             <h2>Friend List</h2>
             <ul className="FriendList">
                 {list.map((user: any) => (
-                    <li key={user.id + "a"} onClick={() => handleSelect(user)}>{user.login}</li>
+                    <li key={user.id + "a"} onClick={() => handleSelect(user)}>
+                    {user.isConnected ? <span className="green">¤£</span> : <span className="gray">££</span>}
+                    {user.login}
+                    </li>
                 ))}
             </ul>
         </div>
     )
 }
 
-export default function Friends({login, blockeds, handleBlock, handleUnblock}) {
+export default function Friends({login, blockeds, handleBlock, handleUnblock, socket}) {
     const [user, setUser] = useState(null); //maintenant, user sera l'utilisateur complet
     const [friends, setFriends] = useState([]);
+    const [reload, setReload] = useState(false);
 
 
     useEffect (() => {
@@ -25,14 +30,50 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock}) {
         axios.get(url_friends, {withCredentials: true})
         .then((response) => {
             if (response.data.users) {
-                console.log("friends", response.data.users);
+                // console.log("je get friend");
+                // console.log(response.data.users);
                 setFriends(response.data.users);
             }
             else
                 console.log(response.data.error);
         })
-    }, [login])
+        // useEffect(() => {
+            // const handleConnect = () => {
+            //     console.log("je recois levent connection");
+            //     setReload(prevReload => !prevReload);
+            //   };
+          
+            // socket.on('connection', handleConnect);
+          
+            // return () => {
+            //   socket.off('message', handleConnect);
+            // };
+    }, [login, reload, socket])
 
+    useEffect(() => {
+        const handleConnect = () => {
+            // console.log("je recois levent connection");
+            const url_friends = "http://localhost:3001/users/friends";
+            axios.get(url_friends, {withCredentials: true})
+            .then((response) => {
+            if (response.data.users) {
+                // console.log("je get friend");
+                // console.log(response.data.users);
+                setFriends(response.data.users);
+                // console.log("friends changés");
+            }
+            else
+                console.log(response.data.error);
+        })
+          };
+      
+        socket.on('connection', handleConnect);
+      
+        return () => {
+          socket.off('message', handleConnect);
+        };
+      }, [socket]);
+    
     function handleAdd(user: any) {
         const temp = [...friends];
         temp.push(user);

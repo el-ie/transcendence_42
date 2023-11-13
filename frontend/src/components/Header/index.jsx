@@ -11,7 +11,7 @@ function Settings({me, onClose}) {
     const [login, setLogin] = useState("");
     const [retour1, setRetour1] = useState("");
     const [retour2, setRetour2] = useState("");
-    const [timestamp, setTimestamp] = useState(Date.now()); // Ajout de la clé timestamp
+    const [timestamp, setTimestamp] = useState(Date.now());
     const urlAvatar = `http://localhost:3001/users/${me.id}/avatar?timestamp=${timestamp}`;
 
     function handleClickUpload() {

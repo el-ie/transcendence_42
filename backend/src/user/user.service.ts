@@ -30,6 +30,38 @@ export class UserService {
         return (user.username);
     }
 
+    async connect(username: string) {
+        try {
+            const user = await this.prisma.user.update({
+                where : {
+                    username,
+                },
+                data: {
+                    isConnected: true,
+                }
+            })
+        }
+        catch {
+            console.log("erreur connect");
+        }
+    }
+
+    async disconnect(username: string) {
+        try {
+            const user = await this.prisma.user.update({
+                where : {
+                    username,
+                },
+                data: {
+                    isConnected: false,
+                }
+            })
+        }
+        catch {
+            console.log("erreur disconnect");
+        }
+    }
+
     async getLoginById(id: number): Promise<string> {
         const user = await this.prisma.user.findUniqueOrThrow({
             where : {

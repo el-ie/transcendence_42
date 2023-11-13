@@ -1,0 +1,16 @@
+.green {
+    color: transparent;
+    background-color: green;
+    font-size: 700;
+    border-radius: 100%;
+    margin: 4px;
+
+}
+
+.gray{
+    color: transparent;
+    background-color: rgb(116, 128, 116);
+    font-size: 700;
+    border-radius: 100%;
+    margin: 4px;
+}

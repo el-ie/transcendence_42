@@ -1,0 +1,16 @@
+.profile {
+    position: fixed;
+    top: 33%;
+    left: 33%;
+    height: 33%;
+    width: 33%;
+    color: white;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: rgb(86, 24, 145);
+}
+
+.avatar {
+    height: 100px;
+    width: 100px;
+}

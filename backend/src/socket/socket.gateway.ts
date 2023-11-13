@@ -18,19 +18,26 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private connectedClients = new Map<string, Socket>();
 
-  handleConnection(client: Socket) {
-    // console.log('socket emise:', client);
+  async handleConnection(client: Socket) {
     const username = client.handshake.query.username as string;
+    const userService = this.moduleRef.get(UserService, {strict: false});
+    await userService.connect(username);
     this.connectedClients.set(username, client);
+    this.server.emit("connection");
   }
 
-  handleDisconnect(client: Socket) {
-    for (const [userLogin, socket] of this.connectedClients) {
+  async handleDisconnect(client: Socket) {
+
+    const userService = this.moduleRef.get(UserService, {strict: false});
+    for (const [username, socket] of this.connectedClients) {
       if (socket === client) {
-        this.connectedClients.delete(userLogin);
+        this.connectedClients.delete(username);
+        await userService.disconnect(username);
+        console.log("user disconnected");
         break;
       }
     }
+    this.server.emit("connection");
   }
 
   sendEvent(username: string, eventName: string, data: any) {
@@ -38,8 +45,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (socket)
       socket.emit(eventName, data);
   }
-
-  //a changer: dans les messages il ne faut pas stocker senderLogin mais senderUsername, car il ne change pas.(pour les blocked)
 
   @SubscribeMessage('message')
   async handleMessage(client: Socket, payload: any) {

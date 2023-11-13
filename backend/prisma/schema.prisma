@@ -39,6 +39,7 @@ model User {
   sessionId String
   twoFaEnabled Boolean @default(false)
   twoFaSecret String @default("")
+  isConnected Boolean @default(false)
   
   @@map("users")
 }

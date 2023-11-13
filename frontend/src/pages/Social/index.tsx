@@ -91,7 +91,7 @@ export default function Social() {
             {login !== '' &&  socket !== null && <div className="social">
                 <Channels handleSelect={(channel: any) => selectChan(channel)} login={login} currentChan={currentChan} socket={socket}/>
                 <Chat channel={currentChan} login={login} socket={socket} handleLeave={handleLeave} handleDelete={handleDelete} blockeds={blockeds}/>
-                <Friends login={login} blockeds={blockeds} handleBlock={handleBlock} handleUnblock={handleUnblock}/>
+                <Friends login={login} blockeds={blockeds} handleBlock={handleBlock} handleUnblock={handleUnblock} socket={socket}/>
             </div> }
             {login !== '' && <span>hello :{login}</span>}
         </div>
