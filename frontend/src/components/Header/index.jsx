@@ -63,65 +63,69 @@ function Settings({me, onClose}) {
         })
     }
 
+	async function handleDisconnect() {
+		await axios.get('http://localhost:3001/auth/delete_cookie', { withCredentials: true });
+		window.location.reload();
+	}
 
-    return (
-        <div className="popup">
-            <button className="closeButton" onClick={onClose}>x</button>
-            <button>Disconect</button>
-            <div className="row">
-                <span>Nickname: {myLogin}</span>
-                <button onClick={() => setChangeLogin(!changeLogin)}>change</button>
-            </div>
-            {changeLogin && 
-            <div>
-                <input type="text" onChange={(event) => setLogin(event.target.value)}/>
-                <button onClick={() => handleClickChange()}>change</button><br/>
-                {retour1 !== "" && <span>{retour1}</span>}
-                
-            </div>
-            }
-            <div className="row">
-                <img className="avatar" src={urlAvatar} alt="avatar" />
-                <button onClick={() => setChangeAvatar(!changeAvatar)}>Change</button><br />
-            </div>
-            {changeAvatar && 
-            <div>
-                <input type="file" onChange={(event) => setFile(event.target.files[0])}/>
-                <button onClick={() => handleClickUpload()}>Upload</button><br/>
-                {retour2 !== "" && <span>{retour2}</span>}
-                
-            </div>
-            }
-        </div>
-    )
+	return (
+		<div className="popup">
+		<button className="closeButton" onClick={onClose}>x</button>
+		<button onClick={handleDisconnect}>Disconect</button>
+		<div className="row">
+		<span>Nickname: {myLogin}</span>
+		<button onClick={() => setChangeLogin(!changeLogin)}>change</button>
+		</div>
+		{changeLogin && 
+			<div>
+			<input type="text" onChange={(event) => setLogin(event.target.value)}/>
+			<button onClick={() => handleClickChange()}>change</button><br/>
+			{retour1 !== "" && <span>{retour1}</span>}
+
+			</div>
+		}
+		<div className="row">
+		<img className="avatar" src={urlAvatar} alt="avatar" />
+		<button onClick={() => setChangeAvatar(!changeAvatar)}>Change</button><br />
+		</div>
+		{changeAvatar && 
+			<div>
+			<input type="file" onChange={(event) => setFile(event.target.files[0])}/>
+			<button onClick={() => handleClickUpload()}>Upload</button><br/>
+			{retour2 !== "" && <span>{retour2}</span>}
+
+			</div>
+		}
+		</div>
+	)
 }
 
 export default function Header() {
-    const [me, setMe] = useState(null);
-    const [params, setParams] = useState(false);
+	const [me, setMe] = useState(null);
+	const [params, setParams] = useState(false);
 
-    useEffect(() => {
-        const url_get_user = "http://localhost:3001/users/me"
-        axios.get(url_get_user, {withCredentials: true})
-        .then((response) => {
-            setMe(response.data);
-        })
-    }, [])
+	useEffect(() => {
+		const url_get_user = "http://localhost:3001/users/me"
+		axios.get(url_get_user, {withCredentials: true})
+			.then((response) => {
+				setMe(response.data);
+			})
+	}, [])
 
-    function handleClose() {
-        setParams(false);
-    }
-    // console.log("params: ", params);
+	function handleClose() {
+		setParams(false);
+	}
+	// console.log("params: ", params);
 
-    return(
-        <nav>
-            <Link to="/Home">Home</Link>
-            <Link to="/Game">Game</Link>
-            <Link to="/Social">Social</Link>
-            {me && <Link to={`/Profile/${me.id}`}>Profile</Link>}
-            <button onClick={() => setParams(!params)}>🛠️</button>
-            {me && params && <Settings me={me} onClose={handleClose}/>}
+	return(
+		<nav>
+		<Link to="/Home">Home</Link>
+		<Link to="/Game">Game</Link>
+		<Link to="/Social">Social</Link>
+		{me && <Link to={`/Profile/${me.id}`}>Profile</Link>}
+		<button onClick={() => setParams(!params)}>🛠️</button>
+		{me && params && <Settings me={me} onClose={handleClose}/>}
 
-        </nav>
-    )
+		</nav>
+	)
 }

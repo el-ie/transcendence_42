@@ -14,6 +14,12 @@ export class AuthController{
 	//////////////// ROUTES AUTHENTIFICATION API 42 ////////////////
 	// ces routes permettent de declencher l authentification basique a l aide de l api de 42
 
+	@Get('delete_cookie')
+	deleteCookie(@Res() res) {
+		res.cookie('AUTH_TOKEN', '', { expires: new Date(0) });
+		res.cookie('TWOFA_TOKEN', '', { expires: new Date(0) });
+		res.send();
+	}
 	/* CALL API Le decorateur Public est necessaire pour que la route puisse etre accessible sans passer par le guard jwt puisque l'utilisateur n'est pas encore authentifie */
 		@Public()
 	@UseGuards(AuthGuard('42strat'))
