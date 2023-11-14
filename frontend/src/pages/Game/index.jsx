@@ -22,6 +22,8 @@ export default function Game() {
 	const [isKeyUpPressed, setIsKeyUpPressed] = useState(false);
 	const [isKeyDownPressed, setIsKeyDownPressed] = useState(false);
 
+	const [boostedMode, setBoostedMode] = useState(false);
+
 	const ballRef = useRef({ x: 400 , y: 100 , dx: 0, dy: 0 });
 
 	function actualizeBallPos(gameState: Game) {
@@ -55,7 +57,9 @@ export default function Game() {
 			setWinner(winner);
 		};
 
-		socket.emit('FIND_GAME');
+		socket.emit('FIND_GAME', boostedMode);
+
+
 		socket.on('GAME_START', gameStartHandler);
 		socket.on('GAME_REFRESH_PADDLE', gameRefreshPaddleHandler);
 		socket.on('GAME_REFRESH_BALL', gameRefreshBallHandler);
@@ -70,7 +74,7 @@ export default function Game() {
 				socket.off('GAME_REFRESH_SCORE', gameRefreshScoreHandler);
 			};
 
-	}, [socket, readyToPlay]);
+	}, [socket, readyToPlay, boostedMode]);
 
 	///////////// CAPTURE KEYBOARD && VERIFICATION VALID MOVE /////////////
 
@@ -222,10 +226,17 @@ export default function Game() {
 		setReadyToPlay(true);
 	}
 
+	const handleReadyToPlayBoosted = () => {
+		setBoostedMode(true);
+		setReadyToPlay(true);
+	}
+
 	if (!readyToPlay) {
 		return (
-			<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
-			<button onClick={handleReadyToPlay} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent </button>
+			<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
+			<button onClick={handleReadyToPlay} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent CLASSIC MODE </button>
+			<br /> <br /> <br /> <br /> <br />
+			<button onClick={handleReadyToPlayBoosted} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent BOOSTED MODE</button>
 			</div>
 		);
 	}
@@ -247,41 +258,3 @@ export default function Game() {
 		</div>
 	);
 }
-
-//	const changeBallSpeed = (newSpeed) => {
-	//
-		//		// fine tuning
-	//		newSpeed = (newSpeed * (maxSpeedBall - minSpeedBall)) + minSpeedBall;
-	//		if (newSpeed > maxSpeedBall)
-		//			newSpeed = maxSpeedBall;
-	//
-		//		const currentDx = ballRef.current.dx;
-	//		const currentDy = ballRef.current.dy;
-	//
-		//		const currentAngle = Math.atan2(currentDy, currentDx);
-	//
-		//		ballRef.current.dx = newSpeed * Math.cos(currentAngle);
-	//		ballRef.current.dy = newSpeed * Math.sin(currentAngle);
-	//	}
-//
-	//const getBallSpeed = () => {
-		//	const currentDx = ballRef.current.dx;
-		//	const currentDy = ballRef.current.dy;
-		//	let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
-		//
-			//	let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
-		//
-			//	return speed_finetuned;
-		//}
-//const changeBallAngle = (theta) => {
-	//	const currentDx = ballRef.current.dx;
-	//	const currentDy = ballRef.current.dy;
-	//	const currentSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
-	//
-		//	ballRef.current.dx = currentSpeed * Math.cos(theta);
-	//	ballRef.current.dy = currentSpeed * Math.sin(theta);
-	//}
-//
-	//function toRadians(degrees) {
-		//	return degrees * (Math.PI / 180);
-		//}

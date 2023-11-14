@@ -48,10 +48,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	  if (this.isInMatchmakingQueue(username))
 		  this.matchmakingQueue = this.matchmakingQueue.filter(player => player !== username);
+	  
+	  if (this.isInMatchmakingQueueBoosted(username))
+		  this.matchmakingQueueBoosted = this.matchmakingQueueBoosted.filter(player => player !== username);
 
 	  if (this.isInActiveGame(username)) {
 
 		  const currentGame = this.getPlayerCurrentGame(username);
+		  if (!currentGame)
+			  return;
 		  currentGame.interruption = true; //stopper la loop du jeu
 
 		  let opponent: string = this.getOpponent(username);
@@ -119,10 +124,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private matchmakingQueue: string[] = [];
 
+  private matchmakingQueueBoosted: string[] = [];
+
   private activeGames: [string, string, Game][] = [];
 
   @SubscribeMessage('FIND_GAME')
-  async handleLaunchGame(client: Socket) {
+  async handleLaunchGame(client: Socket, boostedMode: boolean) {
 
 	  let username = client.handshake.query.username;
 
@@ -142,26 +149,42 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  if (player == username)
 			  return;
 	  }
+
+	  for (const player of this.matchmakingQueueBoosted) {
+		  if (player == username)
+			  return;
+	  }
 	  //check si l username est deja dans un activeGames 
 	  for (const game of this.activeGames) {
 		  if (game[0] === username || game[1] === username)
 			  return;
 	  }
 
-	  this.matchmakingQueue.push(username);
+	  if (boostedMode)
+		  this.matchmakingQueueBoosted.push(username);
+	  else
+		  this.matchmakingQueue.push(username);
 	  //console.log(username, ' added : ', this.matchmakingQueue);
+
+	  if (boostedMode && this.matchmakingQueueBoosted.length >= 2) {
+		  const playerLeft = this.matchmakingQueueBoosted.shift();
+		  const playerRight = this.matchmakingQueueBoosted.shift();
+
+		  this.launchGame(playerLeft, playerRight, true);
+	  }
 
 	  if (this.matchmakingQueue.length >= 2) {
 		  const playerLeft = this.matchmakingQueue.shift();
 		  const playerRight = this.matchmakingQueue.shift();
 
-		  this.launchGame(playerLeft, playerRight);
+		  this.launchGame(playerLeft, playerRight, false);
 	  }
+
 
   }
 
 
-  async launchGame(playerLeft: string, playerRight: string) {
+  async launchGame(playerLeft: string, playerRight: string, boostedMode: boolean) {
 
 	  const sPlayer1 = this.connectedClients.get(playerLeft);
 	  const sPlayer2 = this.connectedClients.get(playerRight);
@@ -183,7 +206,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  return;
 	  }
 
-	  const gameState : Game = this.initializeGameState(playerLeft, playerRight, loginLeft, loginRight);
+	  const gameState : Game = this.initializeGameState(playerLeft, playerRight, loginLeft, loginRight, boostedMode);
 
 	  changeBallSpeed(gameState, 0);
 
@@ -361,7 +384,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  }
 
 		  if (gameState.interruption) {
-			this.historyService.saveGame(gameState.playerLeft.login, gameState.playerRight.login, gameState.playerLeft.score, gameState.playerRight.score);
+			  //this.historyService.saveGame(gameState.playerLeft.login, gameState.playerRight.login, gameState.playerLeft.score, gameState.playerRight.score);
+			  //finalement c est mieux de ne pas mettre les parties interromppues dans l historique puisqu elles peuvent etre gagnees par le joueur avec le score le plus bas, sinon il faudrai rajouter un champs pour dire qui a gagne ...
 			  clearInterval(intervalId);
 			  return;
 		  }
@@ -396,7 +420,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  }
 
 	  //La vitesse de deplacement du paddle augmente avec l augmentation de la vitesse de la balle
-	  let paddleStep = 8 + getBallSpeed(gameState) * 7;
+	  let paddleStep: number;
+
+	  if (gameState.mode == 1)
+		  paddleStep = 8 + getBallSpeed(gameState) * 7;
+	  if (gameState.mode == 2)
+		  paddleStep = 13 + getBallSpeed(gameState) * 16;
 
 	  if (payload === 'UP') {
 		  if (playerSide === 'LEFT')
@@ -464,6 +493,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  return false;
   }
 
+  isInMatchmakingQueueBoosted(player: string) : boolean {
+
+	  for (const playerIterator of this.matchmakingQueueBoosted) {
+		  if (playerIterator == player)
+			  return true;
+	  }
+	  return false;
+  }
+
   getPlayerSide(player: string) : string
   {
 
@@ -477,15 +515,28 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  return null;
   }
 
-  initializeGameState(playerL: string, playerR: string, loginL: string, loginR: string) : Game {
+  initializeGameState(playerL: string, playerR: string, loginL: string, loginR: string, boostedMode: boolean) : Game {
 	  // Initialiser l'état de jeu, par exemple avec des positions de départ
-	  return ({
-		  playerLeft: { name: playerL, score: 0, paddlePosition: 300, login: loginL},
-		  playerRight: { name: playerR, score: 0, paddlePosition: 300, login: loginR},
-		  ball: { x: 400, y: 300 , dx: 1, dy: 0}, //tuner
-		  interruption: false,
-		  // autres éléments d'état nécessaires
-	  });
+	  if (boostedMode) {
+		  return ({
+			  playerLeft: { name: playerL, score: 0, paddlePosition: 300, login: loginL},
+			  playerRight: { name: playerR, score: 0, paddlePosition: 300, login: loginR},
+			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 7, maxSpeedBall: 12}, //tuner
+			  interruption: false,
+			  mode: 2,
+			  // autres éléments d'état nécessaires
+		  });
+	  }
+	  else {
+		  return ({
+			  playerLeft: { name: playerL, score: 0, paddlePosition: 300, login: loginL},
+			  playerRight: { name: playerR, score: 0, paddlePosition: 300, login: loginR},
+			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 4, maxSpeedBall: 9}, //tuner
+			  interruption: false,
+			  mode: 1,
+			  // autres éléments d'état nécessaires
+		  });
+	  }
   }
 
 }
@@ -493,19 +544,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 type Game = {
 	playerLeft: { name: string, score: number, paddlePosition: number, login: string },
 	playerRight: { name: string, score: number, paddlePosition: number, login: string },
-	ball: {x: number, y: number, dx: number, dy: number}
+	ball: {x: number, y: number, dx: number, dy: number, minSpeedBall: number, maxSpeedBall: number}
 	interruption: boolean;
+	mode: number;
 };
-
-let minSpeedBall = 4;
-let maxSpeedBall = 9;
 
 function changeBallSpeed(gameState: Game, newSpeed: number) {
 
 	// fine tuning
-	newSpeed = (newSpeed * (maxSpeedBall - minSpeedBall)) + minSpeedBall;
-	if (newSpeed > maxSpeedBall)
-		newSpeed = maxSpeedBall;
+	newSpeed = (newSpeed * (gameState.ball.maxSpeedBall - gameState.ball.minSpeedBall)) + gameState.ball.minSpeedBall;
+	if (newSpeed > gameState.ball.maxSpeedBall)
+		newSpeed = gameState.ball.maxSpeedBall;
 
 	const currentDx = gameState.ball.dx;
 	const currentDy = gameState.ball.dy;
@@ -521,7 +570,7 @@ function getBallSpeed (gameState: Game) {
 	const currentDy = gameState.ball.dy;
 	let rawSpeed = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
 
-	let speed_finetuned = (rawSpeed - minSpeedBall) / ( maxSpeedBall - minSpeedBall);
+	let speed_finetuned = (rawSpeed - gameState.ball.minSpeedBall) / ( gameState.ball.maxSpeedBall - gameState.ball.minSpeedBall);
 
 	return speed_finetuned;
 }
