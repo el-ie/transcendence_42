@@ -6,10 +6,8 @@ import { ChannelType } from '@prisma/client';
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { ModuleRef } from '@nestjs/core';
 import { SocketService } from 'src/socket/socket.service';
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Assurez-vous d'importer votre propre JwtAuthGuard
 
 @Controller('channel')
-// @UseGuards(JwtAuthGuard) // Vous pouvez appliquer votre propre stratégie d'authentification ici
 export class ChannelController {
   constructor(private readonly channelService: ChannelService,
     private userService: UserService,

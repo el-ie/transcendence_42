@@ -2,6 +2,7 @@ import { ModuleRef } from '@nestjs/core';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChannelService } from 'src/channel/channel.service';
+import { HistoryService } from 'src/history/history.service';
 import { MessageService } from 'src/message/message.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
@@ -12,7 +13,7 @@ import { UserService } from 'src/user/user.service';
 	credentials: true,
 } })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private moduleRef: ModuleRef, private prismaService: PrismaService){}
+	constructor(private moduleRef: ModuleRef, private prismaService: PrismaService, private historyService: HistoryService){}
 	@WebSocketServer()
 	server: Server;
 
@@ -304,6 +305,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 					if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
 						clearInterval(intervalId);
+
+						this.historyService.saveGame(gameState.playerLeft.name, gameState.playerRight.name, gameState.playerLeft.score, gameState.playerRight.score);
+
 						this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
 						return;
 					}

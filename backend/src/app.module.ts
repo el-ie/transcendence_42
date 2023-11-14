@@ -10,6 +10,7 @@ import { SocketModule } from './socket/socket.module';
 import { SocketGateway } from './socket/socket.gateway';
 import { RequestModule } from './request/request.module';
 import { ForTestModule } from './forTest/forTest.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ForTestModule } from './forTest/forTest.module';
      }),
      RequestModule,
     //  FriendModule, 
-     ChannelModule, MessageModule, SocketModule, ForTestModule
+     ChannelModule, MessageModule, SocketModule, ForTestModule, HistoryModule
     ],
   controllers: [],
   providers: [],

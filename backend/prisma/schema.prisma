@@ -44,6 +44,15 @@ model User {
   @@map("users")
 }
 
+model Game {
+  id        Int      @id @default(autoincrement())
+  login1 String
+  login2 String
+
+  score1 Int
+  score2 Int
+}
+
 model UserConnection {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())

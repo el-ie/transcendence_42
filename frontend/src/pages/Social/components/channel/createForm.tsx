@@ -20,7 +20,8 @@ export default function CreateForm({onClose, onCreate, login}) {
         .then((reponse) => {
             if (reponse.data.channel)
             {
-                onCreate(reponse.data.channel)
+                onCreate(reponse.data.channel);
+                onClose();
                 setError('');
             }
             else {

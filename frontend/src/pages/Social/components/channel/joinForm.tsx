@@ -17,7 +17,8 @@ export default function JoinForm({onClose, onJoin, login}) {
         .then((reponse) => {
             if (reponse.data.channel)
             {
-                onJoin(reponse.data.channel)
+                onJoin(reponse.data.channel);
+                onClose();
                 setError('');
             }
             else

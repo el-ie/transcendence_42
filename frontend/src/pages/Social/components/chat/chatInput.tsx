@@ -17,7 +17,6 @@ export default function ChatInput({socket, channel, login}) {
                     userList: reponse.data.users,
                 }
                 socket.emit('message', payload);
-                console.log(payload);
                 setInput('');
             }
         })
@@ -27,7 +26,6 @@ export default function ChatInput({socket, channel, login}) {
         <div>
             <input type="text" placeholder="message" value={input} onChange={(e) => setInput(e.target.value)} />
             <button onClick={handleClick}>Send</button>
-
         </div>
     )
 
