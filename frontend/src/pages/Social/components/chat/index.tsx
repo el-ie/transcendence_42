@@ -13,6 +13,7 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
 
     useEffect(() => {
         if (channel) {
+            setSetting(false);
             const url_get_message = "http://localhost:3001/channel/messages?name=" + channel.name;
             axios.get(url_get_message, {withCredentials: true})
             .then((response) => {
@@ -59,11 +60,13 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
 
     useEffect(() => {
         const messageHandler = (newmessage: any) => {
-          if (newmessage.channelId === channel.id) {
-            const temp = [...messages];
-            temp.push(newmessage);
-            setMessages(temp);
-          }
+        if (channel) {
+            if (newmessage.channelId === channel.id) {
+              const temp = [...messages];
+              temp.push(newmessage);
+              setMessages(temp);
+            }
+        }
         };
       
         socket.on('message', messageHandler);

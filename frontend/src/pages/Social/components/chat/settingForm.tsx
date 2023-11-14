@@ -88,7 +88,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
                 login: selectedUserDefault,
                 name: channel.name,
             }
-            console.log(data);
 
             axios.post(url, data, {withCredentials: true})
             .then(() => {
@@ -107,7 +106,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             name: channel.name,
         }
 
-        console.log(data);
         axios.post(url, data, {withCredentials: true})
         .then(() => {
         })

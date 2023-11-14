@@ -13,7 +13,6 @@ export default function Social() {
     const [blockeds, setBlocked] = useState([]);
 
     const socket =  useSocket();
-    // console.log(socket);
 
     useEffect(() => {
         const url_get_login = "http://localhost:3001/users/getLogin";

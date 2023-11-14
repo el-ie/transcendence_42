@@ -22,7 +22,6 @@ function FriendList({list, handleSelect}) {
 export default function Friends({login, blockeds, handleBlock, handleUnblock, socket}) {
     const [user, setUser] = useState(null); //maintenant, user sera l'utilisateur complet
     const [friends, setFriends] = useState([]);
-    const [reload, setReload] = useState(false);
 
 
     useEffect (() => {
@@ -30,37 +29,21 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         axios.get(url_friends, {withCredentials: true})
         .then((response) => {
             if (response.data.users) {
-                // console.log("je get friend");
-                // console.log(response.data.users);
                 setFriends(response.data.users);
             }
             else
                 console.log(response.data.error);
         })
-        // useEffect(() => {
-            // const handleConnect = () => {
-            //     console.log("je recois levent connection");
-            //     setReload(prevReload => !prevReload);
-            //   };
-          
-            // socket.on('connection', handleConnect);
-          
-            // return () => {
-            //   socket.off('message', handleConnect);
-            // };
-    }, [login, reload, socket])
+        
+    }, [login, socket])
 
     useEffect(() => {
         const handleConnect = () => {
-            // console.log("je recois levent connection");
             const url_friends = "http://localhost:3001/users/friends";
             axios.get(url_friends, {withCredentials: true})
             .then((response) => {
             if (response.data.users) {
-                // console.log("je get friend");
-                // console.log(response.data.users);
                 setFriends(response.data.users);
-                // console.log("friends changés");
             }
             else
                 console.log(response.data.error);

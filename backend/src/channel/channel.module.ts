@@ -9,13 +9,9 @@ import { SocketService } from 'src/socket/socket.service';
 
 @Module({
     imports : [SocketModule],
-    // imports: [SocketModule],
   providers: [
     ChannelService,
     UserService,
-    // MessageService,
-    // SocketService,
-    // SocketGateway,
   ],
   controllers: [ChannelController]
 })

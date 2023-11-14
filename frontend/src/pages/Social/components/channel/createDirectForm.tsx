@@ -17,6 +17,7 @@ export default function CreateDirectForm({onClose, onCreateDirect, login}) {
         .then((reponse) => {
             if (reponse.data.channel){
                 onCreateDirect(reponse.data.channel)
+                onClose();
                 setError('');
             }
             else {
