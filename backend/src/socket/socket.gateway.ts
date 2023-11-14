@@ -231,11 +231,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  let hheight = 600;
 	  let paddleHeight = 80;
 	  let paddleWidth = 10;
-	  let ballRadius = 10;
 	  let ballAccelerationStack = 0.2;
 
 	  let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight};
 	  let	rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight };
+
+	  let ballRadius = gameState.ball.radius;
+
+	  let maxAngle = gameState.ball.maxAngle;
 
 	  let ballX: number;
 	  let ballY: number;
@@ -278,9 +281,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			  //on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
 			  if (angle_impact > 0.3) {
 				  if (quadrant === 0)
-					  changeBallAngle(gameState, toRadians(angle_impact * 70));
+					  changeBallAngle(gameState, toRadians(angle_impact * maxAngle));
 				  else
-					  changeBallAngle(gameState, toRadians(360 - (angle_impact * 70)));
+					  changeBallAngle(gameState, toRadians(360 - (angle_impact * maxAngle)));
 			  }
 			  if (angle_impact > 0.5) {
 				  let ratioAcceleration = (angle_impact - 0.5) * 2; //ratioAcceleration entre 0.5 et 1;
@@ -321,9 +324,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			  //on envoi une valeur entre 0 et 80 degres ( 0 < angle_impact < 1 )
 			  if (angle_impact > 0.3) {
 				  if (quadrant === 0)
-					  changeBallAngle(gameState, toRadians(90 + angle_impact * 70));
+					  changeBallAngle(gameState, toRadians(90 + angle_impact * maxAngle));
 				  else
-					  changeBallAngle(gameState, toRadians(180 + (angle_impact * 70))) ;
+					  changeBallAngle(gameState, toRadians(180 + (angle_impact * maxAngle))) ;
 			  }
 
 			  if (angle_impact > 0.5) {
@@ -521,7 +524,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  return ({
 			  playerLeft: { name: playerL, score: 0, paddlePosition: 300, login: loginL},
 			  playerRight: { name: playerR, score: 0, paddlePosition: 300, login: loginR},
-			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 7, maxSpeedBall: 12}, //tuner
+			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 7, maxSpeedBall: 12, radius: 25, maxAngle: 50}, //tuner
 			  interruption: false,
 			  mode: 2,
 			  // autres éléments d'état nécessaires
@@ -531,7 +534,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  return ({
 			  playerLeft: { name: playerL, score: 0, paddlePosition: 300, login: loginL},
 			  playerRight: { name: playerR, score: 0, paddlePosition: 300, login: loginR},
-			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 4, maxSpeedBall: 9}, //tuner
+			  ball: { x: 400, y: 300 , dx: 1, dy: 0, minSpeedBall: 4, maxSpeedBall: 9, radius: 10, maxAngle: 70}, //tuner
 			  interruption: false,
 			  mode: 1,
 			  // autres éléments d'état nécessaires
@@ -544,7 +547,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 type Game = {
 	playerLeft: { name: string, score: number, paddlePosition: number, login: string },
 	playerRight: { name: string, score: number, paddlePosition: number, login: string },
-	ball: {x: number, y: number, dx: number, dy: number, minSpeedBall: number, maxSpeedBall: number}
+	ball: {x: number, y: number, dx: number, dy: number, minSpeedBall: number, maxSpeedBall: number, radius: number, maxAngle: number}
 	interruption: boolean;
 	mode: number;
 };

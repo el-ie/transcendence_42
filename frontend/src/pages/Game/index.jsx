@@ -153,7 +153,6 @@ export default function Game() {
 	let hheight = 600;
 	let paddleHeight = 80;
 	let paddleWidth = 10;
-	let ballRadius = 10;
 
 	let leftPaddle = { x: 35, width: paddleWidth, height: paddleHeight, dy: 0 };
 	let rightPaddle = { x: wwidth - 40, width: paddleWidth, height: paddleHeight, dy: 0 };
@@ -182,7 +181,10 @@ export default function Game() {
 
 			// Draw Ball
 			context.beginPath();
-			context.arc(ballRef.current.x, ballRef.current.y, ballRadius, 0, Math.PI * 2);
+			if (boostedMode)
+				context.arc(ballRef.current.x, ballRef.current.y, 25, 0, Math.PI * 2);
+			else
+				context.arc(ballRef.current.x, ballRef.current.y, 10, 0, Math.PI * 2);
 			context.fill();
 
 			// Draw Paddles
