@@ -54,10 +54,13 @@ export class ForTestController {
 		if (user)
 			response.send('login already taken');
 
+		let complete_login = 'login_' + name;
+		let complete_username = 'username_' + name;
+
 		user = await this.prisma.user.create({
 			data: {
-				login: name,
-				username: name,
+				login: complete_login,
+				username: complete_username,
 				sessionId: "no need",
 			},
 		});

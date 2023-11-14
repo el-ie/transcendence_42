@@ -21,325 +21,335 @@ export class UserService {
         return (user.id);
     }
 
-    async getUsernameByLogin(login: string): Promise<string> {
-        const user = await this.prisma.user.findFirst({
-            where : {
-                login,
-            }
-        })
-        return (user.username);
-    }
-
-    async connect(username: string) {
-        try {
-            const user = await this.prisma.user.update({
-                where : {
-                    username,
-                },
-                data: {
-                    isConnected: true,
-                }
-            })
-        }
-        catch {
-            console.log("erreur connect");
-        }
-    }
-
-    async disconnect(username: string) {
-        try {
-            const user = await this.prisma.user.update({
-                where : {
-                    username,
-                },
-                data: {
-                    isConnected: false,
-                }
-            })
-        }
-        catch {
-            console.log("erreur disconnect");
-        }
-    }
-
-    async getLoginById(id: number): Promise<string> {
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                id,
-            }
-        })
-        return (user.login);
-    }
-
-    async getUser(login: string): Promise<User> {
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where: {
-                login: login,
-            }
-        })
-        return (user);
-    }
-
-    async getUserById(id: number): Promise<User> {
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where: {
-                id,
-            }
-        })
-        return (user);
-    }
-
-    async addFriend(login: string, target: string): Promise<User> {
-        const senderId = await this.getIdByLogin(login);
-        const targetId = await this.getIdByLogin(target);
-
-        const test = await this.prisma.userConnection.findMany({
-            where : {
-                targetId,
-                fromId: senderId,
-                followed: 1,
-            }
-        })
-
-        if (test.length > 0)
-        {
-            console.log("already friends: throw");
-            throw new Error("Already friend");
-        }
-
-        const userco = await this.prisma.userConnection.updateMany({
-            where :{
-                targetId,
-                fromId: senderId,
-            },
-            data : {
-                followed: 1
-            }
-        })
-        console.log(userco.count);
-        if (!userco.count){
-            const newUserCo = await this.prisma.userConnection.create({
-                data: {
-                    targetId,
-                    fromId: senderId,
-                    blocked: 0,
-                    followed: 1,
-                }
-            })
-        }
-        const added = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login: target,
-            }
-        })
-        return (added)
-    }
+	async getLoginByUsername(username: string): Promise<string> {
+		const user = await this.prisma.user.findFirst({
+			where : {
+				username,
+			}
+		})
+		return (user.login);
+	}
 
 
-    async delFriend(login: string, target: string): Promise<User> {
-        const senderId = await this.getIdByLogin(login);
-        const targetId = await this.getIdByLogin(target);
+	async getUsernameByLogin(login: string): Promise<string> {
+		const user = await this.prisma.user.findFirst({
+			where : {
+				login,
+			}
+		})
+		return (user.username);
+	}
 
-        const test = await this.prisma.userConnection.findMany({
-            where : {
-                targetId,
-                fromId: senderId,
-                followed: 0,
-            }
-        })
+	async connect(username: string) {
+		try {
+			const user = await this.prisma.user.update({
+				where : {
+					username,
+				},
+				data: {
+					isConnected: true,
+				}
+			})
+		}
+		catch {
+			console.log("erreur connect");
+		}
+	}
 
-        if (test.length > 0)
-        {
-            console.log("already not friends: throw");
-            throw new Error("Already  not friend");
-        }
+	async disconnect(username: string) {
+		try {
+			const user = await this.prisma.user.update({
+				where : {
+					username,
+				},
+				data: {
+					isConnected: false,
+				}
+			})
+		}
+		catch {
+			console.log("erreur disconnect");
+		}
+	}
 
-        const userco = await this.prisma.userConnection.updateMany({
-            where :{
-                targetId,
-                fromId: senderId,
-            },
-            data : {
-                followed: 0,
-            }
-        })
-        const added = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login: target,
-            }
-        })
-        return (added)
-    }
+	async getLoginById(id: number): Promise<string> {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where : {
+				id,
+			}
+		})
+		return (user.login);
+	}
 
-    async blockUser(login: string, target: string): Promise<User> {
-        const senderId = await this.getIdByLogin(login);
-        const targetId = await this.getIdByLogin(target);
+	async getUser(login: string): Promise<User> {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where: {
+				login: login,
+			}
+		})
+		return (user);
+	}
 
-        const test = await this.prisma.userConnection.findMany({
-            where : {
-                targetId,
-                fromId: senderId,
-                blocked: 1,
-            }
-        })
+	async getUserById(id: number): Promise<User> {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where: {
+				id,
+			}
+		})
+		return (user);
+	}
 
-        if (test.length > 0)
-        {
-            console.log("already blocked: throw");
-            throw new Error("Already blocked");
-        }
+	async addFriend(login: string, target: string): Promise<User> {
+		const senderId = await this.getIdByLogin(login);
+		const targetId = await this.getIdByLogin(target);
 
-        const userco = await this.prisma.userConnection.updateMany({
-            where :{
-                targetId,
-                fromId: senderId,
-            },
-            data : {
-                blocked: 1
-            }
-        })
-        if (!userco){
-            const newUserCo = await this.prisma.userConnection.create({
-                data: {
-                    targetId,
-                    fromId: senderId,
-                    blocked: 1,
-                    followed: 0,
-                }
-            })
-        }
-        const blocked = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login: target,
-            }
-        })
-        return (blocked)
-    }
-    async unblockUser(login: string, target: string): Promise<User> {
-        const senderId = await this.getIdByLogin(login);
-        const targetId = await this.getIdByLogin(target);
+		const test = await this.prisma.userConnection.findMany({
+			where : {
+				targetId,
+				fromId: senderId,
+				followed: 1,
+			}
+		})
 
-        const test = await this.prisma.userConnection.findMany({
-            where : {
-                targetId,
-                fromId: senderId,
-                blocked: 0,
-            }
-        })
+		if (test.length > 0)
+			{
+				console.log("already friends: throw");
+				throw new Error("Already friend");
+			}
 
-        if (test.length > 0)
-        {
-            console.log("already unblocked: throw");
-            throw new Error("Already unblocked");
-        }
+			const userco = await this.prisma.userConnection.updateMany({
+				where :{
+					targetId,
+					fromId: senderId,
+				},
+				data : {
+					followed: 1
+				}
+			})
+			console.log(userco.count);
+			if (!userco.count){
+				const newUserCo = await this.prisma.userConnection.create({
+					data: {
+						targetId,
+						fromId: senderId,
+						blocked: 0,
+						followed: 1,
+					}
+				})
+			}
+			const added = await this.prisma.user.findUniqueOrThrow({
+				where : {
+					login: target,
+				}
+			})
+			return (added)
+	}
 
-        const userco = await this.prisma.userConnection.updateMany({
-            where :{
-                targetId,
-                fromId: senderId,
-            },
-            data : {
-                blocked: 0
-            }
-        })
-        const blocked = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login: target,
-            }
-        })
-        return (blocked)
-    }
 
-    async getFriends(login:string) : Promise<User[]>{
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login,
-            },
-            include: {
-                userConnections :{
-                    where : {
-                        followed: 1
-                    },
-                    select : {
-                        targetId: true,
-                    }
-                }
-            }
-        })
-        const usersPromises = user.userConnections.map(async (connection) => {
-            const user = await this.prisma.user.findUniqueOrThrow({where: {id: connection.targetId}});
-            return user;
-        });
-    
-        const users = await Promise.all(usersPromises);
-        return (users);
-    }
+	async delFriend(login: string, target: string): Promise<User> {
+		const senderId = await this.getIdByLogin(login);
+		const targetId = await this.getIdByLogin(target);
 
-    async changeLogin(userId: number, newLogin: string){
-        const user = await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                login: newLogin,
-            }
-        })
-        if (!user)
-            throw new Error("error: user not find or login taken");
-        await this.prisma.message.updateMany({
-            where: {
-                senderId: userId,
-            },
-            data: {
-                senderLogin: newLogin,
-            }
-        })
-        return (user);
-    }
+		const test = await this.prisma.userConnection.findMany({
+			where : {
+				targetId,
+				fromId: senderId,
+				followed: 0,
+			}
+		})
 
-    async getAvatarPath(userId: number) :Promise<string>{
+		if (test.length > 0)
+			{
+				console.log("already not friends: throw");
+				throw new Error("Already  not friend");
+			}
 
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                id: userId
-            }
-        })
-        return (user.avatarFileName)
-    }
+			const userco = await this.prisma.userConnection.updateMany({
+				where :{
+					targetId,
+					fromId: senderId,
+				},
+				data : {
+					followed: 0,
+				}
+			})
+			const added = await this.prisma.user.findUniqueOrThrow({
+				where : {
+					login: target,
+				}
+			})
+			return (added)
+	}
 
-    async changeAvatarPath(userId: number, name: string) {
-        const user = await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                avatarFileName: name,
-            }
-        })
-    }
+	async blockUser(login: string, target: string): Promise<User> {
+		const senderId = await this.getIdByLogin(login);
+		const targetId = await this.getIdByLogin(target);
 
-    async getBlocked(login:string) : Promise<number[]>{
-        const user = await this.prisma.user.findUniqueOrThrow({
-            where : {
-                login,
-            },
-            include: {
-                userConnections :{
-                    where : {
-                        blocked: 1
-                    },
-                    select : {
-                        targetId: true,
-                    }
-                }
-            }
-        })
-        const usersPromises = user.userConnections.map((connection) => {
-            const targetId = connection.targetId;
-            return targetId;
-        });
-    
-        const users = await Promise.all(usersPromises);
-        return (users);
-    }
+		const test = await this.prisma.userConnection.findMany({
+			where : {
+				targetId,
+				fromId: senderId,
+				blocked: 1,
+			}
+		})
+
+		if (test.length > 0)
+			{
+				console.log("already blocked: throw");
+				throw new Error("Already blocked");
+			}
+
+			const userco = await this.prisma.userConnection.updateMany({
+				where :{
+					targetId,
+					fromId: senderId,
+				},
+				data : {
+					blocked: 1
+				}
+			})
+			if (!userco){
+				const newUserCo = await this.prisma.userConnection.create({
+					data: {
+						targetId,
+						fromId: senderId,
+						blocked: 1,
+						followed: 0,
+					}
+				})
+			}
+			const blocked = await this.prisma.user.findUniqueOrThrow({
+				where : {
+					login: target,
+				}
+			})
+			return (blocked)
+	}
+	async unblockUser(login: string, target: string): Promise<User> {
+		const senderId = await this.getIdByLogin(login);
+		const targetId = await this.getIdByLogin(target);
+
+		const test = await this.prisma.userConnection.findMany({
+			where : {
+				targetId,
+				fromId: senderId,
+				blocked: 0,
+			}
+		})
+
+		if (test.length > 0)
+			{
+				console.log("already unblocked: throw");
+				throw new Error("Already unblocked");
+			}
+
+			const userco = await this.prisma.userConnection.updateMany({
+				where :{
+					targetId,
+					fromId: senderId,
+				},
+				data : {
+					blocked: 0
+				}
+			})
+			const blocked = await this.prisma.user.findUniqueOrThrow({
+				where : {
+					login: target,
+				}
+			})
+			return (blocked)
+	}
+
+	async getFriends(login:string) : Promise<User[]>{
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where : {
+				login,
+			},
+			include: {
+				userConnections :{
+					where : {
+						followed: 1
+					},
+					select : {
+						targetId: true,
+					}
+				}
+			}
+		})
+		const usersPromises = user.userConnections.map(async (connection) => {
+			const user = await this.prisma.user.findUniqueOrThrow({where: {id: connection.targetId}});
+			return user;
+		});
+
+		const users = await Promise.all(usersPromises);
+		return (users);
+	}
+
+	async changeLogin(userId: number, newLogin: string){
+		const user = await this.prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				login: newLogin,
+			}
+		})
+		if (!user)
+			throw new Error("error: user not find or login taken");
+		await this.prisma.message.updateMany({
+			where: {
+				senderId: userId,
+			},
+			data: {
+				senderLogin: newLogin,
+			}
+		})
+		return (user);
+	}
+
+	async getAvatarPath(userId: number) :Promise<string>{
+
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where : {
+				id: userId
+			}
+		})
+		return (user.avatarFileName)
+	}
+
+	async changeAvatarPath(userId: number, name: string) {
+		const user = await this.prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				avatarFileName: name,
+			}
+		})
+	}
+
+	async getBlocked(login:string) : Promise<number[]>{
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where : {
+				login,
+			},
+			include: {
+				userConnections :{
+					where : {
+						blocked: 1
+					},
+					select : {
+						targetId: true,
+					}
+				}
+			}
+		})
+		const usersPromises = user.userConnections.map((connection) => {
+			const targetId = connection.targetId;
+			return targetId;
+		});
+
+		const users = await Promise.all(usersPromises);
+		return (users);
+	}
 }
