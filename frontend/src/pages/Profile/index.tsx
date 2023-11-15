@@ -3,6 +3,23 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./profile.css"
 
+function History({list, user}) {
+    return (
+        <div>
+            <h2>History</h2>
+            <ul className="history_list">
+                {list.map((game: any) => {
+                    return (
+                        <li className="game_results">
+                            <span>{game.login1}</span> <span>{game.score1} - {game.score2}</span> <span>{game.login2}</span>
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    )
+}
+
 export default function Profile() {
 
     const {userId} = useParams();
@@ -49,8 +66,11 @@ export default function Profile() {
     return (
         (user && <div className="profile">
             <div className="infos">
-                <img className="avatar" src={urlAvatar} alt="avatar" />
-                <span>{user.login}</span>
+                <div className="user">
+                    <img className="avatar" src={urlAvatar} alt="avatar" />
+                    <span>{user.login}</span>
+                </div>
+                <History list={history} user={user} />
             </div>
         </div> )
     )

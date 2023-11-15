@@ -80,7 +80,7 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
     {
         return (
             <div>
-                ici, se trouvera la liste des chats dans lesquels ce trouve le user, et le chat en lui même.
+                Please, create or join a channel, or a direct Chat, then select it
             </div>
         )
     }

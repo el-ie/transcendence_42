@@ -109,7 +109,7 @@ export class ChannelController {
       const invitedId = await this.userService.getIdByLogin(inviteDto.login);
       const channelId = await this.channelService.getIdByName(inviteDto.name);
       await this.channelService.inviteUser(channelId, invitedId)
-      const socketService = this.socketRef.get(SocketGateway, { strict: false })
+      // const socketService = this.socketRef.get(SocketGateway, { strict: false })
       // socketService.sendEvent(channelLeaveDto.login, "kicked", null);
     } catch (error) {
       return { error: `you cant invite this user`};

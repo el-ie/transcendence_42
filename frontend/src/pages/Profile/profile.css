@@ -14,3 +14,16 @@
     height: 100px;
     width: 100px;
 }
+
+.history_list {
+    overflow-y: scroll;
+    list-style-type: none;
+}
+
+.game_results {
+    display: flex;
+    justify-content: space-around;
+    font-weight: 800;
+    font-size: larger;
+}
+

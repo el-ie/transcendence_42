@@ -7,10 +7,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as imageSize from 'image-size';
 import * as fs from 'fs';
+import { SocketService } from 'src/socket/socket.service';
+import { ModuleRef } from '@nestjs/core';
+import { SocketGateway } from 'src/socket/socket.gateway';
 
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService){}
+    constructor(private userService: UserService, private moduleref: ModuleRef){}
     @Get('me')
     getme(@Req() req: Request) {
         return (req.user);
@@ -24,7 +27,6 @@ export class UserController {
     @Get(':id/avatar')
     async getUserAvatar(@Param('id') userId: string, @Res() res: Response) {
         const fileName = await this.userService.getAvatarPath(parseInt(userId));
-        console.log("filename: ", fileName);
         const avatarPath = path.join(__dirname, '..', '..', 'images', fileName);
         res.sendFile(avatarPath);
     }
@@ -146,7 +148,9 @@ export class UserController {
     @Post('changeLogin')
     async changeLogin(@Req() req: any, @Body() dto: ChangeLoginDto ){
         try {
-            const user = await this.userService.changeLogin(req.user.id, dto.newLogin);
+            const user = await this.userService.changeLogin(req.user.id, dto.newLogin, req.user.login);
+            const socketService = this.moduleref.get(SocketGateway, { strict: false })
+            socketService.sendEvent(user.username, "newLogin", null);
             return ({user});
            } 
            catch (error) {

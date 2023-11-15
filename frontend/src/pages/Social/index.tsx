@@ -40,6 +40,28 @@ export default function Social() {
         })
     }, []);
 
+    useEffect(() => {
+        function getLogin () {
+            // console.log("new login recu !");
+            const url_get_login = "http://localhost:3001/users/getLogin";
+            axios.get(url_get_login, {withCredentials: true})
+            .then((response) => {
+                if (response.data) {
+                    setLogin(response.data);
+                }
+            })
+            .catch(() => {
+                console.log("erreur !");
+            })
+        }
+        if (socket) {
+            socket.on("newLogin", getLogin);
+
+        }
+    }, [socket]);
+
+
+
 
 
     function handleBlock(userId: number) {

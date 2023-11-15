@@ -99,10 +99,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  })
 		  if (chanco.muted < (Math.floor(new Date().getTime() / 1000)))
 			  {
-				  console.log ("user " + payload.senderLogin + " is no muted until " + chanco.muted + '/' + Math.floor(new Date().getTime() / 1000));
+				//   console.log ("user " + payload.senderLogin + " is no muted until " + chanco.muted + '/' + Math.floor(new Date().getTime() / 1000));
 				  const messageservice = this.moduleRef.get(MessageService, { strict: false });
 				  const message = await messageservice.createMessage(payload.content, payload.senderLogin, payload.channelName);
-				  console.log('jenvoie le message');
+				//   console.log('jenvoie le message');
 				  payload.userList.map((user: any) => {
 					  this.connectedClients.get(user.username).emit('message', message);
 				  })
