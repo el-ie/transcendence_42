@@ -43,6 +43,14 @@ root.render(
               </SocketProvider>
             </RouteProtection>
         } />
+        <Route path="/game/:direct" element={
+            <RouteProtection>
+              <Header />
+              <SocketProvider>
+                <Game />
+              </SocketProvider>
+            </RouteProtection>
+        } />
         <Route path="/profile/:userId" element={
             <RouteProtection>
               <Header />

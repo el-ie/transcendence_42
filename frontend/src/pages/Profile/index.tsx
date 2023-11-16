@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./profile.css"
+import { useSocket } from "../../components/Socket";
 
 function History({list, user}) {
     return (
@@ -27,6 +28,13 @@ export default function Profile() {
     const [history, setHistory] = useState([]);
     const [timestamp, setTimestamp] = useState(Date.now());
     const urlAvatar = user ? `http://localhost:3001/users/${user.id}/avatar?timestamp=${timestamp}` : "";
+
+    const socket = useSocket();
+
+    useEffect(() => {
+        if (socket)
+        socket.emit("QUIT_QUEUE");
+    }, [socket])
 
     useEffect(() => {
         const url = "http://localhost:3001/users/otherById?id=" + userId;

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { AddFriendDto, ChangeLoginDto } from './dto/user.dto';
@@ -41,6 +41,11 @@ export class UserController {
         catch {
             return {error: "404 User not found"}
         }
+    }
+
+    @Get('redirection')
+    redirectToGame(@Res() res: Response): void {
+      res.redirect('/game');
     }
 
     @Get('otherById')

@@ -15,6 +15,8 @@ export default function Social() {
     const socket =  useSocket();
 
     useEffect(() => {
+        if (socket)
+            socket.emit("QUIT_QUEUE");
         const url_get_login = "http://localhost:3001/users/getLogin";
         axios.get(url_get_login, {withCredentials: true})
         .then((response) => {
@@ -38,7 +40,7 @@ export default function Social() {
         .catch(() => {
             console.log("erreur !");
         })
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
         function getLogin () {

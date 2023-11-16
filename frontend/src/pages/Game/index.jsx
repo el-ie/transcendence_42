@@ -1,10 +1,15 @@
 import './game.css'
 import { useSocket } from '../../components/Socket';
 import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function Game() {
 
-	const socket =  useSocket(); //securiser ?
+	const socket =  useSocket();
+	const {direct} = useParams();
+    const navigate = useNavigate();
+
+	console.log(direct); //securiser ?
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
@@ -12,7 +17,7 @@ export default function Game() {
 		ball: {x: number, y: number, dx: number, dy: number}
 	};
 
-	const [readyToPlay, setReadyToPlay] = useState(false);
+	const [readyToPlay, setReadyToPlay] = useState(direct ? true: false);
 	const [playerSide, setPlayerSide] = useState(null);
 	const [winner, setWinner] = useState(null);
 
@@ -221,6 +226,10 @@ export default function Game() {
 	}, [gameState, ballRef, gameEnd]);
 
 	const handleReload = () => {
+		if (direct) {
+			navigate('/game');
+			// return;
+		}
 		window.location.reload();
 	};
 

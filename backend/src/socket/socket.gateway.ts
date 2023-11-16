@@ -126,7 +126,53 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private matchmakingQueueBoosted: string[] = [];
 
+  private matchingQueuePrivate = new Map<string, string>();
+
   private activeGames: [string, string, Game][] = [];
+
+  @SubscribeMessage("QUIT_QUEUE")
+  async quitQueue(client: Socket) {
+	this.connectedClients.forEach((value, key) => {
+        if (value === client) {
+			this.manageGameInterruption(key);
+        }
+      });
+  }
+
+  @SubscribeMessage("INVITE_PLAYER")
+  invitePlayer(client: Socket, payload: any) {
+	this.connectedClients.forEach((value, key) => {
+        if (value === client) {
+			this.matchingQueuePrivate[key] = payload.targetUsername;
+			console.log(key, "is inviting ", payload.targetUsername);
+			console.log(this.matchingQueuePrivate[key], " !!");
+			// const data = {
+			// 	by: key,
+			// }
+			this.sendEvent(payload.targetUsername, "INVITED", key);
+        }
+      });
+  }
+
+  @SubscribeMessage("ACCEPT_INVITATION")
+  acceptInvitation(client: Socket, payload: any) {
+	this.connectedClients.forEach((value, key) => {
+        if (value === client) {
+			if (this.matchingQueuePrivate[payload.inviter] === key)
+				console.log("je lance une game entre ", payload.inviter , " et ", this.matchingQueuePrivate[payload.inviter]);
+			// this.matchingQueuePrivate.forEach((value2, key2) => {
+			// 	console.log(key, value2);
+			// 	if (value2 === key && payload.inviter === key2) {
+			// 		//lauchgame !
+			// 	}
+			// });
+        }
+      });
+  }
+  
+
+
+
 
   @SubscribeMessage('FIND_GAME')
   async handleLaunchGame(client: Socket, boostedMode: boolean) {
