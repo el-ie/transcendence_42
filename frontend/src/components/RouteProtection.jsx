@@ -14,14 +14,20 @@ const RouteProtection = (props) => {
 				await axios.get('http://localhost:3001/auth/check_auth_cookie', { withCredentials: true });
 			} catch {
 				setIsAuthenticated(false);
+				try {
 				await axios.get('http://localhost:3001/auth/delete_all_cookies', { withCredentials: true });
+				} catch {
+				}
 			}
 
 			try {
 				await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
 			} catch {
 				setIsAuthenticated(false);
+				try {
 				await axios.get('http://localhost:3001/auth/delete_2FA_cookie', { withCredentials: true });
+				} catch {
+				}
 			}
 
 			setIsAuthenticated(true);
