@@ -244,7 +244,10 @@ export default function Header() {
 		<Link to="/Game" onClick={handleClickProtection}>Game</Link>
 		<Link to="/Social" onClick={handleClickProtection}>Social</Link>
 		{me && <Link to={`/Profile/${me.id}`} onClick={handleClickProtection}>Profile</Link>}
-		<button onClick={() => setParams(!params)}>🛠️</button>
+		<button onClick={() => {
+			handleClickProtection();
+			setParams(!params);
+		}}>🛠️</button>
 		{me && params && <Settings me={me} onClose={handleClose}/>}
 
 		</nav>
