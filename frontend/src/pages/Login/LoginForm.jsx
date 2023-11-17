@@ -81,7 +81,9 @@ export default function LoginForm() {
 		.then( () => getTwoFaCookieState())
 		.catch((error) => {});
 
-		checkIfAuthorized();
+
+		checkIfAuthorized()
+		.catch((error) => {});
 
     }, [refreshPage]);
 	// bien laisser le , [] sinon le rechargement se fait 2 fois
