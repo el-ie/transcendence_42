@@ -14,7 +14,32 @@ function Settings({me, onClose}) {
     const [timestamp, setTimestamp] = useState(Date.now());
     const urlAvatar = `http://localhost:3001/users/${me.id}/avatar?timestamp=${timestamp}`;
 
+    const [loginTooLong, setLoginTooLong] = useState(false);
+    const [photoTooHeavy, setPhotoTooHeavy] = useState(false);
+    const [validFileExtension, setValidFileExtension] = useState(true);
+
     function handleClickUpload() {
+
+		const allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+		const fileExtension = file.name.split('.').pop().toLowerCase();
+
+		if (!allowedExtensions.includes(fileExtension)) {
+			setValidFileExtension(false);
+			return;
+		}
+		else {
+			setValidFileExtension(true);
+		}
+		//50 Mo maximum
+		if (file.size > 50 * 1024 * 1024) {
+			setPhotoTooHeavy(true);
+			return;
+		}
+		else {
+			setPhotoTooHeavy(false);
+		}
+
         const formdata = new FormData();
         formdata.append('avatar', file);
         // console.log(file);
@@ -40,6 +65,15 @@ function Settings({me, onClose}) {
     }
 
     function handleClickChange() {
+
+		//CHECK
+		if (login.length > 20)
+		{
+			setLoginTooLong(true);
+			return;
+		}
+		else
+			setLoginTooLong(false);
 
         const url = "http://localhost:3001/users/changeLogin";
         const data = {
@@ -153,8 +187,9 @@ function Settings({me, onClose}) {
 		{changeLogin && 
 			<div>
 			<input type="text" onChange={(event) => setLogin(event.target.value)}/>
-			<button onClick={() => handleClickChange()}>change</button><br/>
+			<button onClick={() => handleClickChange()}>send</button><br/>
 			{retour1 !== "" && <span>{retour1}</span>}
+			{loginTooLong && <p style={{color: 'red', fontSize: '17px'}}>maximum login size is 20 characters </p>}
 
 			</div>
 		}
@@ -168,6 +203,8 @@ function Settings({me, onClose}) {
 			<button onClick={() => handleClickUpload()}>Upload</button><br/>
 			{retour2 !== "" && <span>{retour2}</span>}
 
+			{photoTooHeavy && <p style={{color: 'red', fontSize: '17px', textAlign: 'center'}}>maximum photo size is 20MB </p>}
+			{!validFileExtension && <p style={{color: 'red', fontSize: '17px', textAlign: 'center'}}>Accepted image types are jpg, jpeg and png</p>}
 			</div>
 		}
 
