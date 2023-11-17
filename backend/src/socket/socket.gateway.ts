@@ -44,16 +44,19 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	this.server.emit("connection");
   }
 
-  manageGameInterruption(username: string) {
+  async manageGameInterruption(username: string) {
 
+	const userService = this.moduleRef.get(UserService, {strict: false});
 	  if (this.isInMatchmakingQueue(username))
 		  this.matchmakingQueue = this.matchmakingQueue.filter(player => player !== username);
 	  
 	  if (this.isInMatchmakingQueueBoosted(username))
 		  this.matchmakingQueueBoosted = this.matchmakingQueueBoosted.filter(player => player !== username);
 		if (this.matchingQueuePrivate[username]){
-			console.log("jerase !");
 			this.matchingQueuePrivate.delete(username);
+			await userService.deleteInvite(username);
+			if (this.matchingQueuePrivate[username])
+			this.sendEvent(this.matchingQueuePrivate[username], "CANCEL_INVITE", username);
 		}
 
 	  if (this.isInActiveGame(username)) {
@@ -145,14 +148,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("INVITE_PLAYER")
   invitePlayer(client: Socket, payload: any) {
+	const userService = this.moduleRef.get(UserService, {strict: false});
 	this.connectedClients.forEach((value, key) => {
         if (value === client) {
 			this.matchingQueuePrivate[key] = payload.targetUsername;
-			// console.log(key, "is inviting ", payload.targetUsername);
-			// console.log(this.matchingQueuePrivate[key], " !!");
-			// const data = {
-			// 	by: key,
-			// }
+			userService.inviteUser(key, payload.targetUsername);
 			this.sendEvent(payload.targetUsername, "INVITED", key);
         }
       });

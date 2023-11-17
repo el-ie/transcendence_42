@@ -57,6 +57,22 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         
     }, [login, socket])
 
+    useEffect (() => {
+        const url = "http://localhost:3001/users/invite";
+        axios.get(url, {withCredentials: true})
+        .then((response) => {
+            const temp = [...inviteList];
+            if (response.data.invites)
+            {
+                response.data.invites.map((invite: any) => {
+                    temp.push(invite.inviterUN);
+                    return true;
+                })
+                setInviteList(temp);
+            }
+        })
+    }, [])
+
     useEffect(() => {
         const handleConnect = () => {
             const url_friends = "http://localhost:3001/users/friends";
@@ -75,9 +91,27 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
             temp.push(by);
             setInviteList(temp);
         }
+
+        const handleCancel = (by: string) => {
+        console.log("je suis dans cancelinvite");
+        const url = "http://localhost:3001/users/invite";
+        axios.get(url, {withCredentials: true})
+        .then((response) => {
+            const temp = [];
+            if (response.data.invites)
+            {
+                response.data.invites.map((invite: any) => {
+                    temp.push(invite.inviterUN);
+                    return true;
+                })
+                setInviteList(temp);
+            }
+        })
+        }
       
         socket.on('connection', handleConnect);
         socket.on('INVITED', handleInvited);
+        socket.on('CANCEL_INVITE', handleCancel);
       
         return () => {
           socket.off('message', handleConnect);
@@ -98,14 +132,6 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
 
     function handleAccept(username: string)
     {
-        // const url = "http://localhost:3001/users/redirection";
-        // axios.get(url, {withCredentials: true})
-        // .then (() => {
-        //     console.log("je redirige");
-        // })
-        // .catch(() => {
-        //     console.log("oupsi");
-        // })
         navigate('/game/1');
 
         if (socket) {
@@ -113,7 +139,6 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
                 inviter: username
             }
             socket.emit("ACCEPT_INVITATION", payload);
-            //socket.emit("FIND_GAME", 0);
         }
     }
 

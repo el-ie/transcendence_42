@@ -43,6 +43,13 @@ export class UserController {
         }
     }
 
+    @Get('invite')
+    async getInvite(@Req() req: any)
+    {
+        const invites = await this.userService.getMyInvite(req.user.username);
+        return ({invites})
+    }
+
     @Get('redirection')
     redirectToGame(@Res() res: Response): void {
       res.redirect('/game');

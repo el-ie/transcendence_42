@@ -44,6 +44,12 @@ model User {
   @@map("users")
 }
 
+model Invite {
+  id        Int      @id @default(autoincrement())
+  inviterUN String
+  targetUN String
+}
+
 model Game {
   id        Int      @id @default(autoincrement())
   login1 String

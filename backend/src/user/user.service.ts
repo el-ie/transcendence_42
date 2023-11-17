@@ -285,6 +285,34 @@ export class UserService {
 		return (users);
 	}
 
+	async getMyInvite(username: string) {
+		const invites = await this.prisma.invite.findMany({
+			where: {
+				targetUN: username
+			}
+		})
+		return (invites);
+	}
+
+	async inviteUser(inviterUN: string, targetUN: string)
+	{
+		const invite = await this.prisma.invite.create({
+			data: {
+				inviterUN,
+				targetUN,
+			}
+		})
+	}
+
+	async deleteInvite(inviterUN: string)
+	{
+		await this.prisma.invite.deleteMany({
+			where: {
+				inviterUN
+			}
+		})
+	}
+
 	async changeLogin(userId: number, newLogin: string, oldLogin: string){
 		
 		
