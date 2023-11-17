@@ -10,16 +10,23 @@ const RouteProtection = (props) => {
 
         const checkAuthentication = async () => {
 
-            try {
-                await axios.get('http://localhost:3001/auth/check_auth_cookie', { withCredentials: true });
-				await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
-				setIsAuthenticated(true);
-            } catch (error) {
-                console.log("RouteProtection : route interdite");
-                setIsAuthenticated(false);
-            }
+			try {
+				await axios.get('http://localhost:3001/auth/check_auth_cookie', { withCredentials: true });
+			} catch {
+				setIsAuthenticated(false);
+				await axios.get('http://localhost:3001/auth/delete_all_cookies', { withCredentials: true });
+			}
 
+			try {
+				await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
+			} catch {
+				setIsAuthenticated(false);
+				await axios.get('http://localhost:3001/auth/delete_2FA_cookie', { withCredentials: true });
+			}
+
+			setIsAuthenticated(true);
         };
+
 
         checkAuthentication();
     }, []);
