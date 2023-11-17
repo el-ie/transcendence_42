@@ -24,7 +24,7 @@ export default function ChatInput({socket, channel, login}) {
 
     return (
         <div>
-            <input type="text" placeholder="message" value={input} onChange={(e) => setInput(e.target.value)} />
+            <input type="text" placeholder="message" value={input} maxLength={255} onChange={(e) => setInput(e.target.value)} />
             <button onClick={handleClick}>Send</button>
         </div>
     )

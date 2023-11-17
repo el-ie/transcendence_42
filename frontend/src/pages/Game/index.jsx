@@ -61,9 +61,8 @@ export default function Game() {
 			setGameEnd(true);
 			setWinner(winner);
 		};
-
-		socket.emit('FIND_GAME', boostedMode);
-
+		if (!direct)
+			socket.emit('FIND_GAME', boostedMode);
 
 		socket.on('GAME_START', gameStartHandler);
 		socket.on('GAME_REFRESH_PADDLE', gameRefreshPaddleHandler);

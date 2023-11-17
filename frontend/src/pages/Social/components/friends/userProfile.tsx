@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
+import "./userprofile.css"
 
 function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends, socket}) {
     const isFriend = friends.some(friend => friend.id === user.id);
@@ -81,18 +82,23 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
             }
             navigate('/game/1');
             socket.emit("INVITE_PLAYER", payload);
-            socket.emit("FIND_GAME", 0);
+            // socket.emit("FIND_GAME", 0);
             
         }
     }
 
     return (
-        <div>
+        <div className="profilefiche">
             <h3>{user.login}</h3>
-            {!isFriend ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
-            {!blockeds.includes(user.id) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
-            <Link to={`/Profile/${user.id}`}>Profile</Link>
-            <button onClick={() => handleChallenge()}>Challenge !</button>
+            <div className="addblock">
+                {!isFriend ? <button onClick={() => handleClickAdd()}>+</button> : <button onClick={() => handleClickDell()}>-</button>}
+                {!blockeds.includes(user.id) ? <button onClick={() => handleClickBlock()}>Block</button> : <button onClick={() => handleClickUnblock()}>unblock</button>}
+            </div>
+            <div className="linkchall">
+                <Link to={`/Profile/${user.id}`}>Profile</Link>
+                <button onClick={() => handleChallenge()}>Challenge !</button>
+
+            </div>
         </div>
     )
 }
@@ -123,7 +129,7 @@ export default function UserProfile({user, setUser, handleAdd, handleUnblock, ha
     return (
         <div>
             <h3>Search for a player</h3>
-            <input type="text" placeholder="Username" value={input} onChange={(e) => setInput(e.target.value)} />
+            <input type="text" placeholder="Username" value={input} maxLength={10} onChange={(e) => setInput(e.target.value)} />
             <button onClick={() => handleSearch()}>Search</button>
             {user && <Profile handleBlock={handleBlock} handleUnblock={handleUnblock} handleDel={handleDel} user={user} login={login} handleAdd={handleAdd} blockeds={blockeds} friends={friends} socket={socket}/>}
         </div>

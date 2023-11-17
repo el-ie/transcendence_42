@@ -75,8 +75,8 @@ export default function Profile() {
         (user && <div className="profile">
             <div className="infos">
                 <div className="user">
+                    <h2>{user.login}</h2>
                     <img className="avatar" src={urlAvatar} alt="avatar" />
-                    <span>{user.login}</span>
                 </div>
                 <History list={history} user={user} />
             </div>

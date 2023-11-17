@@ -42,6 +42,11 @@ nav *{
 
 .popup button{
     width: fit-content;
+    
+}
+
+.popup input {
+    width: 70%;
 }
 
 .popup .row {

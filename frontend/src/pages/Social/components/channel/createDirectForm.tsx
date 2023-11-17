@@ -31,7 +31,7 @@ export default function CreateDirectForm({onClose, onCreateDirect, login}) {
     return (
         <div className="form">
             <button className="closeButton" onClick={onClose}>x</button>
-            <input type="text" placeholder="target" value={target} onChange={(e) => setTarget(e.target.value)} />
+            <input type="text" placeholder="target" value={target} maxLength={10} onChange={(e) => setTarget(e.target.value)} />
             <button onClick={handleClick}>Chat</button>
             {(error !== '')? <div>{error}</div> : null}
         </div>

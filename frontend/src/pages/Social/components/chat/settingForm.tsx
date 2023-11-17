@@ -169,13 +169,13 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             </div>
             {role === 'OWNER' && 
             <div>
-                <input type="text" placeholder="new password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                <input type="text" placeholder="new password" value={password} maxLength={10} onChange={(e) => setPassword(e.target.value)}/>
                 <button onClick={() => handlepswSet()}>Change</button>
                 <button onClick={() =>handlepswDelete()}>Delete</button>
             </div>}
             {channel.type === 'PRIVATE' &&
             <div>
-                <input type="text" placeholder="target" value={invited} onChange={(e) => setInvited(e.target.value)} />
+                <input type="text" placeholder="target" value={invited} maxLength={10} onChange={(e) => setInvited(e.target.value)} />
                 <button onClick={() => handleInvite()}>invite</button>
 
             </div>}

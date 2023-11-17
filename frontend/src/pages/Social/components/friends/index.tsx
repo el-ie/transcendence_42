@@ -113,7 +113,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
                 inviter: username
             }
             socket.emit("ACCEPT_INVITATION", payload);
-            socket.emit("FIND_GAME", 0);
+            //socket.emit("FIND_GAME", 0);
         }
     }
 

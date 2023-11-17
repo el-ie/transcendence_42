@@ -33,8 +33,8 @@ export default function JoinForm({onClose, onJoin, login}) {
     return (
         <div className="form">
             <button className="closeButton" onClick={onClose}>x</button>
-            <input type="text" placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
-            <input type="text" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type="text" placeholder="name" value={name} maxLength={10} onChange={(e) => setName(e.target.value)} />
+            <input type="text" placeholder="password" value={password}  maxLength={10} onChange={(e) => setPassword(e.target.value)} />
             <button onClick={handleClick}>Join</button>
             {error !== '' ? <div>{error}</div> : null}
         </div>

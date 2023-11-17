@@ -10,12 +10,17 @@
     background-color: rgb(86, 24, 145);
 }
 
+h2 {
+    text-align: center;
+}
+
 .avatar {
     height: 100px;
     width: 100px;
 }
 
 .history_list {
+    max-height: 180px;
     overflow-y: scroll;
     list-style-type: none;
 }

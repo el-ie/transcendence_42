@@ -1,0 +1,25 @@
+.profilefiche {
+    border: 2px solid black;
+    padding-bottom: 10px;
+    margin-top: 20px;
+}
+.profilefiche h3 {
+    text-align: center;
+    margin-top: 0px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background-color: rgb(68, 23, 110);
+    font-weight: 800;
+    color: white;
+}
+
+.addblock  {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.linkchall  {
+    display: flex;
+    justify-content: space-around;
+}

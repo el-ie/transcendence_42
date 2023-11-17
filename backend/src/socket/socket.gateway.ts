@@ -51,6 +51,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  
 	  if (this.isInMatchmakingQueueBoosted(username))
 		  this.matchmakingQueueBoosted = this.matchmakingQueueBoosted.filter(player => player !== username);
+		if (this.matchingQueuePrivate[username]){
+			console.log("jerase !");
+			this.matchingQueuePrivate.delete(username);
+		}
 
 	  if (this.isInActiveGame(username)) {
 
@@ -144,8 +148,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	this.connectedClients.forEach((value, key) => {
         if (value === client) {
 			this.matchingQueuePrivate[key] = payload.targetUsername;
-			console.log(key, "is inviting ", payload.targetUsername);
-			console.log(this.matchingQueuePrivate[key], " !!");
+			// console.log(key, "is inviting ", payload.targetUsername);
+			// console.log(this.matchingQueuePrivate[key], " !!");
 			// const data = {
 			// 	by: key,
 			// }
@@ -158,14 +162,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   acceptInvitation(client: Socket, payload: any) {
 	this.connectedClients.forEach((value, key) => {
         if (value === client) {
-			if (this.matchingQueuePrivate[payload.inviter] === key)
+			for (const game of this.activeGames) {
+				if (game[0] === payload.inviter || game[1] === payload.inviter || game[0] === this.matchingQueuePrivate[payload.inviter] || game[1] === this.matchingQueuePrivate[payload.inviter])
+					return;
+			}
+			if (this.matchingQueuePrivate[payload.inviter] === key) {
 				console.log("je lance une game entre ", payload.inviter , " et ", this.matchingQueuePrivate[payload.inviter]);
-			// this.matchingQueuePrivate.forEach((value2, key2) => {
-			// 	console.log(key, value2);
-			// 	if (value2 === key && payload.inviter === key2) {
-			// 		//lauchgame !
-			// 	}
-			// });
+				this.launchGame(payload.inviter, this.matchingQueuePrivate[payload.inviter], false);
+				// this.matchingQueuePrivate.delete(payload.inviter);
+			}
         }
       });
   }

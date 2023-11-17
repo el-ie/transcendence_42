@@ -39,8 +39,8 @@ export default function CreateForm({onClose, onCreate, login}) {
                 <option value="PUBLIC">PUBLIC</option>
                 <option value="PRIVATE">PRIVATE</option>
             </select>
-            <input type="text" placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
-            <input type="text" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type="text" placeholder="name" value={name} maxLength={10} onChange={(e) => setName(e.target.value)} />
+            <input type="text" placeholder="password" value={password} maxLength={10} onChange={(e) => setPassword(e.target.value)} />
             <div>
                 <button onClick={handleClick}>Create</button>
                 {/* <button onClick={onCancel}>Cancel</button> */}

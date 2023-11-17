@@ -286,25 +286,8 @@ export class UserService {
 	}
 
 	async changeLogin(userId: number, newLogin: string, oldLogin: string){
-		const games1 = await this.prisma.game.updateMany({
-			where : {
-				login1: oldLogin,
-			},
-			data : {
-				login1: newLogin,
-			}
-		})
-
-		const games2 = await this.prisma.game.updateMany({
-			where : {
-				login2: oldLogin,
-			},
-			data : {
-				login2: newLogin,
-			}
-		})
-
-
+		
+		
 		const user = await this.prisma.user.update({
 			where: {
 				id: userId,
@@ -314,16 +297,33 @@ export class UserService {
 			}
 		})
 		if (!user)
-			throw new Error("error: user not find or login taken");
-		await this.prisma.message.updateMany({
-			where: {
-				senderId: userId,
-			},
-			data: {
-				senderLogin: newLogin,
-			}
-		})
-		return (user);
+		throw new Error("error: user not find or login taken");
+	await this.prisma.message.updateMany({
+		where: {
+			senderId: userId,
+		},
+		data: {
+			senderLogin: newLogin,
+		}
+	})
+	const games1 = await this.prisma.game.updateMany({
+		where : {
+			login1: oldLogin,
+		},
+		data : {
+			login1: newLogin,
+		}
+	})
+
+	const games2 = await this.prisma.game.updateMany({
+		where : {
+			login2: oldLogin,
+		},
+		data : {
+			login2: newLogin,
+		}
+	})
+	return (user);
 	}
 
 	async getAvatarPath(userId: number) :Promise<string>{
