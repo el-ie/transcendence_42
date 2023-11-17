@@ -106,6 +106,8 @@ export default function Game() {
 
 	const handleKeyDown = (event) => {
 
+		event.preventDefault();
+
 		if ((event.keyCode === 87 || event.keyCode === 38)) {
 			if (validPaddleMove('direction_up'))
 				setIsKeyUpPressed(true);
@@ -117,6 +119,8 @@ export default function Game() {
 	};
 
 	const handleKeyUp = (event) => {
+
+		event.preventDefault();
 
 		if ((event.keyCode === 87 || event.keyCode === 38))
 			setIsKeyUpPressed(false);
