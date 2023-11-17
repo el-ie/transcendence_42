@@ -14,9 +14,21 @@ export class AuthController{
 	//////////////// ROUTES AUTHENTIFICATION API 42 ////////////////
 	// ces routes permettent de declencher l authentification basique a l aide de l api de 42
 
-	@Get('delete_cookie')
+	@Get ('check_authorized')
+	check_authorized() {
+	}
+
+	@Public()
+	@Get('delete_all_cookies')
 	deleteCookie(@Res() res) {
 		res.cookie('AUTH_TOKEN', '', { expires: new Date(0) });
+		res.cookie('TWOFA_TOKEN', '', { expires: new Date(0) });
+		res.send();
+	}
+
+	@Public()
+	@Get('delete_2FA_cookie')
+	deleteTwoFaCookie(@Res() res) {
 		res.cookie('TWOFA_TOKEN', '', { expires: new Date(0) });
 		res.send();
 	}
@@ -112,6 +124,23 @@ export class AuthController{
 					//le @HttpCode(200) enverra la reponse correcte
 			}
 
+				@Get('2fa_remove') 
+				async remove_2fa(@Req() request, @Res() res) {
+
+					//Attention changement de nom twoFaActivate
+
+					await this.prisma.user.update({
+						where: { username: request.user.username },
+						data: { twoFaEnabled: false }
+					});
+
+					res.cookie('TWOFA_TOKEN', '', { expires: new Date(0) });
+					res.send();
+
+					//response.redirect('http://localhost:3000/login');
+					//response.send(); //code http ? options ?
+						//le @HttpCode(200) enverra la reponse correcte
+				}
 				////////////////	ROUTES USED BY RouteProtection in REACT ////////////////
 				//(protection des routes du front)
 
