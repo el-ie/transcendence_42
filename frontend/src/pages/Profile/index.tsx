@@ -21,6 +21,39 @@ function History({list, user}) {
     )
 }
 
+function Stat({ list, user }) {
+    const [wins, setWins] = useState(0);
+    const [loses, setLoses] = useState(0);
+  
+    useEffect(() => {
+      list.forEach((game: any) => {
+        if (game.login1 === user.login) {
+          if (game.score1 >= game.score2) {
+            setWins((prevWins) => prevWins + 1);
+          } else {
+            setLoses((prevLoses) => prevLoses + 1);
+          }
+        } else {
+          if (game.score2 >= game.score1) {
+            setWins((prevWins) => prevWins + 1);
+          } else {
+            setLoses((prevLoses) => prevLoses + 1);
+          }
+        }
+      });
+    }, [list, user]);
+
+    return (
+        <div>
+            <h2>Stats</h2>
+            <div>
+                <span>Wins {wins} - {loses} Loses</span>
+            </div>
+        </div>
+    )
+
+}
+
 export default function Profile() {
 
     const {userId} = useParams();
@@ -78,6 +111,7 @@ export default function Profile() {
                     <h2>{user.login}</h2>
                     <img className="avatar" src={urlAvatar} alt="avatar" />
                 </div>
+                <Stat list={history} user={user} />
                 <History list={history} user={user} />
             </div>
         </div> )

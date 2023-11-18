@@ -230,5 +230,4 @@ export class UserController {
              return { error: `you cant change login`};
            }
     }
-
 }
