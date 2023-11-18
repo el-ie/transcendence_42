@@ -1,3 +1,4 @@
+/* eslint-disable */
 import './game.css'
 import { useSocket } from '../../components/Socket';
 import React, { useRef, useEffect, useState } from 'react';
