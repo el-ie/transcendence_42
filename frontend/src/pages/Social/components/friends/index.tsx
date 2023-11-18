@@ -40,7 +40,7 @@ function InviteList({list, handleAccept, handleDecline}) {
 }
 
 export default function Friends({login, blockeds, handleBlock, handleUnblock, socket}) {
-    const [user, setUser] = useState(null); //maintenant, user sera l'utilisateur complet
+    const [user, setUser] = useState(null);
     const [friends, setFriends] = useState([]);
     const [inviteList, setInviteList] = useState([]);
     const navigate = useNavigate();
@@ -93,23 +93,20 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         };
 
         const handleInvited = (by: string) => {
-            const url = "http://localhost:3001/users/otherByUsername?username=" + by;
-            axios.get(url, {withCredentials: true})
-            .then ((response) => {
-                if (response.data.user) {
-                    console.log(response.data.user);
-                    const temp = [...inviteList];
-                    temp.push(response.data.user);
-                    setInviteList(temp);
-                }
-            })
-            .catch(() => {
-                console.log("erreur lors du chargement des invites");
-            })
+        const url = "http://localhost:3001/users/invite";
+        axios.get(url, {withCredentials: true})
+        .then((response) => {
+            if (response.data.inviters)
+            {
+                setInviteList(response.data.inviters);
+            }
+        })
+        .catch(() => {
+            console.log("error");
+        })
         }
 
         const handleCancel = (by: string) => {
-        console.log("je suis dans cancelinvite");
         const url = "http://localhost:3001/users/invite";
         axios.get(url, {withCredentials: true})
         .then((response) => {
@@ -174,7 +171,6 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
             
         })
     }
-    // console.log(inviteList);
 
 
     return (

@@ -150,7 +150,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("INVITE_PLAYER")
-  invitePlayer(client: Socket, payload: any) {
+	invitePlayer(client: Socket, payload: any) {
 	const userService = this.moduleRef.get(UserService, {strict: false});
 	this.connectedClients.forEach((value, key) => {
         if (value === client) {

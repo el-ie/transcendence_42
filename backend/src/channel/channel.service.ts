@@ -36,6 +36,32 @@ export class ChannelService {
         return (createdChannel);
     }
 
+    async isAdmin(userId: number, channelId: number) {
+        const usercos = await this.prisma.channelConnection.findMany({
+            where: {
+                userId,
+                channelId,
+                role: "ADMIN"
+            }
+        })
+        if (usercos.length > 0)
+            return (true)
+        return (false);
+    }
+
+    async isOwner(userId: number, channelId: number) {
+        const usercos = await this.prisma.channelConnection.findMany({
+            where: {
+                userId,
+                channelId,
+                role: "OWNER"
+            }
+        })
+        if (usercos.length > 0)
+            return (true)
+        return (false);
+    }
+
 
     async joinChannel(name: string, joinerId: number, password: string): Promise<Channel> {
         const channel = await this.prisma.channel.findUnique({

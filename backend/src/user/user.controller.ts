@@ -68,15 +68,18 @@ export class UserController {
     async getInvite(@Req() req: any)
     {
         const invites = await this.userService.getMyInvite(req.user.username);
-        const inviters = invites.map(async (invite) => {
+
+        const invitersPromises = invites.map(async (invite) => {
             const inviter = await this.userService.getUserByUsername(invite.inviterUN);
-            delete(inviter.avatarFileName);
-            delete(inviter.sessionId);
-            delete(inviter.twoFaSecret);
-            delete(inviter.twoFaEnabled);
-            return (inviter);
-        })
-        return ({inviters})
+            delete inviter.avatarFileName;
+            delete inviter.sessionId;
+            delete inviter.twoFaSecret;
+            delete inviter.twoFaEnabled;
+            return inviter;
+        });
+        const inviters = await Promise.all(invitersPromises);
+        console.log("inviters : ", inviters);
+        return { inviters };
     }
 
     @Get('redirection')

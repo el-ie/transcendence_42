@@ -41,9 +41,13 @@ export class ChannelController {
   }
 
   @Post('setPassword')
-  async setPassword(@Body() dto: ChangePasswordDto) {
+  async setPassword(@Body() dto: ChangePasswordDto, @Req() req: any) {
     const channelId = await this.channelService.getIdByName(dto.name);
     try {
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isOwner)
+        throw new Error();
       await this.channelService.setPassword(channelId, dto.password);
     }
     catch{
@@ -74,11 +78,15 @@ export class ChannelController {
   }
 
   @Post('kick')
-  async kickUser(@Body() channelLeaveDto: ChannelJoinDto) {
+  async kickUser(@Body() channelLeaveDto: ChannelJoinDto, @Req() req: any) {
     try {
+      const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isAdmin && !isOwner)
+        throw new Error();
       const leaverId = await this.userService.getIdByLogin(channelLeaveDto.login);
       const leaverUsername = await this.userService.getUsernameByLogin(channelLeaveDto.login);
-      const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
       await this.channelService.leaveChan(leaverId, channelId, channelLeaveDto.login);
       const username = await this.userService.getUsernameByLogin(channelLeaveDto.login);
       const socketService = this.socketRef.get(SocketGateway, { strict: false });
@@ -89,10 +97,14 @@ export class ChannelController {
   }
 
   @Post('ban')
-  async banUser(@Body() channelLeaveDto: ChannelJoinDto) {
+  async banUser(@Body() channelLeaveDto: ChannelJoinDto, @Req() req: any) {
     try {
       const leaverId = await this.userService.getIdByLogin(channelLeaveDto.login);
       const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isAdmin && !isOwner)
+        throw new Error();
       const leaverUsername = await this.userService.getUsernameByLogin(channelLeaveDto.login);
       await this.channelService.leaveChan(leaverId, channelId, channelLeaveDto.login);
       await this.channelService.banUser(channelId, leaverId)
@@ -117,10 +129,14 @@ export class ChannelController {
   }
 
   @Post('mute')
-  async MuteUser(@Body() channelLeaveDto: ChannelJoinDto) {
+  async MuteUser(@Body() channelLeaveDto: ChannelJoinDto, @Req() req: any) {
     try {
       const leaverId = await this.userService.getIdByLogin(channelLeaveDto.login);
       const channelId = await this.channelService.getIdByName(channelLeaveDto.name);
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isAdmin && !isOwner)
+        throw new Error();
       await this.channelService.muteUser(leaverId, channelId);
     } catch (error) {
       return { error: `you cant kicked this user`};
@@ -128,10 +144,14 @@ export class ChannelController {
   }
 
   @Post('setAdmin')
-  async setAdmin(@Body() dto: SetAdminDto) {
+  async setAdmin(@Body() dto: SetAdminDto, @Req() req: any) {
     try {
       const userId = await this.userService.getIdByLogin(dto.login);
       const channelId = await this.channelService.getIdByName(dto.name);
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isOwner && !isAdmin)
+        throw new Error();
       await this.channelService.setNewAdmin(userId, channelId);
     } catch (error) {
       return { error: `you cant set this user as admin`};
@@ -140,9 +160,13 @@ export class ChannelController {
 
 
   @Post('delete')
-  async deleteChannel(@Body() nameDto: NameDto) {
+  async deleteChannel(@Body() nameDto: NameDto, @Req() req: any) {
     try {
       const channelId = await this.channelService.getIdByName(nameDto.name);
+      const isAdmin = await this.channelService.isAdmin(req.user.id, channelId);
+      const isOwner = await this.channelService.isOwner(req.user.id, channelId);
+      if (!isAdmin && !isOwner)
+        throw new Error();
       await this.channelService.deleteChan(channelId);
     } catch (error) {
       return { error: `cant destroy this channel`};
