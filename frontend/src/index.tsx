@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Home from './pages/Home';
+import Bonus from './pages/Bonus';
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Social from './pages/Social';
 import Game from './pages/Game';
@@ -19,11 +19,11 @@ root.render(
       <Routes>
         <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
-        <Route path="/home" element={
+        <Route path="/bonus" element={
           <RouteProtection>
               <Header />
               <SocketProvider>
-                <Home />
+                <Bonus />
               </SocketProvider>
             </RouteProtection>
         } />

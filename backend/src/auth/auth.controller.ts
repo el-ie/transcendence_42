@@ -50,7 +50,7 @@ export class AuthController{
 		const token = await this.authService.generateJwt(req.user, 'basic_auth');
 		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
 		//return response.send();//options?
-		response.redirect('http://localhost:3000/home');
+		response.redirect('http://localhost:3000/bonus');
 	}
 
 		//////////////// ROUTES AUTHENTIFICATION 2FA ////////////////

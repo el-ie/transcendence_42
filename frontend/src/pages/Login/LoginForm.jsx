@@ -120,7 +120,7 @@ export default function LoginForm() {
 			await axios.post('http://localhost:3001/auth/2fa_authenticate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setRefreshPage(42);//permet de relancer le useEffect pour mettre les check a jour
 			// normalement si le cookie est bien envoye par la route il n y a pas besoin de faire plus
-			window.location.href = 'http://localhost:3000/home';
+			window.location.href = 'http://localhost:3000/bonus';
 		} catch (error) {
 			console.log('handleSubmit', error.response.data.message, error.response.data);
 		}
@@ -132,7 +132,7 @@ export default function LoginForm() {
 
 		if (authorized) {
 			return (
-				<Navigate to="/home" replace /> 
+				<Navigate to="/bonus" replace /> 
 			);
 		};
 

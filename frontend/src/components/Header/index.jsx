@@ -277,7 +277,7 @@ export default function Header() {
 
 	return(
 		<nav>
-		<Link to="/Home" onClick={handleClickProtection}>Home</Link>
+		<Link to="/bonus" onClick={handleClickProtection}>3D</Link>
 		<Link to="/Game" onClick={handleClickProtection}>Game</Link>
 		<Link to="/Social" onClick={handleClickProtection}>Social</Link>
 		{me && <Link to={`/Profile/${me.id}`} onClick={handleClickProtection}>Profile</Link>}
