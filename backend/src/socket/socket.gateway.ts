@@ -37,6 +37,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		  this.connectedClients.delete(username);
 		  await userService.disconnect(username);
+		  await userService.setOutGame(username);
 		  console.log("user disconnected");
 		  break;
 	  }
@@ -47,6 +48,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async manageGameInterruption(username: string) {
 
 	const userService = this.moduleRef.get(UserService, {strict: false});
+	await userService.setOutGame(username);
+    this.server.emit("connection");
 	  if (this.isInMatchmakingQueue(username))
 		  this.matchmakingQueue = this.matchmakingQueue.filter(player => player !== username);
 	  
@@ -167,7 +170,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					return;
 			}
 			if (this.matchingQueuePrivate[payload.inviter] === key) {
-				console.log("je lance une game entre ", payload.inviter , " et ", this.matchingQueuePrivate[payload.inviter]);
+	  			const userService = this.moduleRef.get(UserService, {strict: false});
+				userService.setInGame(payload.inviter);
+				userService.setInGame(this.matchingQueuePrivate[payload.inviter]);
+				this.server.emit("connection");
 				this.launchGame(payload.inviter, this.matchingQueuePrivate[payload.inviter], false);
 				// this.matchingQueuePrivate.delete(payload.inviter);
 			}
@@ -220,15 +226,21 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  if (boostedMode && this.matchmakingQueueBoosted.length >= 2) {
 		  const playerLeft = this.matchmakingQueueBoosted.shift();
 		  const playerRight = this.matchmakingQueueBoosted.shift();
-
+		  const userService = this.moduleRef.get(UserService, {strict: false});
+		  userService.setInGame(playerLeft);
+		  userService.setInGame(playerRight);
+		  this.server.emit("connection");
 		  this.launchGame(playerLeft, playerRight, true);
 	  }
 
 	  if (this.matchmakingQueue.length >= 2) {
-		  const playerLeft = this.matchmakingQueue.shift();
-		  const playerRight = this.matchmakingQueue.shift();
-
-		  this.launchGame(playerLeft, playerRight, false);
+		const playerLeft = this.matchmakingQueue.shift();
+		const playerRight = this.matchmakingQueue.shift();
+		const userService = this.moduleRef.get(UserService, {strict: false});
+		userService.setInGame(playerLeft);
+		userService.setInGame(playerRight);
+		this.server.emit("connection");
+		this.launchGame(playerLeft, playerRight, false);
 	  }
 
 
@@ -426,6 +438,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 			  if (gameState.playerLeft.score >= scoreToWin || gameState.playerRight.score >= scoreToWin) {
 				  clearInterval(intervalId);
+				  const userService = this.moduleRef.get(UserService, {strict: false});
+				  
+				  userService.setInGame(gameState.playerLeft.name);
+				  userService.setInGame(gameState.playerRight.name);
+				  this.server.emit("connection");
 				  this.historyService.saveGame(gameState.playerLeft.login, gameState.playerRight.login, gameState.playerLeft.score, gameState.playerRight.score); 
 				  this.activeGames = this.activeGames.filter(([key1, key2, game]) => game !== gameState);
 				  return;
@@ -438,6 +455,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  }
 
 		  if (gameState.interruption) {
+			// const userService = this.moduleRef.get(UserService, {strict: false});
+			// userService.setInGame(playerLeft);
+			// userService.setInGame(playerRight);
 			  //this.historyService.saveGame(gameState.playerLeft.login, gameState.playerRight.login, gameState.playerLeft.score, gameState.playerRight.score);
 			  //finalement c est mieux de ne pas mettre les parties interromppues dans l historique puisqu elles peuvent etre gagnees par le joueur avec le score le plus bas, sinon il faudrai rajouter un champs pour dire qui a gagne ...
 			  clearInterval(intervalId);

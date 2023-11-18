@@ -56,6 +56,39 @@ export class UserService {
 		}
 	}
 
+	async setInGame(username: string) {
+		try {
+			const user = await this.prisma.user.update({
+				where : {
+					username,
+				},
+				data: {
+					isInGame: true,
+				}
+			})
+		}
+		catch {
+			console.log("erreur connect");
+		}
+	}
+
+	async setOutGame(username: string) {
+		try {
+			const user = await this.prisma.user.update({
+				where : {
+					username,
+				},
+				data: {
+					isInGame: false,
+				}
+			})
+		}
+		catch {
+			console.log("erreur connect");
+		}
+	}
+
+	
 	async disconnect(username: string) {
 		try {
 			const user = await this.prisma.user.update({
@@ -85,6 +118,15 @@ export class UserService {
 		const user = await this.prisma.user.findUniqueOrThrow({
 			where: {
 				login: login,
+			}
+		})
+		return (user);
+	}
+
+	async getUserByUsername(username: string): Promise<User> {
+		const user = await this.prisma.user.findUniqueOrThrow({
+			where: {
+				username,
 			}
 		})
 		return (user);

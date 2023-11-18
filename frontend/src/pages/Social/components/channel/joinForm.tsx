@@ -26,8 +26,8 @@ export default function JoinForm({onClose, onJoin, login}) {
                 setError(reponse.data.error);
             }
         })
-        .catch(function(error) {
-            console.error(error);
+        .catch(() => {
+            console.log("error");
         });
     }
     return (

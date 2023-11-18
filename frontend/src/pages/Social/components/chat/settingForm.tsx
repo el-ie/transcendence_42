@@ -78,6 +78,9 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         .then(() => {
             console.log("password succesfully changed");
         })
+        .catch(() => {
+            console.log("error");
+        })
         
     }
 

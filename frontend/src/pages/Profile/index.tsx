@@ -11,7 +11,7 @@ function History({list, user}) {
             <ul className="history_list">
                 {list.map((game: any) => {
                     return (
-                        <li className="game_results">
+                        <li className="game_results" key={game.id}>
                             <span>{game.login1}</span> <span>{game.score1} - {game.score2}</span> <span>{game.login2}</span>
                         </li>
                     );

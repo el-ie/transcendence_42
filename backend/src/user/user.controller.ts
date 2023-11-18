@@ -43,11 +43,28 @@ export class UserController {
         }
     }
 
+    @Get('otherByUsername')
+    async getuserByUsername(@Query('username') username: string)
+    {
+        try {
+            const user = await this.userService.getUserByUsername(username);
+            return ({user});
+        }
+        catch {
+            return {error: "404 User not found"}
+        }
+    }
+
+
     @Get('invite')
     async getInvite(@Req() req: any)
     {
         const invites = await this.userService.getMyInvite(req.user.username);
-        return ({invites})
+        const inviters = invites.map(async (invite) => {
+            const inviter = await this.userService.getUserByUsername(invite.inviterUN);
+            return (inviter);
+        })
+        return ({inviters})
     }
 
     @Get('redirection')
@@ -113,6 +130,10 @@ export class UserController {
         }
     }
 
+    @Post('cancelInvite')
+    async cancel(@Body() dto: ChangeLoginDto) {
+        await this.userService.deleteInvite(dto.newLogin);
+    }
 
     @Post('addFriend')
     async addFriend(@Body() dto: AddFriendDto) {

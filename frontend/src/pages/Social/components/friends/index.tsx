@@ -13,6 +13,7 @@ function FriendList({list, handleSelect}) {
                     <li key={user.id + "a"} onClick={() => handleSelect(user)}>
                     {user.isConnected ? <span className="green">¤£</span> : <span className="gray">££</span>}
                     {user.login}
+                    {user.isInGame && <span> In a game</span>}
                     </li>
                 ))}
             </ul>
@@ -21,15 +22,16 @@ function FriendList({list, handleSelect}) {
 }
 
 function InviteList({list, handleAccept, handleDecline}) {
+    console.log("list :", list);
     return (
         <div>
             <h2>Game Invite List</h2>
             <ul className="gameInviteList">
-                {list.map((username: string) => (
-                    <li key={username + "a"}>
-                    {username} 
-                    <button onClick={() => handleAccept(username)}>Accept</button>
-                    <button onClick={handleDecline}>Coward</button>
+                {list.map((inviter: any) => (
+                    <li key={inviter.username + "a"}>
+                    {inviter.login} 
+                    <button onClick={() => handleAccept(inviter.username)}>Accept</button>
+                    <button onClick={() => handleDecline(inviter.username)}>Coward</button>
                     </li>
                 ))}
             </ul>
@@ -54,6 +56,9 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
             else
                 console.log(response.data.error);
         })
+        .catch(() => {
+            console.log("error");
+        })
         
     }, [login, socket])
 
@@ -61,15 +66,13 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         const url = "http://localhost:3001/users/invite";
         axios.get(url, {withCredentials: true})
         .then((response) => {
-            const temp = [...inviteList];
-            if (response.data.invites)
+            if (response.data.inviters)
             {
-                response.data.invites.map((invite: any) => {
-                    temp.push(invite.inviterUN);
-                    return true;
-                })
-                setInviteList(temp);
+                setInviteList(response.data.inviters);
             }
+        })
+        .catch(() => {
+            console.log("error");
         })
     }, [])
 
@@ -84,12 +87,25 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
             else
                 console.log(response.data.error);
             })
+            .catch(() => {
+                console.log("error");
+            })
         };
 
         const handleInvited = (by: string) => {
-            const temp = [...inviteList];
-            temp.push(by);
-            setInviteList(temp);
+            const url = "http://localhost:3001/users/otherByUsername?username=" + by;
+            axios.get(url, {withCredentials: true})
+            .then ((response) => {
+                if (response.data.user) {
+                    console.log(response.data.user);
+                    const temp = [...inviteList];
+                    temp.push(response.data.user);
+                    setInviteList(temp);
+                }
+            })
+            .catch(() => {
+                console.log("erreur lors du chargement des invites");
+            })
         }
 
         const handleCancel = (by: string) => {
@@ -97,15 +113,13 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         const url = "http://localhost:3001/users/invite";
         axios.get(url, {withCredentials: true})
         .then((response) => {
-            const temp = [];
-            if (response.data.invites)
+            if (response.data.inviters)
             {
-                response.data.invites.map((invite: any) => {
-                    temp.push(invite.inviterUN);
-                    return true;
-                })
-                setInviteList(temp);
+                setInviteList(response.data.inviters);
             }
+        })
+        .catch(() => {
+            console.log("error");
         })
         }
       
@@ -142,12 +156,32 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         }
     }
 
+    function handleDecline(username: string) {
+        const url = "http://localhost:3001/users/cancelInvite";
+        const data = {
+            newLogin: username,
+        }
+        axios.post(url, data, {withCredentials: true})
+        .then(() => {
+            const url = "http://localhost:3001/users/invite";
+            axios.get(url, {withCredentials: true})
+            .then((response) => {
+                if (response.data.inviters)
+                {
+                    setInviteList(response.data.inviters);
+                }
+            })
+            
+        })
+    }
+    // console.log(inviteList);
+
 
     return (
         <div>
             <UserProfile user={user} setUser={setUser} handleDel={handleDel} handleUnblock={handleUnblock}  handleAdd={handleAdd} handleBlock={handleBlock} login={login} friends={friends} blockeds={blockeds} socket={socket}/>
             <FriendList list={friends} handleSelect={setUser} />
-            <InviteList list={inviteList} handleAccept={handleAccept} handleDecline={null} />
+            <InviteList list={inviteList} handleAccept={handleAccept} handleDecline={handleDecline} />
 
         </div>
     )

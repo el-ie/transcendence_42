@@ -7,7 +7,8 @@ export default function ChatInput({socket, channel, login}) {
     function handleClick(){
 
         const url = "http://localhost:3001/channel/users?name=" + channel.name
-        axios.get(url, {withCredentials: true}).then((reponse) => {
+        axios.get(url, {withCredentials: true})
+        .then((reponse) => {
             if (reponse.data.users)
             {
                 const payload = {
@@ -19,6 +20,9 @@ export default function ChatInput({socket, channel, login}) {
                 socket.emit('message', payload);
                 setInput('');
             }
+        })
+        .catch(() => {
+            console.log("error");
         })
     }
 
