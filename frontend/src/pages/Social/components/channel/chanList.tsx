@@ -1,5 +1,5 @@
 import axios from "axios";
-import "./chanList.css"
+import "/app/src/css/channel.css";
 import { useEffect, useState } from "react";
 
 async function getName(name:string) {
@@ -25,10 +25,10 @@ async function getName(name:string) {
 }
 export default function ChanList({ list, handleSelect, login }) {
     const [resolvedNames, setResolvedNames] = useState([]);
-  
+
     useEffect(() => {
       const promises = list.map((channel) => getName(channel.name));
-  
+
       Promise.all(promises)
         .then((resolved) => {
           setResolvedNames(resolved);
@@ -37,7 +37,7 @@ export default function ChanList({ list, handleSelect, login }) {
           console.error("Error resolving names: ", error);
         });
     }, [list, login]);
-  
+
     return (
       <ul className="chanList">
         {resolvedNames.length !== 0 && resolvedNames.map((name, index) => (
@@ -48,4 +48,4 @@ export default function ChanList({ list, handleSelect, login }) {
       </ul>
     );
   }
-  
+

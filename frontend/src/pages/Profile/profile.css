@@ -1,26 +1,26 @@
 .profile {
-    position: fixed;
-    top: 33%;
-    left: 33%;
-    height: 33%;
-    width: 33%;
+    /*position: fixed;*/
+    /*top: 33%;*/
+    /*left: 33%;*/
+    /*height: 33%;*/
+    /*width: 33%;*/
     color: white;
-    border-radius: 20px;
+    /*border-radius: 20px;*/
     padding: 20px;
-    background-color: rgb(86, 24, 145);
+    /*background-color: rgb(86, 24, 145);*/
 }
 
 h2 {
-    text-align: center;
+    /*text-align: center;*/
 }
 
 .avatar {
-    height: 100px;
-    width: 100px;
+    height: 10%;
+    width: 10%;
 }
 
 .history_list {
-    max-height: 180px;
+    /*max-height: 180px;*/
     overflow-y: scroll;
     list-style-type: none;
 }

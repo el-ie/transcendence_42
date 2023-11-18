@@ -1,8 +1,19 @@
 import { Link } from "react-router-dom";
-import "./header.css"
+//import "./index.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+function Settings() {
+  return (
+	<>
+	<h1>pong</h1>
+	</>
+  )
+}
+
+export default Settings;
+
+//
 //function Settings({me, onClose}) {
 //    const [changeAvatar, setChangeAvatar] = useState(false);
 //    const [changeLogin, setChangeLogin] = useState(false);
@@ -243,51 +254,7 @@ import axios from "axios";
 //
 //
 //		</div>
-//
 //	)
 //}
-
-export default function Header() {
-	const [me, setMe] = useState(null);
-	const [params, setParams] = useState(false);
-
-	useEffect(() => {
-		const url_get_user = "http://localhost:3001/users/me"
-		axios.get(url_get_user, {withCredentials: true})
-			.then((response) => {
-				setMe(response.data);
-			})
-	}, [])
-
-	function handleClose() {
-		setParams(false);
-	}
-	// console.log("params: ", params);
-
-
-	async function handleClickProtection()
-	{
-		try {
-			await axios.get('http://localhost:3001/auth/check_authorized', { withCredentials: true });
-		} catch {
-			window.location.reload();
-		}
-	}
-
-	return(
-		<nav>
-		<Link to="/Home" onClick={handleClickProtection}>Home</Link>
-		<Link to="/Game" onClick={handleClickProtection}>Game</Link>
-		<Link to="/Social" onClick={handleClickProtection}>Social</Link>
-		{me && <Link to={`/Profile/${me.id}`} onClick={handleClickProtection}>Profile</Link>}
-		<Link to="/Settings" onClick={handleClickProtection}>Settings</Link>
-		</nav>
-	)
-
-}
-
-		//<button onClick={() => {
-		//	handleClickProtection();
-		//	setParams(!params);
-		//}}>settings</button>
-		//{me && params && <Settings me={me} onClose={handleClose}/>}
+//
+//export default Settings;

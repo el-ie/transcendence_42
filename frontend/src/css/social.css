@@ -1,6 +1,5 @@
 .social {
     display: flex;
-
 }
 
 .social > *{
@@ -8,5 +7,5 @@
     padding: 20px;
     margin: 3px;
     height: 100%;
-    border: 2px solid rgb(46, 14, 105);
+    border: 2px solid #a56fe2;
 }

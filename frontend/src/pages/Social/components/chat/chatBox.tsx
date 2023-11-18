@@ -1,4 +1,4 @@
-import "./chatbox.css"
+import "/app/src/css/chatbox.css";
 export default function Chatbox({messages, login, blockeds}) {
 
     return (

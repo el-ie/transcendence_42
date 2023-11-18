@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
-import "../channel/form.css"
+import "/app/src/css/channel.css";
 
 
 function SelectDefault({defaultUsers, setSelected}) {
@@ -64,7 +64,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         .then(() => {
             console.log("password succesfully deleted");
         })
-        
+
     }
 
     function handlepswSet() {
@@ -81,7 +81,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         .catch(() => {
             console.log("error");
         })
-        
+
     }
 
     function handleSetAdmin() {
@@ -170,7 +170,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
                 <button onClick={handleLeave}>Leave</button>
                 {role === 'OWNER' && <button onClick={handleDelete}>Delete</button>}
             </div>
-            {role === 'OWNER' && 
+            {role === 'OWNER' &&
             <div>
                 <input type="text" placeholder="new password" value={password} maxLength={10} onChange={(e) => setPassword(e.target.value)}/>
                 <button onClick={() => handlepswSet()}>Change</button>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import ChanZone from "./chanZone";
 import DirectZone from "./directZone";
-import "./chanZone.css"
+import "/app/src/css/channel.css";
 
 function Button({value, handleClick}) {
     return (
@@ -19,9 +19,9 @@ export default function Channels({handleSelect, login, currentChan, socket}){
             setKicked(!kicked);
             handleSelect(null);
           }
-      
+
         socket.on('kicked', kickHandler);
-      
+
         return () => {
           socket.off('message', kickHandler);
         };

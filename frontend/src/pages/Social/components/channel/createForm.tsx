@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import "./form.css"
+import "/app/src/css/channel.css";
 
 export default function CreateForm({onClose, onCreate, login}) {
     const [name, setName] = useState('');
@@ -36,11 +36,11 @@ export default function CreateForm({onClose, onCreate, login}) {
         <div className="form">
             <button onClick={onClose} className="closeButton">x</button>
             <select name="witchType" defaultValue="PUBLIC" onChange={(e) => setType(e.target.value)}>
-                <option value="PUBLIC">PUBLIC</option>
-                <option value="PRIVATE">PRIVATE</option>
+                <option value="PUBLIC">public</option>
+                <option value="PRIVATE">private</option>
             </select>
             <input type="text" placeholder="name" value={name} maxLength={10} onChange={(e) => setName(e.target.value)} />
-            <input type="text" placeholder="password" value={password} maxLength={10} onChange={(e) => setPassword(e.target.value)} />
+            <input type="password" placeholder="password" value={password} maxLength={10} onChange={(e) => setPassword(e.target.value)} />
             <div>
                 <button onClick={handleClick}>Create</button>
                 {/* <button onClick={onCancel}>Cancel</button> */}
