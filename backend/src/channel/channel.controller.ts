@@ -198,7 +198,11 @@ export class ChannelController {
     try {
       const channelId = await this.channelService.getIdByName(name);
       const users = await this.channelService.getChannelUsers(channelId);
-      return {users} ;
+      const sanitizedUsers = users.map(user => {
+        const { avatarFileName, sessionId, twoFaEnabled, twoFaSecret, ...sanitizedUser } = user;
+        return sanitizedUser;
+      });
+      return {users: sanitizedUsers} ;
 
     }
     catch (error) {
@@ -211,7 +215,11 @@ export class ChannelController {
     try {
       const channelId = await this.channelService.getIdByName(name);
       const users = await this.channelService.getChannelDefaultUsers(channelId);
-      return {users} ;
+      const sanitizedUsers = users.map(user => {
+        const { avatarFileName, sessionId, twoFaEnabled, twoFaSecret, ...sanitizedUser } = user;
+        return sanitizedUser;
+      });
+      return {users: sanitizedUsers} ;
 
     }
     catch (error) {
@@ -224,7 +232,11 @@ export class ChannelController {
     try {
       const channelId = await this.channelService.getIdByName(name);
       const users = await this.channelService.getChannelDefaultAdminUsers(channelId);
-      return {users} ;
+      const sanitizedUsers = users.map(user => {
+        const { avatarFileName, sessionId, twoFaEnabled, twoFaSecret, ...sanitizedUser } = user;
+        return sanitizedUser;
+      });
+      return {users: sanitizedUsers} ;
 
     }
     catch (error) {

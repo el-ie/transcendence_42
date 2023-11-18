@@ -36,6 +36,10 @@ export class UserController {
     {
         try {
             const user = await this.userService.getUser(login);
+            delete(user.avatarFileName);
+            delete(user.sessionId);
+            delete(user.twoFaSecret);
+            delete(user.twoFaEnabled);
             return ({user});
         }
         catch {
@@ -48,6 +52,10 @@ export class UserController {
     {
         try {
             const user = await this.userService.getUserByUsername(username);
+            delete(user.avatarFileName);
+            delete(user.sessionId);
+            delete(user.twoFaSecret);
+            delete(user.twoFaEnabled);
             return ({user});
         }
         catch {
@@ -62,6 +70,10 @@ export class UserController {
         const invites = await this.userService.getMyInvite(req.user.username);
         const inviters = invites.map(async (invite) => {
             const inviter = await this.userService.getUserByUsername(invite.inviterUN);
+            delete(inviter.avatarFileName);
+            delete(inviter.sessionId);
+            delete(inviter.twoFaSecret);
+            delete(inviter.twoFaEnabled);
             return (inviter);
         })
         return ({inviters})
@@ -77,6 +89,10 @@ export class UserController {
     {
         try {
             const user = await this.userService.getUserById(parseInt(id));
+            delete(user.avatarFileName);
+            delete(user.sessionId);
+            delete(user.twoFaSecret);
+            delete(user.twoFaEnabled);
             return ({user});
         }
         catch {
@@ -90,7 +106,11 @@ export class UserController {
     {
         try {
             const users = await this.userService.getFriends(req.user.login);
-            return {users};
+            const sanitizedUsers = users.map(user => {
+                const { avatarFileName, sessionId, twoFaEnabled, twoFaSecret, ...sanitizedUser } = user;
+                return sanitizedUser;
+              });
+              return {users: sanitizedUsers} ;
         }
         catch {
             return {error: "404 User not found"}
@@ -139,6 +159,10 @@ export class UserController {
     async addFriend(@Body() dto: AddFriendDto) {
         try {
           const added = await this.userService.addFriend(dto.login, dto.target);
+            delete(added.avatarFileName);
+            delete(added.sessionId);
+            delete(added.twoFaSecret);
+            delete(added.twoFaEnabled);
           return ({added})
         } 
         catch (error) {
@@ -150,6 +174,10 @@ export class UserController {
     async delFriend(@Body() dto: AddFriendDto) {
         try {
           const deleted = await this.userService.delFriend(dto.login, dto.target);
+            delete(deleted.avatarFileName);
+            delete(deleted.sessionId);
+            delete(deleted.twoFaSecret);
+            delete(deleted.twoFaEnabled);
           return ({deleted})
         } 
         catch (error) {
@@ -161,6 +189,10 @@ export class UserController {
     async blockUser(@Body() dto: AddFriendDto) {
         try {
          const blocked = await this.userService.blockUser(dto.login, dto.target);
+         delete(blocked.avatarFileName);
+         delete(blocked.sessionId);
+         delete(blocked.twoFaSecret);
+         delete(blocked.twoFaEnabled);
          return ({blocked});
         } 
         catch (error) {
@@ -172,6 +204,10 @@ export class UserController {
     async unblockUser(@Body() dto: AddFriendDto) {
         try {
          const unblocked = await this.userService.unblockUser(dto.login, dto.target);
+         delete(unblocked.avatarFileName);
+         delete(unblocked.sessionId);
+         delete(unblocked.twoFaSecret);
+         delete(unblocked.twoFaEnabled);
          return ({unblocked});
         } 
         catch (error) {
@@ -184,6 +220,10 @@ export class UserController {
             const user = await this.userService.changeLogin(req.user.id, dto.newLogin, req.user.login);
             const socketService = this.moduleref.get(SocketGateway, { strict: false })
             socketService.sendEvent(user.username, "newLogin", null);
+            delete(user.avatarFileName);
+            delete(user.sessionId);
+            delete(user.twoFaSecret);
+            delete(user.twoFaEnabled);
             return ({user});
            } 
            catch (error) {
