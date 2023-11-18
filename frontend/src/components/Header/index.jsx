@@ -118,7 +118,7 @@ function Settings({me, onClose}) {
     useEffect(() => {
         const getTwoFaActivationState = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
+                await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
 				setTwoFaActivation(true); //utile ?
             } catch (error) {
 				setTwoFaActivation(false);
@@ -151,7 +151,7 @@ function Settings({me, onClose}) {
 	const handleSubmitActivation = async (event) => {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 		try {
-			const response = await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setTwoFaActivation(true);
 			//REVOIR ICI//setRefreshPage(42); //permet de relancer le useEffect pour mettre les check a jour
 		} catch (error) {
@@ -167,7 +167,7 @@ function Settings({me, onClose}) {
 	const handleRemoveTwoFa = async (event) => {
 
 		try {
-			const response = await axios.get('http://localhost:3001/auth/2fa_remove', { withCredentials: true });
+			await axios.get('http://localhost:3001/auth/2fa_remove', { withCredentials: true });
 			setTwoFaActivation(false);
 			window.location.reload();
 		} catch (error) {
@@ -225,7 +225,7 @@ function Settings({me, onClose}) {
 			<button type="submit" style={{color: 'black'}}>Soumettre</button>
 			</form>
 			<br />
-			<img src={qrCode} />
+			<img src={qrCode} alt="Qr code" />
 			</div>
 		}
 

@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import UserInfos from './UserInfos';
-
-import Header from '../../components/Header';
-
 import { Navigate } from 'react-router-dom'
 
 export default function LoginForm() {
@@ -33,7 +29,7 @@ export default function LoginForm() {
 
         const checkIsSigned = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/auth/check_is_signed', { withCredentials: true });
+                await axios.get('http://localhost:3001/auth/check_is_signed', { withCredentials: true });
 				setIsSigned(true);
 				return true; //utile ?
             } catch (error) {
@@ -45,7 +41,7 @@ export default function LoginForm() {
 
         const getTwoFaActivationState = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
+                await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
 				setTwoFaActivation(true); //utile ?
             } catch (error) {
 				setTwoFaActivation(false);
@@ -56,7 +52,7 @@ export default function LoginForm() {
 
         const getTwoFaCookieState = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
+                await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
 				setTwoFaCookieState(true);
             } catch (error) {
 				setTwoFaCookieState(false); 
@@ -67,7 +63,7 @@ export default function LoginForm() {
 
         const checkIfAuthorized = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/auth/check_authorized', { withCredentials: true });
+                await axios.get('http://localhost:3001/auth/check_authorized', { withCredentials: true });
 				setAuthorized(true);
             } catch (error) {
 				setAuthorized(false); 
@@ -108,7 +104,7 @@ export default function LoginForm() {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 
 		try {
-			const response = await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setTwoFaActivation(true);
 			setRefreshPage(42); //permet de relancer le useEffect pour mettre les check a jour
 		} catch (error) {
@@ -121,7 +117,7 @@ export default function LoginForm() {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 
 		try {
-			const response = await axios.post('http://localhost:3001/auth/2fa_authenticate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post('http://localhost:3001/auth/2fa_authenticate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setRefreshPage(42);//permet de relancer le useEffect pour mettre les check a jour
 			// normalement si le cookie est bien envoye par la route il n y a pas besoin de faire plus
 			window.location.href = 'http://localhost:3000/home';
@@ -201,7 +197,7 @@ export default function LoginForm() {
 				<button type="submit">Soumettre</button>
 				</form>
 				<br />
-				<img src={qrCode} />
+				<img src={qrCode} alt="Qr code"/>
 				</div>
 		}
 
