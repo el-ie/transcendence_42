@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import ChanZone from "./chanZone";
 import DirectZone from "./directZone";
-import "/app/src/css/channel.css";
+import "/app/src/css/style.css";
 
 function Button({value, handleClick}) {
     return (

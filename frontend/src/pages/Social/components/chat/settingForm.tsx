@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
-import "/app/src/css/channel.css";
+import "/app/src/css/style.css";
 
 
 function SelectDefault({defaultUsers, setSelected}) {

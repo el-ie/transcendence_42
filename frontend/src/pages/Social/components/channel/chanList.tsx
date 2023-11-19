@@ -1,5 +1,5 @@
 import axios from "axios";
-import "/app/src/css/channel.css";
+import "/app/src/css/style.css";
 import { useEffect, useState } from "react";
 
 async function getName(name:string) {

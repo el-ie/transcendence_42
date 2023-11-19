@@ -1,4 +1,4 @@
-import '/app/src/css/index.css';
+import '/app/src/css/style.css';
 import image from '/app/src/image_intro.png';
 
 function App() {

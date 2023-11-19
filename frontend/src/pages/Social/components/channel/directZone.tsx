@@ -15,7 +15,7 @@ export default function DirectZone({handleSelect, login}) {
         })
         .catch((error) => {
             console.error("Erreur lors de la récupération des direct : ", error);
-        });         
+        });
     }, [login])
 
     function addChannel(channel: any) {

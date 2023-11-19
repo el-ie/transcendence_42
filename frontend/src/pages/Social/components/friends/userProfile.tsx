@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
-import "/app/src/css/userprofile.css";
+import "/app/src/css/style.css";
 
 function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock, blockeds, friends, socket}) {
     const isFriend = friends.some(friend => friend.id === user.id);

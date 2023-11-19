@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./profile.css"
 import { useSocket } from "../../components/Socket";
 
 function History({list, user}) {
@@ -24,7 +23,7 @@ function History({list, user}) {
 function Stat({ list, user }) {
     const [wins, setWins] = useState(0);
     const [loses, setLoses] = useState(0);
-  
+
     useEffect(() => {
       list.forEach((game: any) => {
         if (game.login1 === user.login) {
@@ -85,7 +84,7 @@ export default function Profile() {
     useEffect(() => {
         if (user){
             const url = "http://localhost:3001/history?login=" + user.login;
-        
+
             axios.get(url, {withCredentials: true})
             .then ((response) => {
                 if (response.data.history)

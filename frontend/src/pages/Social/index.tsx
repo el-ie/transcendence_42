@@ -1,4 +1,4 @@
-import '/app/src/css/social.css'
+import '/app/src/css/style.css'
 import Channels from './components/channel'
 import Chat from './components/chat'
 import Friends from './components/friends'

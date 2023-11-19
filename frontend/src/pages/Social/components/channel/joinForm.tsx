@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import "/app/src/css/channel.css";
+import "/app/src/css/style.css";
 
 export default function JoinForm({onClose, onJoin, login}) {
     const [name, setName] = useState('');

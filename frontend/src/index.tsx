@@ -10,7 +10,6 @@ import LoginForm from './pages/Login/LoginForm';
 import RouteProtection from './components/RouteProtection';
 import { SocketProvider } from './components/Socket';
 import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 
 
 const root_element: HTMLElement = document.getElementById('root') as HTMLElement;
@@ -61,14 +60,6 @@ root.render(
               </SocketProvider>
             </RouteProtection>
         } />
-		<Route path="/settings" element={
-			<RouteProtection>
-				<Header />
-				<SocketProvider>
-					<Settings />
-				</SocketProvider>
-			</RouteProtection>
-		} />
       </Routes>
 	  </Router>
 );

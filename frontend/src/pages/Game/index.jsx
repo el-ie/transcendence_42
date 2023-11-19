@@ -1,4 +1,3 @@
-import './game.css'
 import Menu from '../Menu';
 import { useSocket } from '../../components/Socket';
 import React, { useRef, useEffect, useState } from 'react';
@@ -250,8 +249,8 @@ export default function Game() {
 		return (
 			<div class="find_game">
 			<h1>Matchmaking</h1>
-			<button class="find_game_button" onClick={handleReadyToPlay}>CLASSIC MODE</button>
-			<button class="find_game_button" onClick={handleReadyToPlayBoosted}>BOOSTED MODE</button>
+			<button onClick={handleReadyToPlay}>CLASSIC MODE</button>
+			<button onClick={handleReadyToPlayBoosted}>BOOSTED MODE</button>
 			</div>
 		);
 	}
