@@ -1,5 +1,7 @@
 import axios from "axios";
+import "/app/src/css/style.css";
 import { useState } from "react";
+
 
 export default function ChatInput({socket, channel, login}) {
     const [input, setInput] = useState('');
@@ -8,6 +10,7 @@ export default function ChatInput({socket, channel, login}) {
 
         if (input.length === 0)
             return;
+
         const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/users?name=` + channel.name
         axios.get(url, {withCredentials: true})
         .then((reponse) => {
@@ -31,6 +34,7 @@ export default function ChatInput({socket, channel, login}) {
         if (event.key === 'Enter') {
             handleClick();
         }
+
     }
 
     return (

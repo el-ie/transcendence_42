@@ -85,7 +85,7 @@ export default function Profile() {
     useEffect(() => {
         if (user){
             const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/history?login=` + user.login;
-        
+
             axios.get(url, {withCredentials: true})
             .then ((response) => {
                 if (response.data.history)

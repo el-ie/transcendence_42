@@ -1,5 +1,4 @@
 /* eslint-disable */
-import Menu from '../Menu';
 import { useSocket } from '../../components/Socket';
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -185,6 +184,7 @@ export default function Game() {
 
 		const update = () => {
 
+
 			// Clear canvasRef.current
 			context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
@@ -197,18 +197,18 @@ export default function Game() {
 			context.fill();
 
 			// Draw Paddles
-			context.fillStyle = 'blue';
+			context.fillStyle = '#a56fe2';
 
 			if (playerSide === 'player_left')
 			{
 				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
-				context.fillStyle = 'black';
+				context.fillStyle = '#4a3e56';
 				context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, rightPaddle.width, rightPaddle.height);
 			}
 			else
 			{
 				context.fillRect(rightPaddle.x, gameState.playerRight.paddlePosition, rightPaddle.width, rightPaddle.height);
-				context.fillStyle = 'black';
+				context.fillStyle = '#d3c4de';
 				context.fillRect(leftPaddle.x, gameState.playerLeft.paddlePosition, leftPaddle.width, leftPaddle.height);
 			}
 
