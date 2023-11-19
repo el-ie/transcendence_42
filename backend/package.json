@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma:generate": "npx prisma generate && sleep 2 && npx prisma db push --force-reset -- accept-data-loss",
+    "prisma:generate": "npx prisma generate && sleep 2 && npx prisma db push",
     "prisma:dev:deploy": "npx prisma migrate deploy",
     "db:dev:up": "docker-compose up database -d",
     "db:dev:rm": "docker-compose rm database -fsv",

@@ -177,7 +177,8 @@ function Settings({me, onClose}) {
 
 	return (
 
-		<div className="popup" refresh={twoFaActivation}>
+		// <div className="popup" refresh={twoFaActivation}>
+		<div className="popup">
 		<button className="closeButton" onClick={onClose}>x</button>
 		<button onClick={handleDisconnect}>Disconect</button>
 		<div className="row">
