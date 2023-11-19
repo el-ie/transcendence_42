@@ -187,7 +187,7 @@ function Settings({me, onClose}) {
 			<button onClick={() => setChangeLogin(!changeLogin)}>change</button>
 			{changeLogin &&
 			<div>
-				<input type="text" onChange={(event) => setLogin(event.target.value)}/>
+				<input type="text" maxLength={10} onChange={(event) => setLogin(event.target.value)}/>
 				<button onClick={() => handleClickChange()}>send</button>
 				{retour1 !== "" && <span>{retour1}</span>}
 				{loginTooLong && <p style={{color: 'red', fontSize: '17px'}}>maximum login size is 20 characters</p>}

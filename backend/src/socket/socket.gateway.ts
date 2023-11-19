@@ -117,6 +117,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				  const message = await messageservice.createMessage(payload.content, payload.senderLogin, payload.channelName);
 				//   console.log('jenvoie le message');
 				  payload.userList.map((user: any) => {
+					if (this.connectedClients.get(user.username))
 					  this.connectedClients.get(user.username).emit('message', message);
 				  })
 			  }
