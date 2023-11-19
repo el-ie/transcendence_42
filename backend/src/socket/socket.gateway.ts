@@ -260,7 +260,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  const loginRight = await userService.getLoginByUsername(playerRight);
 	  ///
 
-	  //ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!! surtout quand la database etait full (200 users)
 	  if (sPlayer1 === undefined || sPlayer2 === undefined) {
 		  //console.log('socket manageGame erreur le socket recupere est undefined for :');
 		  //if (sPlayer1 === undefined)
