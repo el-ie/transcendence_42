@@ -62,14 +62,20 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
 
     useEffect(() => {
         const messageHandler = (newmessage: any) => {
-        if (channel) {
-            if (newmessage.channelId === channel.id) {
-              const temp = [...messages];
-              temp.push(newmessage);
-              setMessages(temp);
-            }
-        }
-        };
+		if (channel) {
+			if (newmessage.channelId === channel.id) {
+				const temp = [...messages];
+				temp.push(newmessage);
+				setMessages(temp);
+				setTimeout(() => {
+					let scroll = document.querySelector(".chatbox") as HTMLElement;
+					if (scroll) {
+						scroll.scrollTop = scroll.scrollHeight;
+					}
+					}, 150);
+				}
+			}
+		};
 
         socket.on('message', messageHandler);
 

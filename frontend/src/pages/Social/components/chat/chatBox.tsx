@@ -1,6 +1,7 @@
 import "/app/src/css/style.css";
 export default function Chatbox({messages, login, blockeds}) {
 
+
     return (
         <ul className="chatbox">
             {messages.map((message: any) => {

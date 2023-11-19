@@ -1,3 +1,4 @@
+import "/app/src/css/style.css";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom'
@@ -55,7 +56,7 @@ export default function LoginForm() {
                 await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_2fa_cookie`, { withCredentials: true });
 				setTwoFaCookieState(true);
             } catch (error) {
-				setTwoFaCookieState(false); 
+				setTwoFaCookieState(false);
 				console.log('echec: appel de check_2fa_cookie [LoginForm]', error.response.data);
 				//throw new Error('getTwoFaCookieState');
             }
@@ -66,7 +67,7 @@ export default function LoginForm() {
                 await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_authorized`, { withCredentials: true });
 				setAuthorized(true);
             } catch (error) {
-				setAuthorized(false); 
+				setAuthorized(false);
 				console.log('echec: appel de check_2fa_cookie [LoginForm]', error.response.data);
 				//throw new Error('getTwoFaCookieState');
             }
@@ -132,45 +133,33 @@ export default function LoginForm() {
 
 		if (authorized) {
 			return (
-				<Navigate to="/bonus" replace /> 
+				<Navigate to="/bonus" replace />
 			);
 		};
+		//<div>
+		//<div>
+		//<div>
+		//<h2>user status :</h2>
+		//{isSigned ? <h2>SIGNED IN</h2> : <h2>UNSIGNED</h2>}
+		//</div>
+		//
+		//<div>
+		//<h2>2FA activation :</h2>
+		//{twoFaActivation ? <h2>ACTIVATED</h2> : <h2> INACTIVE</h2>}
+		//</div>
+		//
+		//<div>
+		//<h2>2FA Cookie :</h2> {twoFaCookieState ? <h2>VALID</h2> : <h2>INVALID<br/>/ ABSENT</h2>}
+		//</div>
 
 	return (
 
-		<div>
+		<>
 
-
-		<div style={{ textAlign: 'center', whiteSpace: 'pre'}}>
-
-
-		<div style={{ position: 'absolute', right: '4%', top: '6%', border: '2px solid black', padding: '10px', borderRadius: '10px' }}>
-		<h2> user status : </h2>
-		{ isSigned ?
-			<h2 style={{ color: 'green', display: 'inline-block' }} > SIGNED IN </h2> 
-			: <h2 style={{ color: 'red', display: 'inline-block' }} > UNSIGNED </h2>
-		}
-		</div>
-
-		<div style={{ position: 'absolute', right: '100px', top: '250px', border: '2px solid black', padding: '10px', borderRadius: '10px' }}>
-		<h2> 2FA activation : </h2>
-		{ twoFaActivation ?
-			<h2 style={{ color: 'blue' }} > ACTIVATED </h2> 
-			: <h2 style={{ color: 'red' }} > INACTIVE </h2>
-		}
-		</div>
-
-		<div style={{ position: 'absolute', right: '100px', top: '450px', border: '2px solid black', padding: '10px', borderRadius: '10px' }}>
-		<h2> 2FA Cookie : </h2>
-		{ twoFaCookieState ?
-			<h2 style={{ color: 'green' }} > VALID </h2> 
-			: <h2 style={{ color: 'red' }} > INVALID <br />/ ABSENT </h2>
-		}
-		</div>
-
+		<div class="start_page">
 		{ twoFaActivation && !twoFaCookieState &&
-			<div style={{ position: 'absolute', right: '800px', top: '400px', border: '2px solid black', padding: '10px', borderRadius: '10px' }}>
-			<h2> PLEAS AUTHENTICATE 2FA </h2>
+			<div>
+			<h2>PLEASE AUTHENTICATE 2FA</h2>
 			<form onSubmit={handleSubmitAuthentication}>
 			<input type="text" value={twoFaSecret} onChange={handleChangeText} />
 			<button type="submit">Submit</button>
@@ -178,36 +167,44 @@ export default function LoginForm() {
 			</div>
 		}
 
-		<br />
 
-		{ !isSigned &&
-			<button onClick={handleSignup} style={{ padding: '3px 20px', borderRadius: '4px', position:'relative', left:'-86px', width: '10%', height: '40px', fontSize: '17px', marginTop: '20%' }}>  CONNECT  </button>
+		{!isSigned &&
+			<div class="connect_button">
+				<h2>Welcome to transcendance</h2>
+				<button onClick={handleSignup}>CONNECT</button>
+			</div>
 		}
-
-		{false && isSigned && !twoFaActivation &&
-				<button onClick={handleLaunchTwoFa} style={{ padding: '15px 25px', borderRadius: '4px', position:'relative', left:'-20px' }}> active 2FA with QR-code  </button>
-		}
-
-		{false && qrCode && !twoFaActivation &&
-				<div style={{ position:'relative', left: '0px', top: '50px' }}>
-				<br />
-				<h3> Veuillez entrer le code fournit par google authenticator </h3>
-				<form onSubmit={handleSubmitActivation}>
-				<input type="text" value={twoFaSecret} onChange={handleChangeText} />
-				<button type="submit">Soumettre</button>
-				</form>
-				<br />
-				<img src={qrCode} alt="Qr code"/>
-				</div>
-		}
-
-		{isSigned && twoFaActivation && twoFaCookieState &&
-				<h2 style={{ position: 'absolute', right: '50%', bottom: '4%', color: 'green'  }} > 2FA Authentication successfull </h2>
-		}
-
-
 		</div>
+		</>
 
-		</div>
+
+
+
 	);
+		//
+		//{false && isSigned && !twoFaActivation &&
+		//		<button onClick={handleLaunchTwoFa} style={{ padding: '15px 25px', borderRadius: '4px', position:'relative', left:'-20px' }}> active 2FA with QR-code  </button>
+		//}
+		//
+		//{false && qrCode && !twoFaActivation &&
+		//		<div style={{ position:'relative', left: '0px', top: '50px' }}>
+		//		<br />
+		//		<h3> Veuillez entrer le code fournit par google authenticator </h3>
+		//		<form onSubmit={handleSubmitActivation}>
+		//		<input type="text" value={twoFaSecret} onChange={handleChangeText} />
+		//		<button type="submit">Soumettre</button>
+		//		</form>
+		//		<br />
+		//		<img src={qrCode} alt="Qr code"/>
+		//		</div>
+		//}
+		//
+		//{isSigned && twoFaActivation && twoFaCookieState &&
+		//		<h2 style={{ position: 'absolute', right: '50%', bottom: '4%', color: 'green'  }} > 2FA Authentication successfull </h2>
+		//}
+		//
+		//
+		//</div>
+		//
+		//</div>
 }

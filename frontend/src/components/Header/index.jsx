@@ -174,72 +174,65 @@ function Settings({me, onClose}) {
 		}
 	}
 
+			//<div className="row">
+			//</div>
 	return (
 
 		// <div className="popup" refresh={twoFaActivation}>
 		<div className="popup">
-		<button className="closeButton" onClick={onClose}>x</button>
-		<button onClick={handleDisconnect}>Disconect</button>
-		<div className="row">
-		<span>Nickname: {myLogin}</span>
-		<button onClick={() => setChangeLogin(!changeLogin)}>change</button>
-		</div>
-		{changeLogin &&
+			<h1>Settings</h1>
+			<button onClick={onClose}>x</button>
+			<button onClick={handleDisconnect}>Disconect</button>
+			<span>Nickname: {myLogin}</span>
+			<button onClick={() => setChangeLogin(!changeLogin)}>change</button>
+			{changeLogin &&
 			<div>
-			<input type="text" onChange={(event) => setLogin(event.target.value)}/>
-			<button onClick={() => handleClickChange()}>send</button><br/>
-			{retour1 !== "" && <span>{retour1}</span>}
-			{loginTooLong && <p style={{color: 'red', fontSize: '17px'}}>maximum login size is 20 characters </p>}
-
+				<input type="text" onChange={(event) => setLogin(event.target.value)}/>
+				<button onClick={() => handleClickChange()}>send</button>
+				{retour1 !== "" && <span>{retour1}</span>}
+				{loginTooLong && <p style={{color: 'red', fontSize: '17px'}}>maximum login size is 20 characters</p>}
 			</div>
-		}
-		<div className="row">
+			}
 		<img className="avatar" src={urlAvatar} alt="avatar" />
-		<button onClick={() => setChangeAvatar(!changeAvatar)}>Change</button><br />
-		</div>
+		<button onClick={() => setChangeAvatar(!changeAvatar)}>Change</button>
 		{changeAvatar &&
 			<div>
-			<input type="file" onChange={(event) => setFile(event.target.files[0])}/>
-			<button onClick={() => handleClickUpload()}>Upload</button><br/>
-			{retour2 !== "" && <span>{retour2}</span>}
+				<input type="file" onChange={(event) => setFile(event.target.files[0])}/>
+				<button onClick={() => handleClickUpload()}>Upload</button>
+				{retour2 !== "" && <span>{retour2}</span>}
 
-			{photoTooHeavy && <p style={{color: 'red', fontSize: '17px', textAlign: 'center'}}>maximum photo size is 20MB </p>}
-			{!validFileExtension && <p style={{color: 'red', fontSize: '17px', textAlign: 'center'}}>Accepted image types are jpg, jpeg and png</p>}
+				{photoTooHeavy && <p>maximum photo size is 20MB</p>}
+				{!validFileExtension && <p>Accepted image types are jpg, jpeg and png</p>}
 			</div>
 		}
 
 
-		<div className="column">
 
 
 		{!twoFaActivation &&
-		<button onClick={handleLaunchTwoFa} style={{ padding: '15px 25px', borderRadius: '4px', position:'relative', left:'-20px', color: 'black' }}> active 2FA with QR-code  </button>
+		<button onClick={handleLaunchTwoFa}>2FA activation</button>
 		}
 
 		{ qrCode && !twoFaActivation &&
-			<div className = "popup" style={{color: 'black', backgroundColor: 'yellow'}}>
-			<br />
-			<h3 style={{color: 'black', alignItems: 'center'}}> Veuillez entrer le code fournit par google authenticator </h3>
-			<form onSubmit={handleSubmitActivation}>
-			<input type="text" value={twoFaSecret} onChange={handleChangeText} style={{color: 'black'}}/>
-			<button type="submit" style={{color: 'black'}}>Soumettre</button>
-			</form>
-			<br />
-			<img src={qrCode} alt="Qr code" />
+			<div className="popup">
+				<h3>Veuillez entrer le code fournit par google authenticator</h3>
+				<form onSubmit={handleSubmitActivation}>
+				<input type="text" value={twoFaSecret} onChange={handleChangeText}/>
+				<button type="submit" style={{color: 'black'}}>Soumettre</button>
+				</form>
+				<img src={qrCode} alt="Qr code" />
 			</div>
 		}
 
-		<h2 style={{color: 'black'}}> 2FA activation : </h2>
+		<h2>2FA activation :</h2>
 		{ twoFaActivation ?
-				<h2 style={{ color: 'blue' }} > ACTIVATED </h2>
-				: <h2 style={{ color: 'red' }} > INACTIVE </h2>
+				<h3>ACTIVATED</h3> : <h3> INACTIVE </h3>
 		}
 
 		{ twoFaActivation &&
-				<button onClick={handleRemoveTwoFa}>Remove 2fa</button>
+				<button onClick={handleRemoveTwoFa}>Remove 2FA</button>
 		}
 
-		</div>
 
 
 		</div>
@@ -267,6 +260,7 @@ export default function Header() {
 
 	async function handleClickProtection()
 	{
+		handleClose();
 		try {
 			await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_authorized`, { withCredentials: true });
 		} catch {
