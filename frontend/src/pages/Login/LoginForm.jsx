@@ -85,7 +85,7 @@ export default function LoginForm() {
 			setRefreshPage(42);
 			window.location.href = `http://${process.env.REACT_APP_CURRENT_HOST}:3000/bonus`;
 		} catch (error) {
-			console.log('handleSubmit', error.response.data.message, error.response.data);
+			//console.log('handleSubmit', error.response.data.message, error.response.data);
 		}
 
 	};
