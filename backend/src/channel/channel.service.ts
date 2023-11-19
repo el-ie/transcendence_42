@@ -71,7 +71,7 @@ export class ChannelService {
         })
         if (!channel)
         {
-            console.log(`channel ${name} introuvable`);
+            //console.log(`channel ${name} introuvable`);
             throw new error("cant find channel");
         }
 
@@ -128,7 +128,7 @@ export class ChannelService {
         }
         catch(error)
         {
-            console.log(`error dans createchannelco: ${error}`);
+            //console.log(`error dans createchannelco: ${error}`);
         }
 
 
@@ -407,14 +407,14 @@ export class ChannelService {
                     },
             });
     
-            if (deletedChannelConnection) {
-                // this.socketService.sendEvent(userLogin, "kicked", null);
-                console.log(`Le lien entre l'utilisateur ${userId} et le canal ${channelId} a été supprimé.`);
-            } else {
-                console.log(`Aucun lien trouvé entre l'utilisateur ${userId} et le canal ${channelId}.`);
-            }
+            //if (deletedChannelConnection) {
+            //    // this.socketService.sendEvent(userLogin, "kicked", null);
+            //    console.log(`Le lien entre l'utilisateur ${userId} et le canal ${channelId} a été supprimé.`);
+            //} else {
+            //    console.log(`Aucun lien trouvé entre l'utilisateur ${userId} et le canal ${channelId}.`);
+            //}
         } catch (error) {
-            console.error(`Une erreur s'est produite lors de la suppression du lien : ${error}`);
+            //console.error(`Une erreur s'est produite lors de la suppression du lien : ${error}`);
         }
     }
 
@@ -428,10 +428,10 @@ export class ChannelService {
                     password: password,
                 }
             })
-            console.log(`mot de passe du channel changé: '${channel.password}'`);
+            //console.log(`mot de passe du channel changé: '${channel.password}'`);
         }
         catch {
-            console.log("erreur lors du changement de password");
+            //console.log("erreur lors du changement de password");
         }
     }
 

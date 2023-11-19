@@ -52,7 +52,7 @@ export class UserService {
 			})
 		}
 		catch {
-			console.log("erreur connect");
+			//console.log("erreur connect");
 		}
 	}
 
@@ -68,7 +68,7 @@ export class UserService {
 			})
 		}
 		catch {
-			console.log("erreur connect");
+			//console.log("erreur connect");
 		}
 	}
 
@@ -84,7 +84,7 @@ export class UserService {
 			})
 		}
 		catch {
-			console.log("erreur connect");
+			//console.log("erreur connect");
 		}
 	}
 
@@ -101,7 +101,7 @@ export class UserService {
 			})
 		}
 		catch {
-			console.log("erreur disconnect");
+			//console.log("erreur disconnect");
 		}
 	}
 
@@ -155,7 +155,7 @@ export class UserService {
 
 		if (test.length > 0)
 			{
-				console.log("already friends: throw");
+				//console.log("already friends: throw");
 				throw new Error("Already friend");
 			}
 
@@ -168,7 +168,7 @@ export class UserService {
 					followed: 1
 				}
 			})
-			console.log(userco.count);
+			//console.log(userco.count);
 			if (!userco.count){
 				const newUserCo = await this.prisma.userConnection.create({
 					data: {
@@ -202,7 +202,7 @@ export class UserService {
 
 		if (test.length > 0)
 			{
-				console.log("already not friends: throw");
+				//console.log("already not friends: throw");
 				throw new Error("Already  not friend");
 			}
 
@@ -237,7 +237,7 @@ export class UserService {
 
 		if (test.length > 0)
 			{
-				console.log("already blocked: throw");
+				//console.log("already blocked: throw");
 				throw new Error("Already blocked");
 			}
 
@@ -281,7 +281,7 @@ export class UserService {
 
 		if (test.length > 0)
 			{
-				console.log("already unblocked: throw");
+				//console.log("already unblocked: throw");
 				throw new Error("Already unblocked");
 			}
 

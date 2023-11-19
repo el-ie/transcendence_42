@@ -78,7 +78,7 @@ export class UserController {
             return inviter;
         });
         const inviters = await Promise.all(invitersPromises);
-        console.log("inviters : ", inviters);
+        //console.log("inviters : ", inviters);
         return { inviters };
     }
 
@@ -99,7 +99,7 @@ export class UserController {
             return ({user});
         }
         catch {
-            console.log("oups");
+            //console.log("oups");
             return {error: "404 User not found"}
         }
     }

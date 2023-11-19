@@ -24,15 +24,11 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42strat') {
 	//Passport va automatiquement prendre le retour renvoye par validate et creer un champs user : ... dans le @Req du handler contenant quelque retour que ce soit
 	async validate(accessToken: string, refreshToken: string, profile, cb: Function) {
 
-		//penser a utiliser cb
-
-		console.log('42 API strategy :');
-
 		const user = await this.prisma.user.findUnique( { where: { username: profile.username } });
 
 		if (!user) {
-			console.log('the user ', profile.username, ' dont exist');
-			console.log(' ----- user creation in process -----');
+			//console.log('the user ', profile.username, ' dont exist');
+			//console.log(' ----- user creation in process -----');
 
 			const user = await this.prisma.user.create({
 				data: {
@@ -41,13 +37,13 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42strat') {
 					username: profile.username,
 				},
 			});
-			console.log(' ------ user successfully created -----');
+			//console.log(' ------ user successfully created -----');
 
 			return user;
 		}
 		else {
-			console.log(' the user ', profile.username, ' already exist :');
-			console.dir(user, { depth: null })
+			//console.log(' the user ', profile.username, ' already exist :');
+			//console.dir(user, { depth: null })
 
 			const updatedUser = await this.prisma.user.update({
 

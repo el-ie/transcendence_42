@@ -41,7 +41,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  this.connectedClients.delete(username);
 		  await userService.disconnect(username);
 		  await userService.setOutGame(username);
-		  console.log("user disconnected");
+		  //console.log("user disconnected");
 		  break;
 	  }
 	}
@@ -81,7 +81,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			  else if (this.getPlayerSide(username) == 'LEFT')
 				  this.connectedClients.get(opponent).emit('GAME_END', currentGame.playerRight.login);
 			  else
-				  console.log('Error: game interruption');
+				  console.log('');
+			  //console.log('Error: game interruption');
 
 		  }
 
@@ -122,11 +123,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				  })
 			  }
 			  else {
-				  console.log("userid " + chanco.userId + " is muted on chan " + chanco.channelId);
+				  console.log('');
+				  //console.log("userid " + chanco.userId + " is muted on chan " + chanco.channelId);
 			  }
 	  }
 	  catch (error) {
-		  console.log("erroooooor");
+		  //console.log("erroooooor");
 		  throw (error);
 	  }
   }
@@ -260,11 +262,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	  //ATTENTION C EST ARRIVE PLUSIEURS FOIS!!!!!!!! surtout quand la database etait full (200 users)
 	  if (sPlayer1 === undefined || sPlayer2 === undefined) {
-		  console.log('socket manageGame erreur le socket recupere est undefined for :');
-		  if (sPlayer1 === undefined)
-			  console.log('PLAYER1');
-		  if (sPlayer2 === undefined)
-			  console.log('PLAYER2');
+		  //console.log('socket manageGame erreur le socket recupere est undefined for :');
+		  //if (sPlayer1 === undefined)
+			 // console.log('PLAYER1');
+		  //if (sPlayer2 === undefined)
+			 // console.log('PLAYER2');
 		  return;
 	  }
 
@@ -476,7 +478,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	  //securite obligee pour utiliser username comme argument plus tard en temps que String
 	  if (Array.isArray(client.handshake.query.username)) {
-		  console.log('Erreur paddle up');
+		  //console.log('Erreur paddle up');
 		  return;
 	  }
 	  let username : string = client.handshake.query.username ;
@@ -488,7 +490,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  gameState = this.getPlayerCurrentGame(username);
 
 	  if (!gameState) {
-		  console.log('Error: player has no current game');
+		  //console.log('Error: player has no current game');
 		  return;
 	  }
 
@@ -506,7 +508,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  else if (playerSide === 'RIGHT')
 			  gameState.playerRight.paddlePosition -= paddleStep;
 		  else {
-			  console.log('Error: paddle_move');
+			  //console.log('Error: paddle_move');
 			  return;
 		  }
 	  }
@@ -517,7 +519,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  else if (playerSide === 'RIGHT')
 			  gameState.playerRight.paddlePosition += paddleStep;
 		  else {
-			  console.log('Error: paddle_move');
+			  //console.log('Error: paddle_move');
 			  return;
 		  }
 	  }
@@ -544,7 +546,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  if (player === playerRight)
 			  return playerLeft;
 	  }
-	  console.log('Error getOpponent no opponent');
+	  //console.log('Error getOpponent no opponent');
 	  return null;
   }
 
@@ -584,7 +586,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		  if (player === playerRight)
 			  return 'RIGHT';
 	  }
-	  console.log('Error getPlayerSide');
+	  //console.log('Error getPlayerSide');
 	  return null;
   }
 
