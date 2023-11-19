@@ -9,7 +9,7 @@ export default function UserInfos() {
     useEffect(() => {
         const getInformations = async () => {
             try {
-                const response = await axios.get('http://localhost:3333/request/get_all', { withCredentials: true });
+                const response = await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3333/request/get_all`, { withCredentials: true });
 				setData(response.data);
             } catch (error) {
 				//pourquoi la requete s envoi en double en cas d erreur, visible dans le terminal web

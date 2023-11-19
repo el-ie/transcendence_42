@@ -14,7 +14,7 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
     useEffect(() => {
         if (channel) {
             setSetting(false);
-            const url_get_message = "http://localhost:3001/channel/messages?name=" + channel.name;
+            const url_get_message = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/messages?name=` + channel.name;
             axios.get(url_get_message, {withCredentials: true})
             .then((response) => {
                 if (response.data.messages)
@@ -24,7 +24,8 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
                 console.error("Erreur lors de la récupération des messages : ", error);
             });
 
-            const url_get_role = "http://localhost:3001/channel/role?name=" + channel.name + "&login=" + login;
+			//ACHILLE verifier si cette construction d url reste ok avec le `
+            const url_get_role = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/role?name=` + channel.name + "&login=" + login;
             axios.get(url_get_role, {withCredentials: true})
             .then((reponse) => {
                 if (reponse.data.role)
@@ -35,7 +36,8 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
             })
             if (channel.name.includes("-"))
             {
-                const url = "http://localhost:3001/channel/directChatPrintableName?name=" + channel.name;
+				//ACHILLE verifier celle ci egalement
+                const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/directChatPrintableName?name=` + channel.name;
                 axios.get(url, {withCredentials: true})
                 .then((response) => {
                     if (response.data.otherLogin)

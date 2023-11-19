@@ -11,10 +11,13 @@ import { Prisma } from '@prisma/client';
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42strat') {
 
 	constructor(config: ConfigService, private prisma: PrismaService) {
+
+	let constructed_url: string = 'http://' + config.get('CURRENT_HOST') + ':3001/auth/42/callback';
+
 		super({
 			clientID: config.get('UID'),
 			clientSecret: config.get('SECRET'),
-			callbackURL: "http://localhost:3001/auth/42/callback"
+			callbackURL: constructed_url
 		});
 	}
 

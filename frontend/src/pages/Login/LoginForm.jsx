@@ -19,8 +19,8 @@ export default function LoginForm() {
 	const [authorized, setAuthorized] = useState(false);
 
 	function handleSignup() {
-		//let page = await axios.get('http://localhost:3001', { withCredentials: true });
-		window.location.href = 'http://localhost:3001/auth/login42';
+		//let page = await axios.get('http:// HOST :3001', { withCredentials: true });
+		window.location.href = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/login42`;
 	};
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export default function LoginForm() {
 
         const checkIsSigned = async () => {
             try {
-                await axios.get('http://localhost:3001/auth/check_is_signed', { withCredentials: true });
+                await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_is_signed`, { withCredentials: true });
 				setIsSigned(true);
 				return true; //utile ?
             } catch (error) {
@@ -41,7 +41,7 @@ export default function LoginForm() {
 
         const getTwoFaActivationState = async () => {
             try {
-                await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
+                await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_2fa_activation`, { withCredentials: true });
 				setTwoFaActivation(true); //utile ?
             } catch (error) {
 				setTwoFaActivation(false);
@@ -52,7 +52,7 @@ export default function LoginForm() {
 
         const getTwoFaCookieState = async () => {
             try {
-                await axios.get('http://localhost:3001/auth/check_2fa_cookie', { withCredentials: true });
+                await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_2fa_cookie`, { withCredentials: true });
 				setTwoFaCookieState(true);
             } catch (error) {
 				setTwoFaCookieState(false); 
@@ -63,7 +63,7 @@ export default function LoginForm() {
 
         const checkIfAuthorized = async () => {
             try {
-                await axios.get('http://localhost:3001/auth/check_authorized', { withCredentials: true });
+                await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_authorized`, { withCredentials: true });
 				setAuthorized(true);
             } catch (error) {
 				setAuthorized(false); 
@@ -87,7 +87,7 @@ export default function LoginForm() {
 	async function handleLaunchTwoFa() {
 
 		try {
-			const response = await axios.get('http://localhost:3001/auth/2fa_getqr', { withCredentials: true });
+			const response = await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_getqr`, { withCredentials: true });
 			setQrCode(response.data);
 		} catch (error) {
 			setQrCode('QR code error (catched)');
@@ -104,7 +104,7 @@ export default function LoginForm() {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 
 		try {
-			await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_activate`,{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setTwoFaActivation(true);
 			setRefreshPage(42); //permet de relancer le useEffect pour mettre les check a jour
 		} catch (error) {
@@ -117,10 +117,10 @@ export default function LoginForm() {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 
 		try {
-			await axios.post('http://localhost:3001/auth/2fa_authenticate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_authenticate`,{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setRefreshPage(42);//permet de relancer le useEffect pour mettre les check a jour
 			// normalement si le cookie est bien envoye par la route il n y a pas besoin de faire plus
-			window.location.href = 'http://localhost:3000/bonus';
+			window.location.href = `http://${process.env.REACT_APP_CURRENT_HOST}:3000/bonus`;
 		} catch (error) {
 			console.log('handleSubmit', error.response.data.message, error.response.data);
 		}

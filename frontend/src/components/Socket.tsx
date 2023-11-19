@@ -13,12 +13,12 @@ export function SocketProvider({ children }) {
 
   useEffect(() => {
     // Effectuer la requête pour obtenir l'utilisateur actuellement authentifié
-    axios.get("http://localhost:3001/users/me", { withCredentials: true })
+    axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/me`, { withCredentials: true })
       .then((response) => {
 
         // Une fois que vous avez les informations de l'utilisateur, configurez la socket WebSocket
         const username = response.data.username;
-        const socketInstance = io('http://localhost:3001', {
+        const socketInstance = io(`http://${process.env.REACT_APP_CURRENT_HOST}:3001`, {
           query: {
             username: username
           }

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 async function getName(name:string) {
     if (!name.includes("-"))
         return (name)
-    const url = "http://localhost:3001/channel/directChatPrintableName?name=" + name;
+    const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/directChatPrintableName?name=` + name;
     const trueName = await axios.get(url, {withCredentials: true})
     .then((response) => {
         if (response.data.otherLogin)

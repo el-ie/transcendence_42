@@ -6,7 +6,7 @@ export default function ChatInput({socket, channel, login}) {
 
     function handleClick(){
 
-        const url = "http://localhost:3001/channel/users?name=" + channel.name
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/users?name=` + channel.name
         axios.get(url, {withCredentials: true})
         .then((reponse) => {
             if (reponse.data.users)

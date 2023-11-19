@@ -12,7 +12,7 @@ function Settings({me, onClose}) {
     const [retour1, setRetour1] = useState("");
     const [retour2, setRetour2] = useState("");
     const [timestamp, setTimestamp] = useState(Date.now());
-    const urlAvatar = `http://localhost:3001/users/${me.id}/avatar?timestamp=${timestamp}`;
+    const urlAvatar = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/${me.id}/avatar?timestamp=${timestamp}`;
 
     const [loginTooLong, setLoginTooLong] = useState(false);
     const [photoTooHeavy, setPhotoTooHeavy] = useState(false);
@@ -43,7 +43,7 @@ function Settings({me, onClose}) {
         const formdata = new FormData();
         formdata.append('avatar', file);
         // console.log(file);
-        axios.post("http://localhost:3001/users/uploadAvatar", formdata, {
+        axios.post(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/uploadAvatar`, formdata, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -75,7 +75,7 @@ function Settings({me, onClose}) {
 		else
 			setLoginTooLong(false);
 
-        const url = "http://localhost:3001/users/changeLogin";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/changeLogin`;
         const data = {
             newLogin: login,
         }
@@ -99,7 +99,7 @@ function Settings({me, onClose}) {
 
 	async function handleDisconnect() {
 		try {
-		await axios.get('http://localhost:3001/auth/delete_all_cookies', { withCredentials: true });
+		await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/delete_all_cookies`, { withCredentials: true });
 		} catch {
 			console.log('disconnection problem')
 		}
@@ -118,7 +118,7 @@ function Settings({me, onClose}) {
     useEffect(() => {
         const getTwoFaActivationState = async () => {
             try {
-                await axios.get('http://localhost:3001/auth/check_2fa_activation', { withCredentials: true });
+                await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_2fa_activation`, { withCredentials: true });
 				setTwoFaActivation(true); //utile ?
             } catch (error) {
 				setTwoFaActivation(false);
@@ -138,7 +138,7 @@ function Settings({me, onClose}) {
 	async function handleLaunchTwoFa() {
 
 		try {
-			const response = await axios.get('http://localhost:3001/auth/2fa_getqr', { withCredentials: true });
+			const response = await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_getqr`, { withCredentials: true });
 			setQrCode(response.data);
 		} catch (error) {
 			setQrCode('QR code error (catched)');
@@ -151,7 +151,7 @@ function Settings({me, onClose}) {
 	const handleSubmitActivation = async (event) => {
 		event.preventDefault(); // Prévient le rechargement de la page lors de la soumission du formulaire
 		try {
-			await axios.post('http://localhost:3001/auth/2fa_activate',{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
+			await axios.post(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_activate`,{ twoFactorCode: twoFaSecret } ,{ withCredentials: true });
 			setTwoFaActivation(true);
 			//REVOIR ICI//setRefreshPage(42); //permet de relancer le useEffect pour mettre les check a jour
 		} catch (error) {
@@ -167,7 +167,7 @@ function Settings({me, onClose}) {
 	const handleRemoveTwoFa = async (event) => {
 
 		try {
-			await axios.get('http://localhost:3001/auth/2fa_remove', { withCredentials: true });
+			await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/2fa_remove`, { withCredentials: true });
 			setTwoFaActivation(false);
 			window.location.reload();
 		} catch (error) {
@@ -253,7 +253,7 @@ export default function Header() {
 	const [params, setParams] = useState(false);
 
 	useEffect(() => {
-		const url_get_user = "http://localhost:3001/users/me"
+		const url_get_user = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/me`
 		axios.get(url_get_user, {withCredentials: true})
 			.then((response) => {
 				setMe(response.data);
@@ -269,7 +269,7 @@ export default function Header() {
 	async function handleClickProtection()
 	{
 		try {
-			await axios.get('http://localhost:3001/auth/check_authorized', { withCredentials: true });
+			await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/auth/check_authorized`, { withCredentials: true });
 		} catch {
 			window.location.reload();
 		}

@@ -17,7 +17,7 @@ export default function Social() {
     useEffect(() => {
         if (socket)
             socket.emit("QUIT_QUEUE");
-        const url_get_login = "http://localhost:3001/users/getLogin";
+        const url_get_login = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/getLogin`;
         axios.get(url_get_login, {withCredentials: true})
         .then((response) => {
             if (response.data) {
@@ -27,7 +27,7 @@ export default function Social() {
         .catch(() => {
             console.log("erreur !");
         })
-        const url_blocked = "http://localhost:3001/users/blocked?";
+        const url_blocked = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/blocked?`;
         axios.get(url_blocked, {withCredentials: true})
         .then((response) => {
             if (response.data.usersIds) {
@@ -45,7 +45,7 @@ export default function Social() {
     useEffect(() => {
         function getLogin () {
             // console.log("new login recu !");
-            const url_get_login = "http://localhost:3001/users/getLogin";
+            const url_get_login = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/getLogin`;
             axios.get(url_get_login, {withCredentials: true})
             .then((response) => {
                 if (response.data) {
@@ -79,7 +79,7 @@ export default function Social() {
     }
 
     function handleLeave() {
-        const url = "http://localhost:3001/channel/leave";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/leave`;
         const data = {
             login: login,
             name: currentChan.name,
@@ -94,7 +94,7 @@ export default function Social() {
     }
 
     function handleDelete() {
-        const url = "http://localhost:3001/channel/delete";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/delete`;
         const data = {
             name: currentChan.name,
         }

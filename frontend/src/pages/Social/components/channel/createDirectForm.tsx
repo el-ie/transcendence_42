@@ -7,7 +7,7 @@ export default function CreateDirectForm({onClose, onCreateDirect, login}) {
     const [target, setTarget] = useState('');
     const [error, setError] = useState('');
     function handleClick() {
-        const url_create_direct = "http://localhost:3001/channel/createDirect"
+        const url_create_direct = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/createDirect`
         const data = {
             starterLogin: login,
             targetLogin: target,

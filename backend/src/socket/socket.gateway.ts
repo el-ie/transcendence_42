@@ -7,8 +7,11 @@ import { MessageService } from 'src/message/message.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 
+import { ConfigService } from '@nestjs/config';
+
+// ACHILLE: j ai du mettre origin: true pour que le host soit modifiable depuis le .env, ca n aura aucun impact sur le bon fonctionnement des socket ?
 @WebSocketGateway({ cors: {
-	origin: 'http://localhost:3000',
+	origin: true,
 		methods: ['GET', 'POST'],
 	credentials: true,
 } })

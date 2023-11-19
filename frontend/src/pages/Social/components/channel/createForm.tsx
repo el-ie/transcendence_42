@@ -8,7 +8,7 @@ export default function CreateForm({onClose, onCreate, login}) {
     const [type, setType] = useState('PUBLIC');
     const [error, setError] = useState('');
     function handleClick() {
-        const url_create_chan = "http://localhost:3001/channel/create"
+        const url_create_chan = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/create`
         const data = {
             name: name,
             type: type,

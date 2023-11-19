@@ -47,7 +47,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
 
 
     useEffect (() => {
-        const url_friends = "http://localhost:3001/users/friends";
+        const url_friends = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/friends`;
         axios.get(url_friends, {withCredentials: true})
         .then((response) => {
             if (response.data.users) {
@@ -63,7 +63,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
     }, [login, socket])
 
     useEffect (() => {
-        const url = "http://localhost:3001/users/invite";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/invite`;
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.inviters)
@@ -78,7 +78,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
 
     useEffect(() => {
         const handleConnect = () => {
-            const url_friends = "http://localhost:3001/users/friends";
+            const url_friends = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/friends`;
             axios.get(url_friends, {withCredentials: true})
             .then((response) => {
             if (response.data.users) {
@@ -93,7 +93,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         };
 
         const handleInvited = (by: string) => {
-        const url = "http://localhost:3001/users/invite";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/invite`;
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.inviters)
@@ -107,7 +107,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         }
 
         const handleCancel = (by: string) => {
-        const url = "http://localhost:3001/users/invite";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/invite`;
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.inviters)
@@ -154,13 +154,13 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
     }
 
     function handleDecline(username: string) {
-        const url = "http://localhost:3001/users/cancelInvite";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/cancelInvite`;
         const data = {
             newLogin: username,
         }
         axios.post(url, data, {withCredentials: true})
         .then(() => {
-            const url = "http://localhost:3001/users/invite";
+            const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/invite`;
             axios.get(url, {withCredentials: true})
             .then((response) => {
                 if (response.data.inviters)

@@ -8,11 +8,12 @@ import { toDataURL } from "qrcode";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AvoidTwoFa } from "src/decorators/avoidtwofa.decorator";
 
+import { ConfigService } from '@nestjs/config';
 
 @Public()
 @Controller('test')
 export class ForTestController {
-	constructor(private authService: AuthService, private readonly forTestService: ForTestService, private prisma: PrismaService) {}
+	constructor(private authService: AuthService, private readonly forTestService: ForTestService, private prisma: PrismaService, private config: ConfigService) {}
 
 	@Public()
 	@Get('create_fake_user')
@@ -38,7 +39,8 @@ export class ForTestController {
 		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
 
 		//return response.send();//options?
-		response.redirect('http://localhost:3000/bonus');
+		let url_current : string = 'http://' + this.config.get('CURRENT_HOST') + ':3000/bonus';
+		response.redirect(url_current);
 			//return  (await this.prisma.user.findMany());
 	}
 
@@ -70,7 +72,8 @@ export class ForTestController {
 		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
 
 		//return response.send();//options?
-		response.redirect('http://localhost:3000/game');
+		let url_current : string = 'http://' + this.config.get('CURRENT_HOST') + ':3000/bonus';
+		response.redirect(url_current);
 			//return  (await this.prisma.user.findMany());
 	}
 

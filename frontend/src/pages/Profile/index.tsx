@@ -61,7 +61,7 @@ export default function Profile() {
     const [user, setUser] = useState(null);
     const [history, setHistory] = useState([]);
     const [timestamp, setTimestamp] = useState(Date.now());
-    const urlAvatar = user ? `http://localhost:3001/users/${user.id}/avatar?timestamp=${timestamp}` : "";
+    const urlAvatar = user ? `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/${user.id}/avatar?timestamp=${timestamp}` : "";
 
     const socket = useSocket();
 
@@ -71,7 +71,7 @@ export default function Profile() {
     }, [socket])
 
     useEffect(() => {
-        const url = "http://localhost:3001/users/otherById?id=" + userId;
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/otherById?id=` + userId;
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.user) {
@@ -85,7 +85,7 @@ export default function Profile() {
 
     useEffect(() => {
         if (user){
-            const url = "http://localhost:3001/history?login=" + user.login;
+            const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/history?login=` + user.login;
         
             axios.get(url, {withCredentials: true})
             .then ((response) => {
@@ -119,4 +119,4 @@ export default function Profile() {
     )
 }
 
-// const urlAvatar = `http://localhost:3001/users/${me.id}/avatar?timestamp=${timestamp}`;
+// const urlAvatar = `http:// HOST :3001/users/${me.id}/avatar?timestamp=${timestamp}`;

@@ -7,9 +7,12 @@ import { toDataURL } from "qrcode";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AvoidTwoFa } from "src/decorators/avoidtwofa.decorator";
 
+import { ConfigService } from '@nestjs/config';
+
+
 @Controller('auth')
 export class AuthController{
-	constructor(private authService: AuthService, private prisma: PrismaService) {}
+	constructor(private authService: AuthService, private prisma: PrismaService, private config: ConfigService) {}
 
 	//////////////// ROUTES AUTHENTIFICATION API 42 ////////////////
 	// ces routes permettent de declencher l authentification basique a l aide de l api de 42
@@ -50,7 +53,9 @@ export class AuthController{
 		const token = await this.authService.generateJwt(req.user, 'basic_auth');
 		response.cookie('AUTH_TOKEN', token, { httpOnly: false });
 		//return response.send();//options?
-		response.redirect('http://localhost:3000/bonus');
+
+		response.redirect('http://' + this.config.get('CURRENT_HOST') + ':3000/bonus');
+
 	}
 
 		//////////////// ROUTES AUTHENTIFICATION 2FA ////////////////
@@ -95,7 +100,7 @@ export class AuthController{
 			const token = await this.authService.generateJwt(request.user, 'twofa');
 
 			response.cookie('TWOFA_TOKEN', token, { httpOnly: false });
-			//response.redirect('http://localhost:3000/login');
+			//response.redirect('http:// CURRENT HOST :3000/login');
 			response.send(); //code http ? options ?
 				//le @HttpCode(200) enverra la reponse correcte
 		}
@@ -119,7 +124,7 @@ export class AuthController{
 				const token = await this.authService.generateJwt(request.user, 'twofa');
 
 				response.cookie('TWOFA_TOKEN', token, { httpOnly: false });
-				//response.redirect('http://localhost:3000/login');
+				//response.redirect('http:// CURRENT HOST :3000/login');
 				response.send(); //code http ? options ?
 					//le @HttpCode(200) enverra la reponse correcte
 			}
@@ -137,7 +142,7 @@ export class AuthController{
 					res.cookie('TWOFA_TOKEN', '', { expires: new Date(0) });
 					res.send();
 
-					//response.redirect('http://localhost:3000/login');
+					//response.redirect('http:// CURRENT HOST :3000/login');
 					//response.send(); //code http ? options ?
 						//le @HttpCode(200) enverra la reponse correcte
 				}

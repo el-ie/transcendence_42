@@ -9,7 +9,7 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
     const navigate = useNavigate();
 
     function handleClickAdd () {
-        const url = "http://localhost:3001/users/addFriend";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/addFriend`;
         const data = {
             login: login,
             target: user.login,
@@ -27,7 +27,7 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
     }
 
     function handleClickDell () {
-        const url = "http://localhost:3001/users/DelFriend";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/DelFriend`;
         const data = {
             login: login,
             target: user.login,
@@ -43,7 +43,7 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
     }
 
     function handleClickBlock () {
-        const url = "http://localhost:3001/users/blockUser";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/blockUser`;
         const data = {
             login: login,
             target: user.login,
@@ -59,7 +59,7 @@ function Profile({user, login, handleAdd, handleDel, handleBlock, handleUnblock,
     }
 
     function handleClickUnblock () {
-        const url = "http://localhost:3001/users/unblockUser";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/unblockUser`;
         const data = {
             login: login,
             target: user.login,
@@ -111,7 +111,7 @@ export default function UserProfile({user, setUser, handleAdd, handleUnblock, ha
             setInput("");
             return
         }
-        const url = "http://localhost:3001/users/other?login=" + input;
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/other?login=` + input;
         console.log(url);
         axios.get(url, {withCredentials: true})
         .then((response) => {

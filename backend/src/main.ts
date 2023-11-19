@@ -5,11 +5,20 @@ import * as cookieParser from 'cookie-parser';
 import { JwtAuthGuard } from './auth/strategy/jwt.global';
 import { TwoFaAuthGuard } from './auth/strategy/2fa.global';
 
+import { ConfigService } from '@nestjs/config';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
+
+  let current_host = config.get('CURRENT_HOST');
+  if (current_host === undefined)
+	  return;
+  let origin_url : string = 'http://' + current_host + ':3000';
+  
   app.enableCors({
-    origin : 'http://localhost:3000',
+    origin : origin_url,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

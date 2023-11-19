@@ -34,7 +34,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     const [selectedUser, setSelectedUser] = useState('');
 
     useEffect (() => {
-        const url_default = "http://localhost:3001/channel/default?name=" + channel.name;
+        const url_default = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/default?name=` + channel.name;
         axios.get(url_default, {withCredentials: true}).then((reponse) =>{
             if (reponse.data.users)
                 setDefaultUsers(reponse.data.users);
@@ -42,7 +42,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
                 console.log(reponse.data.error);
         })
 
-        const url_all = "http://localhost:3001/channel/all?name=" + channel.name;
+        const url_all = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/all?name=` + channel.name;
         axios.get(url_all, {withCredentials: true}).then((reponse) =>{
             if (reponse.data.users)
                 setUsers(reponse.data.users);
@@ -54,7 +54,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }, [channel])
 
     function handlepswDelete() {
-        const url = "http://localhost:3001/channel/setPassword";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/setPassword`;
         const data = {
             name: channel.name,
             password: ""
@@ -68,7 +68,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }
 
     function handlepswSet() {
-        const url = "http://localhost:3001/channel/setPassword";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/setPassword`;
         const data = {
             name: channel.name,
             password: password
@@ -86,7 +86,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
 
     function handleSetAdmin() {
         if (selectedUserDefault !== ''){
-            const url = "http://localhost:3001/channel/setAdmin";
+            const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/setAdmin`;
             const data = {
                 login: selectedUserDefault,
                 name: channel.name,
@@ -103,7 +103,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }
 
     function handleKick(){
-        const url = "http://localhost:3001/channel/kick";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/kick`;
         const data = {
             login: selectedUser,
             name: channel.name,
@@ -118,7 +118,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }
 
     function handleBan(){
-        const url = "http://localhost:3001/channel/ban";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/ban`;
         const data = {
             login: selectedUser,
             name: channel.name,
@@ -134,7 +134,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }
 
     function handleInvite() {
-        const url = "http://localhost:3001/channel/invite";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/invite`;
         const data = {
             login: invited,
             name: channel.name,
@@ -148,7 +148,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
     }
 
     function handleMute(){
-        const url = "http://localhost:3001/channel/mute";
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/mute`;
         const data = {
             login: selectedUser,
             name: channel.name,

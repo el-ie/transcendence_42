@@ -7,7 +7,7 @@ export default function JoinForm({onClose, onJoin, login}) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     function handleClick() {
-        const url_join_chan = "http://localhost:3001/channel/join"
+        const url_join_chan = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/join`
         const data = {
             name: name,
             password: password,

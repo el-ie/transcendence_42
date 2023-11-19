@@ -10,7 +10,7 @@ export default function ChanZone({handleSelect, login, currentChan, kicked}) {
     const [chanList, setChanList] = useState([]);
 
     useEffect(() => {
-        const url = "http://localhost:3001/channel/mine?login=" + login;
+        const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/mine?login=` + login;
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.channels)
