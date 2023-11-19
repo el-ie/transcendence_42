@@ -9,7 +9,6 @@ export default function Game() {
 	const {direct} = useParams();
     const navigate = useNavigate();
 
-	console.log(direct); //securiser ?
 
 	type Game = {
 		playerLeft: { name: string, score: number, paddlePosition: number },
@@ -133,7 +132,6 @@ export default function Game() {
 	useEffect(() => {
 
 		if (!gameState || gameEnd || !socket) {
-			console.log('deplacement du paddle impossible, gameState = null ou !socket');
 			return;//security
 		}
 		window.addEventListener('keydown', handleKeyDown);

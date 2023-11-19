@@ -41,7 +41,6 @@ function Settings({me, onClose}) {
 
         const formdata = new FormData();
         formdata.append('avatar', file);
-        // console.log(file);
         axios.post(`http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/uploadAvatar`, formdata, {
             withCredentials: true,
             headers: {
@@ -88,7 +87,6 @@ function Settings({me, onClose}) {
                 setMyLogin(login);
                 me.login = login;
                 setChangeLogin(false);
-                console.log("login changed");
             }
         })
         .catch(() => {
@@ -250,12 +248,14 @@ export default function Header() {
 			.then((response) => {
 				setMe(response.data);
 			})
+			.catch(() => {
+				console.log("error");
+			})
 	}, [])
 
 	function handleClose() {
 		setParams(false);
 	}
-	// console.log("params: ", params);
 
 
 	async function handleClickProtection()

@@ -15,7 +15,6 @@ export default function CreateForm({onClose, onCreate, login}) {
             password: password,
             creatorLogin: login,
         }
-        // console.log(data);
         axios.post(url_create_chan, data, {withCredentials: true})
         .then((reponse) => {
             if (reponse.data.channel)

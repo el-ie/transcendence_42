@@ -90,7 +90,6 @@ export default function Profile() {
             .then ((response) => {
                 if (response.data.history)
                     {
-                        console.log(response.data.history);
                         setHistory(response.data.history);
                     }
                 else {

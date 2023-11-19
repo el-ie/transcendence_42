@@ -10,7 +10,6 @@ async function getName(name:string) {
     .then((response) => {
         if (response.data.otherLogin)
         {
-            console.log("je return" ,response.data.otherLogin);
             return (response.data.otherLogin);
         }
         else

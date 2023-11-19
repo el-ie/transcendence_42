@@ -12,8 +12,6 @@ export default function UserInfos() {
                 const response = await axios.get(`http://${process.env.REACT_APP_CURRENT_HOST}:3333/request/get_all`, { withCredentials: true });
 				setData(response.data);
             } catch (error) {
-				//pourquoi la requete s envoi en double en cas d erreur, visible dans le terminal web
-				console.log('Erreur dans l appel axios de get_all : ', error.response);
             }
         };
         getInformations();

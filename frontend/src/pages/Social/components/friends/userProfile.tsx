@@ -112,7 +112,6 @@ export default function UserProfile({user, setUser, handleAdd, handleUnblock, ha
             return
         }
         const url = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/other?login=` + input;
-        console.log(url);
         axios.get(url, {withCredentials: true})
         .then((response) => {
             if (response.data.user){

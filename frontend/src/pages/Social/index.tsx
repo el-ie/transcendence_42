@@ -32,7 +32,6 @@ export default function Social() {
         .then((response) => {
             if (response.data.usersIds) {
                 setBlocked(response.data.usersIds);
-                //changer dans l'affichage des message pour regarder senderId a la place de senderLogin
             }
             else
                 console.log(response.data.error);
@@ -44,7 +43,6 @@ export default function Social() {
 
     useEffect(() => {
         function getLogin () {
-            // console.log("new login recu !");
             const url_get_login = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/users/getLogin`;
             axios.get(url_get_login, {withCredentials: true})
             .then((response) => {

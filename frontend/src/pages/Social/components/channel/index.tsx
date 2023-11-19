@@ -15,7 +15,6 @@ export default function Channels({handleSelect, login, currentChan, socket}){
 
     useEffect(() => {
         const kickHandler = () => {
-            console.log("je me suis fait kicked !!!!");
             setKicked(!kicked);
             handleSelect(null);
           }

@@ -39,7 +39,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             if (reponse.data.users)
                 setDefaultUsers(reponse.data.users);
             else
-                console.log(reponse.data.error);
+            console.log("error");
         })
 
         const url_all = `http://${process.env.REACT_APP_CURRENT_HOST}:3001/channel/all?name=` + channel.name;
@@ -47,7 +47,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             if (reponse.data.users)
                 setUsers(reponse.data.users);
             else
-                console.log(reponse.data.error);
+                console.log("error");
         })
 
 
@@ -61,8 +61,8 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         }
 
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-            console.log("password succesfully deleted");
+        .catch(() => {
+            console.log("error");
         })
 
     }
@@ -75,9 +75,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         }
 
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-            console.log("password succesfully changed");
-        })
         .catch(() => {
             console.log("error");
         })
@@ -93,9 +90,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             }
 
             axios.post(url, data, {withCredentials: true})
-            .then(() => {
-                console.log("admin ajouté");
-            })
             .catch(() => {
                 console.log("erreur lors de l'ajout d'admin");
             })
@@ -110,8 +104,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         }
 
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-        })
         .catch(() => {
             console.log("erreur durant le leave");
         })
@@ -124,10 +116,7 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             name: channel.name,
         }
 
-        console.log(data);
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-        })
         .catch(() => {
             console.log("erreur durant le ban");
         })
@@ -140,10 +129,8 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
             name: channel.name,
         }
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-        })
         .catch(() => {
-            console.log("erreur durant le mute");
+            console.log("erreur durant linvite");
         })
     }
 
@@ -155,8 +142,6 @@ export default function SettingForm({role, handleLeave, handleDelete, channel}){
         }
 
         axios.post(url, data, {withCredentials: true})
-        .then(() => {
-        })
         .catch(() => {
             console.log("erreur durant le mute");
         })

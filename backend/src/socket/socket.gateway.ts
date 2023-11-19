@@ -131,11 +131,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	  }
   }
 
-  ///////////////////////////// GAME ///////////////////////////////
-  //pour l instant je met le code ici puis par la sutie je verrai comment bien repartir le code pour faire ca propre
-
-  //private connectedClients = new Map<string, Socket>();
-
   private matchmakingQueue: string[] = [];
 
   private matchmakingQueueBoosted: string[] = [];

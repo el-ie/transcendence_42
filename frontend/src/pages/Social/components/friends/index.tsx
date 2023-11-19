@@ -22,7 +22,6 @@ function FriendList({list, handleSelect}) {
 }
 
 function InviteList({list, handleAccept, handleDecline}) {
-    console.log("list :", list);
     return (
         <div>
             <h2>Game Invite List</h2>
