@@ -248,7 +248,7 @@ export default function Game() {
 
 	if (!readyToPlay) {
 		return (
-			<div class="find_game">
+			<div className="find_game">
 			<h1>Matchmaking</h1>
 			<button onClick={handleReadyToPlay}>CLASSIC MODE</button>
 			<button onClick={handleReadyToPlayBoosted}>BOOSTED MODE</button>
@@ -258,13 +258,13 @@ export default function Game() {
 
 	return (
 
-		<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginTop: '50px'}}>
+		<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', marginTop: '50px'}}>
 
 		{!gameState && !gameEnd && <h2>Waiting for opponent ...</h2>}
 
 		{gameEnd && winner && <h1 style={{fontSize: '50px'}}>GAME WINNED BY {winner} </h1>}
 
-		{!gameEnd && <canvas ref={canvasRef} width={wwidth} height={hheight} style={{marginBottom: '-50px'}}/>}
+		{!gameEnd && <canvas ref={canvasRef} width='800' height='600' style={{marginBottom: '-50px'}}/>}
 
 		{gameState && <h1 style={{fontSize: '100px'}}>{gameState.playerLeft.score}      -      {gameState.playerRight.score}</h1>}
 
