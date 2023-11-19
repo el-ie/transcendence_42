@@ -1,5 +1,4 @@
-/* eslint-disable */
-import './game.css'
+import Menu from '../Menu';
 import { useSocket } from '../../components/Socket';
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -248,10 +247,10 @@ export default function Game() {
 
 	if (!readyToPlay) {
 		return (
-			<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', marginBottom: '-100px', paddingBottom: '-100px'}}>
-			<button onClick={handleReadyToPlay} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent CLASSIC MODE </button>
-			<br /> <br /> <br /> <br /> <br />
-			<button onClick={handleReadyToPlayBoosted} style={{ padding: '30px 55px', borderRadius: '4px'}} > Find opponent BOOSTED MODE</button>
+			<div class="find_game">
+			<h1>Matchmaking</h1>
+			<button onClick={handleReadyToPlay}>CLASSIC MODE</button>
+			<button onClick={handleReadyToPlayBoosted}>BOOSTED MODE</button>
 			</div>
 		);
 	}
@@ -260,7 +259,7 @@ export default function Game() {
 
 		<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', whiteSpace: 'pre', height: '80vh', marginTop: '50px'}}>
 
-		{!gameState && !gameEnd && <h2> Waiting for opponent ... </h2>}
+		{!gameState && !gameEnd && <h2>Waiting for opponent ...</h2>}
 
 		{gameEnd && winner && <h1 style={{fontSize: '50px'}}>GAME WINNED BY {winner} </h1>}
 

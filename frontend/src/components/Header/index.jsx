@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "./header.css"
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -114,7 +113,7 @@ function Settings({me, onClose}) {
 
 	const [twoFaSecret, setTwoFaSecret] = useState("");
 
-	
+
     useEffect(() => {
         const getTwoFaActivationState = async () => {
             try {
@@ -185,7 +184,7 @@ function Settings({me, onClose}) {
 		<span>Nickname: {myLogin}</span>
 		<button onClick={() => setChangeLogin(!changeLogin)}>change</button>
 		</div>
-		{changeLogin && 
+		{changeLogin &&
 			<div>
 			<input type="text" onChange={(event) => setLogin(event.target.value)}/>
 			<button onClick={() => handleClickChange()}>send</button><br/>
@@ -198,7 +197,7 @@ function Settings({me, onClose}) {
 		<img className="avatar" src={urlAvatar} alt="avatar" />
 		<button onClick={() => setChangeAvatar(!changeAvatar)}>Change</button><br />
 		</div>
-		{changeAvatar && 
+		{changeAvatar &&
 			<div>
 			<input type="file" onChange={(event) => setFile(event.target.files[0])}/>
 			<button onClick={() => handleClickUpload()}>Upload</button><br/>
@@ -232,10 +231,9 @@ function Settings({me, onClose}) {
 
 		<h2 style={{color: 'black'}}> 2FA activation : </h2>
 		{ twoFaActivation ?
-				<h2 style={{ color: 'blue' }} > ACTIVATED </h2> 
+				<h2 style={{ color: 'blue' }} > ACTIVATED </h2>
 				: <h2 style={{ color: 'red' }} > INACTIVE </h2>
 		}
-
 
 		{ twoFaActivation &&
 				<button onClick={handleRemoveTwoFa}>Remove 2fa</button>
@@ -277,17 +275,20 @@ export default function Header() {
 	}
 
 	return(
+		<>
 		<nav>
 		<Link to="/bonus" onClick={handleClickProtection}>3D</Link>
 		<Link to="/Game" onClick={handleClickProtection}>Game</Link>
 		<Link to="/Social" onClick={handleClickProtection}>Social</Link>
 		{me && <Link to={`/Profile/${me.id}`} onClick={handleClickProtection}>Profile</Link>}
-		<button onClick={() => {
+		<Link onClick={() => {
 			handleClickProtection();
 			setParams(!params);
-		}}>🛠️</button>
-		{me && params && <Settings me={me} onClose={handleClose}/>}
-
+		}}>settings</Link>
 		</nav>
+		{me && params && <Settings me={me} onClose={handleClose}/>}
+		</>
 	)
+
 }
+

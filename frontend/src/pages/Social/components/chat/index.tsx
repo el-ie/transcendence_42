@@ -70,9 +70,9 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
             }
         }
         };
-      
+
         socket.on('message', messageHandler);
-      
+
         return () => {
           socket.off('message', messageHandler);
         };
@@ -91,10 +91,10 @@ export default function Chat({channel, login, socket, handleLeave, handleDelete,
         return (
             <div>
                 {name !== "" && <h2>{name}</h2>}
-                {channel.type !== 'DIRECT' && 
+                {channel.type !== 'DIRECT' &&
                 <div className="settingsdiv">
                     <span>{role}</span>
-                    <button onClick={() => setSetting(!setting)}>⚙️</button>
+                    <button onClick={() => setSetting(!setting)}>setup</button>
                 </div>
                 }
                 {setting && channel.type !== 'DIRECT'? (<SettingForm role={role} handleLeave={handleLeave} handleDelete={handleDelete} channel={channel}/>) : null}

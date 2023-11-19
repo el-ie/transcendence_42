@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
 import Bonus from './pages/Bonus';
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+
 import Social from './pages/Social';
 import Game from './pages/Game';
 import Header from './components/Header';
@@ -11,11 +14,11 @@ import { SocketProvider } from './components/Socket';
 import Profile from './pages/Profile';
 
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root_element: HTMLElement = document.getElementById('root') as HTMLElement;
+const root                      = ReactDOM.createRoot(root_element);
+
 root.render(
-    <Router>
+	<Router>
       <Routes>
         <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
@@ -60,6 +63,5 @@ root.render(
             </RouteProtection>
         } />
       </Routes>
-      
-    </Router>
+	  </Router>
 );

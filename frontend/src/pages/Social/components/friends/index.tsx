@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UserProfile from "./userProfile";
-import "./style.css"
+import "/app/src/css/style.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,7 @@ function InviteList({list, handleAccept, handleDecline}) {
             <ul className="gameInviteList">
                 {list.map((inviter: any) => (
                     <li key={inviter.username + "a"}>
-                    {inviter.login} 
+                    {inviter.login}
                     <button onClick={() => handleAccept(inviter.username)}>Accept</button>
                     <button onClick={() => handleDecline(inviter.username)}>Coward</button>
                     </li>
@@ -59,7 +59,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
         .catch(() => {
             console.log("error");
         })
-        
+
     }, [login, socket])
 
     useEffect (() => {
@@ -119,16 +119,16 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
             console.log("error");
         })
         }
-      
+
         socket.on('connection', handleConnect);
         socket.on('INVITED', handleInvited);
         socket.on('CANCEL_INVITE', handleCancel);
-      
+
         return () => {
           socket.off('message', handleConnect);
         };
       }, [socket]);
-    
+
     function handleAdd(user: any) {
         const temp = [...friends];
         temp.push(user);
@@ -168,7 +168,7 @@ export default function Friends({login, blockeds, handleBlock, handleUnblock, so
                     setInviteList(response.data.inviters);
                 }
             })
-            
+
         })
     }
 

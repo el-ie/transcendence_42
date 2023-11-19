@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import "./form.css"
+import "/app/src/css/style.css";
 
 
 export default function CreateDirectForm({onClose, onCreateDirect, login}) {
