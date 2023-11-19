@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 
 import Bonus from './pages/Bonus';
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
 
 import Social from './pages/Social';
 import Game from './pages/Game';
