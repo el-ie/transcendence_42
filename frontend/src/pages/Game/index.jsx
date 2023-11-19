@@ -248,7 +248,7 @@ export default function Game() {
 
 	if (!readyToPlay) {
 		return (
-			<div class="find_game">
+			<div className="find_game">
 			<h1>Matchmaking</h1>
 			<button onClick={handleReadyToPlay}>CLASSIC MODE</button>
 			<button onClick={handleReadyToPlayBoosted}>BOOSTED MODE</button>
